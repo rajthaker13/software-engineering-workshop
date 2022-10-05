@@ -17,7 +17,7 @@
 #import <ReactCommon/RCTTurboModuleManager.h>
 
 #import <react/config/ReactNativeConfig.h>
-@import FirebaseCore;
+#import <Firebase.h>
 
 static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
@@ -34,14 +34,10 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [FIRApp configure];
   RCTAppSetupPrepareApp(application);
 
   RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-    [FIRApp configure];
-
-  return YES;}
 
 #if RCT_NEW_ARCH_ENABLED
   _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
@@ -65,6 +61,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
   return YES;
 }
+
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
