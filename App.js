@@ -1,10 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import HomeScreen from './screens/HomeScreen';
-import SearchScreen from './screens/SearchScreen';
-import CreatePollScreen from './screens/CreatePollScreen';
-import ActivityScreen from './screens/ActivityScreen';
-import ProfileScreen from './screens/ProfileScreen';
 
 export default function App() {
   return (
