@@ -3,13 +3,13 @@ import { StyleSheet, Text, SafeAreaView, Image, TouchableHighlight, Button} from
 //Image is placeholder
 export default function LoginScreen() {
     return (
-    <SafeAreaView style={styles.container}>
-      <Image source={require('../assets/favicon.png')} style={{}}/> 
-      <View>
+      <SafeAreaView style={styles.container}>
+      <View style={{flex: 1, justifyContent: "center"}}><Image source={require('../assets/favicon.png')}/></View>
+      <View style={{alignContent:"flex-start"}}>
         <Text>Username:</Text>
         <TextInput placeholder="firstname.lastname@domain.com" keyboardType='email-address'/>
       </View>
-      <View>
+      <View style={{flex:1}}>
         <Text>Password:</Text>
         <TextInput placeholder="*********" secureTextEntry="true"/>
       </View>
