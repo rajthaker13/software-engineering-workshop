@@ -37,24 +37,26 @@ export default function LoginScreen() {
     }
 
     return (
-        <SafeAreaView style={{flex: 1}}>
+        <SafeAreaView style={{flex: 1, backgroundColor: 'black'}}>
             <View style={styles.image}>
                  <Image source={require("../assets/favicon.png")} />
             </View>
             <KeyboardAvoidingView style={styles.container} behavior="padding">
                 <View style={styles.inputContainer}>
-                    <Text>Username:</Text>
+                    <Text style={styles.text}>Username:</Text>
                     <TextInput 
                     placeholder="firstname.lastname@domain.com" 
+                    placeholderTextColor={"white"}
                     keyboardType='email-address' 
                     value={email} 
                     onChangeText={text => setEmail(text)} 
                     style={styles.input}/>
                 </View>
                 <View style={styles.inputContainer}>
-                    <Text>Password:</Text>
+                    <Text style={styles.text}>Password:</Text>
                     <TextInput 
                     placeholder="Password" 
+                    placeholderTextColor={"white"}
                     secureTextEntry="true"
                     value={password} 
                     onChangeText={text => setPassword(text)}  
@@ -78,6 +80,13 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
+    text: {
+        fontWeight:'400',
+        textAlign: 'left',
+        fontSize: 16,
+        letterSpacing: 0.5,
+        color: "white"
+    },
     image: {
         flex: 0.2,
         justifyContent: 'center',
@@ -89,14 +98,19 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     input: {
-        backgroundColor: "white",
+        backgroundColor: "black",
+        color: "white",
         paddingHorizontal: 15,
         paddingVertical: 10,
         borderRadius: 10,
-        marginTop: 5
+        marginTop: 2.5,
+        marginBottom: 5,
+        borderColor: "#e91e63",
+        borderRadius: 10,
+        borderWidth: 2,
     },
     inputContainer: {
-        width: '80%'
+        width: '80%',
     },
     buttonContainer: {
         width: '60%',
@@ -105,26 +119,26 @@ const styles = StyleSheet.create({
         marginTop: 40
     },
     button: {
-        backgroundColor: 'blue',
+        backgroundColor: '#e91e63',
         width: '100%',
         padding: 15,
         borderRadius: 10,
-        alignItmes: 'center',     
+        alignItems: 'center',     
     },
     buttonText: {
-        color: 'white',
+        color: 'black',
         fontWeight: '700',
-        fontSize: 16,
+        fontSize: 20,
     },
     buttonOutline: {
-        backgroundColor: 'white',
+        backgroundColor: 'black',
         marginTop: 5,
-        borderColor: 'blue',
+        borderColor: '#e91e63',
         borderWidth: 2
     },
     buttonOutlineText: {
-        color: 'blue',
+        color: '#e91e63',
         fontWeight: '700',
-        fontSize: 16
+        fontSize: 20
     },
 });
