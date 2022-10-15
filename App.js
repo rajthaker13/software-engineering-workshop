@@ -11,8 +11,9 @@ import SearchScreen from './screens/SearchScreen';
 import CreatePollScreen from './screens/CreatePollScreen';
 import ActivityScreen from './screens/ActivityScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import LoginScreen from './screens/LoginScreen';
 import { NavigationContainer } from '@react-navigation/native';
-
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 
 const firebaseConfig = {
@@ -30,11 +31,11 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
 const Tab = createMaterialBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
-export default function App() {
+function Home() {
   return (
-    <NavigationContainer>
-      <Tab.Navigator
+    <Tab.Navigator
         initialRouteName="Home"
         activeColor="#e91e63"
         barStyle={{ backgroundColor: 'black' }}
@@ -90,6 +91,16 @@ export default function App() {
           }}
         />
       </Tab.Navigator>
+  );
+}
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name="Home" component={Home} options={{ headerShown: false }}/>
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }
