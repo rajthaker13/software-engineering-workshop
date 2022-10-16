@@ -1,5 +1,6 @@
 import { StyleSheet, Text, SafeAreaView, Image, TouchableHighlight, Button } from 'react-native';
 
+
 export default function LoginScreen() {
     return (
         <SafeAreaView style={styles.container}>
