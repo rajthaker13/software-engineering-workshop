@@ -1,17 +1,20 @@
 import React, {useEffect, useState} from 'react';
-import { Image, KeyboardAvoidingView, SafeAreaView, StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { ActionSheetIOS, Alert, Image, KeyboardAvoidingView, SafeAreaView, StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, applyActionCode, sendEmailVerification, ActionCodeOperation, reload } from "firebase/auth";
 import { useNavigation } from '@react-navigation/native';
+import { getDatabase, ref, set } from "firebase/database";
+import { ReactNativeFirebase } from '@react-native-firebase/app';
+import { FirebaseError } from 'firebase/app';
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const navigation = useNavigation()
-
+    
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
-            if (user) {
+            if (user.emailVerified) {
                 navigation.replace("Home")
             }
         })
@@ -20,18 +23,16 @@ export default function LoginScreen() {
     }, [])
 
     const auth = getAuth()
+    
     const handleSignup = () => (
-        createUserWithEmailAndPassword(auth, email, password)
-            .then(userCredentials => {
-                const user = userCredentials.user;
-            })
-            .catch(error => alert(error.message))
+        navigation.replace("Registration")
     );
 
     const handleLogin = () => {
         signInWithEmailAndPassword(auth, email, password)
             .then(userCredentials => {
                 const user = userCredentials.user;
+                user.reload()
             })
             .catch(error => alert(error.message))
     }
