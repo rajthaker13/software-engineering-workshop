@@ -21,9 +21,9 @@ export default function CreatePollScreen() {
 
     const addInput = () => {
         setInputs([...inputs, 
-            {item: <View style={{flexDirection: 'row'}}>
+            {input: <View style={{flexDirection: 'row'}}>
                 <TextInput defaultValue='Type Here' onChangeText={(text) => updateText(text, indices)}/>
-                <TouchableOpacity onPress={deleteInput(indices)}>
+                <TouchableOpacity onPress={() => deleteInput(indices)}>
                     <MaterialCommunityIcons name="close-circle" color='red' />
                 </TouchableOpacity>
             </View>, index: indices} 
@@ -36,7 +36,8 @@ export default function CreatePollScreen() {
     }
 
     const deleteInput = (deleteIndex) => {
-        setInputs(inputs.filter((value, index) => index != deleteIndex))
+        setInputs(inputs.filter((value, index) => value.index !== deleteIndex))
+        setIndices(indices - 1)
     }
 
     const finishPoll = () => {
@@ -85,7 +86,7 @@ export default function CreatePollScreen() {
                 <ScrollView>
                     {inputs.map((input, index) => {
                         return (
-                           input.item
+                           input.input
                         )
                     })}
                 </ScrollView>
