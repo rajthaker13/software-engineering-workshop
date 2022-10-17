@@ -7,7 +7,7 @@ const windowHeight = Dimensions.get('window').height;
 
 export default StyleSheet.create({
     header: {
-        flex: 1,
+        height: 1000,
         backgroundColor: 'red',
         alignItems: 'center',
         justifyContent: 'center',
