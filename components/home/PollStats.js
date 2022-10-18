@@ -13,7 +13,7 @@ const windowHeight = Dimensions.get('window').height;
 
 export default function PollStats(props) {
     const db = props.db
-    const auth = getAuth()
+    const auth = props.auth
     const pollID = props.id
 
 
@@ -22,6 +22,17 @@ export default function PollStats(props) {
     const [comments, setComments] = useState(props.comments)
     const [shares, setShares] = useState(props.shares)
     const pollRef = ref(db, '/polls/' + pollID)
+
+    useEffect(() => {
+        get(pollRef).then(snapshot => {
+            setLikes(snapshot.val().likes)
+            setDislikes(snapshot.val().dislikes)
+            setComments(snapshot.val().comments)
+            setShares(snapshot.val().shares)
+
+        })
+
+    }, [])
 
     function onPress(type) {
         if (type == "like") {
@@ -143,7 +154,6 @@ const styles = StyleSheet.create({
         marginLeft: windowHeight * .005,
     },
     statsContainer: {
-        marginTop: windowHeight * .01,
         alignItems: 'center',
         flexDirection: 'row',
         justifyContent: 'space-evenly'

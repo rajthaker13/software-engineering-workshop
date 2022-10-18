@@ -22,9 +22,9 @@ const styles = StyleSheet.create({
         borderRadius: windowHeight * .05,
         width: windowWidth * .9,
         height: windowHeight * .045,
-        marginTop: windowHeight * .01,
+        marginTop: windowHeight * .005,
         marginLeft: windowWidth * .05,
-        marginBottom: windowHeight * .01,
+        marginBottom: windowHeight * .005,
         justifyContent: 'center',
     },
     pollmeText: {

@@ -1,4 +1,4 @@
-import { View, Text, Dimensions, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, Dimensions, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import { StyleSheet } from 'react-native';
 import React, { useEffect, useReducer, useState } from 'react';
 import { Database, get, getDatabase, onValue, ref, set } from "firebase/database";
@@ -9,6 +9,7 @@ import Answer from '../components/home/Answer';
 import PollStats from '../components/home/PollStats';
 import ViewPager from 'react-native-pager-view';
 import { useIsFocused } from '@react-navigation/native';
+import PollBanner from '../components/home/PollBanner';
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -19,6 +20,7 @@ const HomeScreen = () => {
 
 
     const db = getDatabase()
+    const auth = getAuth()
 
     const refPolls = ref(db, '/polls/')
 
@@ -47,8 +49,22 @@ const HomeScreen = () => {
                 return (
                     <View style={styles.container}>
                         <Header />
+                        <View style={styles.tabsContainer}>
+                            <TouchableOpacity>
+                                <Text>Following</Text>
+                            </TouchableOpacity>
+                            <Text style={{
+                                color: '#fff',
+                                fontSize: 15,
+                                opacity: 0.2,
+                            }}>|</Text>
+                            <TouchableOpacity>
+                                <Text>For You</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <PollBanner uid={poll.uid} db={db} auth={auth} />
                         <Question title={poll.title} />
-                        <PollStats id={poll.key} likes={poll.likes} dislikes={poll.dislikes} comments={poll.comments} shares={poll.shares} db={db} />
+                        <PollStats id={poll.key} likes={poll.likes} dislikes={poll.dislikes} comments={poll.comments} shares={poll.shares} db={db} auth={auth} />
                         {poll.options.map((option) => {
                             return (
                                 <Answer title={option} key={option} />
@@ -69,6 +85,18 @@ const styles = StyleSheet.create({
         width: windowWidth,
         height: windowHeight,
         paddingTop: 10,
+    },
+    tabsContainer: {
+        height: '10%',
+        flexDirection: 'row',
+        position: 'absolute',
+        alignSelf: 'center',
+        zIndex: 10,
+        alignItems: 'center',
+        marginTop: '20%',
+        flex: 1,
+        justifyContent: 'space-between'
+
     },
     pollmeText: {
         color: 'white',

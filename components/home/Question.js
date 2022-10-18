@@ -11,7 +11,7 @@ export default function Question(props) {
                 backgroundColor: '#D9D9D9', borderWidth: 10, borderColor: '#010101', borderRadius: 20,
                 width: windowWidth * .9,
                 height: windowHeight * .2,
-                marginTop: windowHeight * .08,
+                marginTop: windowHeight * .03,
                 marginLeft: windowWidth * .05,
                 padding: windowHeight * .005,
             }}>
@@ -30,7 +30,6 @@ const styles = StyleSheet.create({
     pollmeText: {
         color: 'white',
         marginTop: '10%',
-        fontFamily: "Federo",
         fontSize: 20,
         marginLeft: '5%'
 
