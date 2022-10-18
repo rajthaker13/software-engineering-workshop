@@ -21,11 +21,11 @@ const styles = StyleSheet.create({
         borderColor: '#010101',
         borderRadius: windowHeight * .05,
         width: windowWidth * .9,
-        height: windowHeight * .05,
+        height: windowHeight * .045,
         marginTop: windowHeight * .01,
         marginLeft: windowWidth * .05,
         marginBottom: windowHeight * .01,
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     pollmeText: {
         color: 'white',

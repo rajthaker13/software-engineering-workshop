@@ -69,7 +69,6 @@ const styles = StyleSheet.create({
         width: windowWidth,
         height: windowHeight,
         paddingTop: 10,
-        zIndex: -1,
     },
     pollmeText: {
         color: 'white',
