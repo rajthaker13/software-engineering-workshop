@@ -5,7 +5,7 @@ import { StyleSheet, View, Text, TextInput, ScrollView, SafeAreaView, Dimensions
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default function Poll(props) {
+export default function Likes(props) {
     return (
 
         <View style={{

@@ -9,9 +9,9 @@ export default function SearchBar(props) {
     return (
         <TextInput
             style={{
-                height: windowHeight,
+                height: windowHeight * .05,
                 width: windowWidth,
-                borderColor: 'gray',
+                borderColor: 'white',
                 borderWidth: 1,
                 backgroundColor: '#3B3C3B'
             }}

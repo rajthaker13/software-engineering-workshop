@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, Image, TouchableHighlight, Pressable, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Image, TouchableHighlight, Pressable, ScrollView, Dimensions } from 'react-native';
 import { Box, FlatList, Badge, Heading, AspectRatio, Avatar, Stack, HStack, VStack, Spacer, Center, NativeBaseProvider } from "native-base";
 import { useNavigation } from '@react-navigation/native';
 import { getAuth } from 'firebase/auth';
@@ -6,24 +6,74 @@ import { Database, get, getDatabase, onValue, ref, set } from "firebase/database
 import React, { useState, useEffect } from 'react';
 // import AppLoading from 'expo-app-loading';
 import { useFonts, IrishGrover_400Regular } from '@expo-google-fonts/irish-grover';
+import Header from '../components/common/Header';
+import LikesWrapper from '../components/activity/wrappers/LikesWrapper';
+import { useIsFocused } from '@react-navigation/native';
+import DislikesWrapper from '../components/activity/wrappers/DislikesWrapper';
+
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 
 export default function ActivityScreen() {
 
+  const [likes, setLikes] = useState([])
+  const [dislikes, setDislikes] = useState([])
+
+  const db = getDatabase()
+  const auth = getAuth()
+
+
+  const isFocused = useIsFocused();
+
+  const userRef = ref(db, 'users/' + auth.currentUser.uid)
+
+  useEffect(() => {
+    get(userRef).then(snapshot => {
+      let likeArr = []
+      let data = snapshot.val().activity
+
+      data.forEach((a) => {
+        if (a.type == "like") {
+          likeArr.push(a)
+        }
+      })
+
+      setLikes(likeArr)
+
+
+    })
+
+
+  }, [isFocused])
+
 
   return (
-    <View>
+    <ScrollView>
+      <Header />
+      <View style={{
+        backgroundColor: '#3B3C3B',
+        width: windowWidth,
+        height: windowHeight,
+        paddingTop: 10,
+        flex: 1
+      }}>
+        <LikesWrapper title="Likes" likeActivity={likes} />
+        {/* <DislikesWrapper title="Dislikes" dislikeActivity={dislikes} /> */}
 
-    </View>
+
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#3B3C3B',
+    width: windowWidth,
+    height: windowHeight,
+    paddingTop: 10,
   },
   button: {
     alignItems: 'center',

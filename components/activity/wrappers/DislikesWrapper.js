@@ -1,24 +1,33 @@
 import React from 'react'
 import { StyleSheet, View, Text, TextInput, ScrollView, SafeAreaView, Dimensions } from 'react-native'
-import Poll from '../Poll';
+import { useEffect, useState } from 'react/cjs/react.development';
+import Dislikes from '../Dislikes';
+import Likes from '../Likes';
+
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 
+export default function DislikesWrapper(props) {
+    const [dislikesActivity, setLDislikesActivity] = useState([])
+    useEffect(() => {
+        setLDislikesActivity(props.dislikesActivity)
 
-
-
-export default function NearYouPollWrapper(props) {
+    }, [])
     return (
         <>
             <View style={{ height: windowHeight * .22 }}>
                 <Text style={{ marginLeft: 20, color: 'white', fontFamily: "Federo", fontSize: 20 }}> {props.title}</Text>
                 <SafeAreaView>
                     <ScrollView horizontal={true}>
-                        <Poll title="Poll 1" time="1h" answerNum="432" />
-                        <Poll title="Poll 2" time="1h" answerNum="432" />
-                        <Poll title="Poll 3" time="1h" answerNum="432" />
+                        {dislikesActivity.map((dislike) => {
+                            return (
+                                <Dislikes title={dislike.timestamp} time="1h" answerNum="432" />
+
+                            )
+                        })}
+
                     </ScrollView>
                 </SafeAreaView>
             </View>

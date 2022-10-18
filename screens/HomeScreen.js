@@ -28,7 +28,7 @@ const HomeScreen = () => {
 
 
     useEffect(() => {
-        const arr = []
+        let arr = []
         get(refPolls).then(snapshot => {
             snapshot.forEach((snap) => {
                 var item = snap.val()

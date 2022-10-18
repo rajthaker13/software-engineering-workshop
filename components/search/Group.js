@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, View, Text, TextInput, ScrollView, SafeAreaView, Dimensions } from 'react-native'
-import SearchBar from '../components/search/SearchjBar'
+
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
