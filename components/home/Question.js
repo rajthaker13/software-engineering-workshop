@@ -13,8 +13,7 @@ export default function Question(props) {
                 height: windowHeight * .2,
                 marginTop: windowHeight * .08,
                 marginLeft: windowWidth * .05,
-                marginBottom: 15,
-                padding: 5,
+                padding: windowHeight * .005,
             }}>
                 <Text style={{ fontSize: 40, marginTop: '5%', fontWeight: 'bold', textAlign: 'center', flex: 1 }}>{props.title}</Text>
             </View>

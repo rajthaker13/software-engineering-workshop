@@ -6,6 +6,7 @@ import { getAuth } from 'firebase/auth';
 import Header from '../components/common/Header';
 import Question from '../components/home/Question';
 import Answer from '../components/home/Answer';
+import PollStats from '../components/home/PollStats';
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -13,9 +14,9 @@ const windowHeight = Dimensions.get('window').height;
 
 const HomeScreen = () => {
     const [pollsArray, setPollsArray] = useState([])
-    const [currentPoll, setCurrentPoll] = useState('')
+    const [currentPoll, setCurrentPoll] = useState([])
     const [question, setQuestion] = useState('')
-    const [options, setOptions] = useState()
+    const [options, setOptions] = useState(["Loading"])
 
 
     const auth = getAuth()
@@ -34,7 +35,7 @@ const HomeScreen = () => {
             setPollsArray(arr)
             setCurrentPoll(arr[0])
             setOptions(arr[0].options)
-            console.log(options)
+            console.log(arr[0])
 
         })
     }, [])
@@ -42,7 +43,8 @@ const HomeScreen = () => {
     return (
         <View style={styles.container}>
             <Header />
-            <Question title={currentPoll == "" ? "" : currentPoll.title} />
+            <Question title={currentPoll == [] ? "" : currentPoll.title} />
+            <PollStats likes={currentPoll.likes} dislikes={currentPoll.dislikes} comments={currentPoll.comments} shares={currentPoll.shares} />
             {options == [] ? <View></View> : options.map((option) => {
                 return (
                     <Answer title={option} key={option} />
