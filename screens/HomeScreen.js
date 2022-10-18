@@ -39,7 +39,6 @@ const HomeScreen = () => {
             setOptions(arr[0].options)
             setLikes(arr[0].likes)
             setDislikes(arr[0].dislikes)
-            console.log(arr[0].dislikes)
 
         })
     }, [])

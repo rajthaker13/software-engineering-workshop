@@ -8,6 +8,8 @@ export default function RegistrationScreen() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
+    const [firstname, setFirstname] = useState('');
+    const [lastname, setLastname] = useState('');
     const navigator = useNavigation()
     const auth = getAuth()
 
@@ -28,17 +30,16 @@ export default function RegistrationScreen() {
                 set(reference, {
                     username: username,
                     profile_picture_url: '',
-                    followers: 0,
-                    following: 0,
-                    firstName: 'John',
-                    lastName: 'Doe',
+                    followers: false,
+                    following: false,
+                    firstName: firstname,
+                    lastName: lastname,
                     likes: 0,
                     dislikes: 0,
                     numPolls: 0,
                     description: '',
                     polls: [],
                     groups: [],
-                    activity: ''
                 })
 
                 navigator.replace("Login")
@@ -50,15 +51,26 @@ export default function RegistrationScreen() {
         <SafeAreaView>
             <Text >Email</Text>
             <TextInput keyboardType='email-address'
+                autoCapitalize={'none'}
                 value={email}
                 onChangeText={text => setEmail(text)} />
             <Text>Password</Text>
             <TextInput secureTextEntry="true"
+                autoCapitalize={'none'}
                 value={password}
                 onChangeText={text => setPassword(text)} />
             <Text>Username</Text>
             <TextInput value={username}
+                autoCapitalize={'none'}
                 onChangeText={text => setUsername(text)} />
+            <Text>First Name</Text>
+            <TextInput value={firstname}
+                autoCapitalize={'none'}
+                onChangeText={text => setFirstname(text)} />
+            <Text>Last Name</Text>
+            <TextInput value={lastname}
+                autoCapitalize={'none'}
+                onChangeText={text => setLastname(text)} />
             <TouchableHighlight onPress={handleSignup}>
                 <Text>Sign Up</Text>
             </TouchableHighlight>

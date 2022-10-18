@@ -52,6 +52,7 @@ export default function LoginScreen() {
                     keyboardType='email-address' 
                     value={email} 
                     onChangeText={text => setEmail(text)} 
+                    autoCapitalize={'none'}
                     style={styles.input}/>
                 </View>
                 <View style={styles.inputContainer}>
@@ -61,7 +62,8 @@ export default function LoginScreen() {
                     placeholderTextColor={"white"}
                     secureTextEntry="true"
                     value={password} 
-                    onChangeText={text => setPassword(text)}  
+                    onChangeText={text => setPassword(text)}
+                    autoCapitalize={'none'}  
                     style={styles.input}/>
                 </View>
                 <View style={styles.buttonContainer}>
