@@ -49,6 +49,7 @@ function Home() {
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="home" color={color} size={26} />
           ),
+          unmountOnBlur: true
         }}
       />
       <Tab.Screen

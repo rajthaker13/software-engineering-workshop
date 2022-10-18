@@ -8,6 +8,7 @@ import Question from '../components/home/Question';
 import Answer from '../components/home/Answer';
 import PollStats from '../components/home/PollStats';
 import ViewPager from 'react-native-pager-view';
+import { useIsFocused } from '@react-navigation/native';
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -15,16 +16,14 @@ const windowHeight = Dimensions.get('window').height;
 
 const HomeScreen = () => {
     const [pollsArray, setPollsArray] = useState([])
-    const [currentPoll, setCurrentPoll] = useState([])
-    const [question, setQuestion] = useState('')
-    const [options, setOptions] = useState(["Loading"])
-    const [likes, setLikes] = useState(0)
-    const [dislikes, setDislikes] = useState(0)
 
-    const auth = getAuth()
+
     const db = getDatabase()
 
     const refPolls = ref(db, '/polls/')
+
+    const isFocused = useIsFocused();
+
 
     useEffect(() => {
         const arr = []
@@ -35,13 +34,8 @@ const HomeScreen = () => {
                 arr.push(item)
             })
             setPollsArray(arr)
-            setCurrentPoll(arr[0])
-            setOptions(arr[0].options)
-            setLikes(arr[0].likes)
-            setDislikes(arr[0].dislikes)
-
         })
-    }, [])
+    }, [isFocused])
 
     return (
         <ViewPager
@@ -49,26 +43,21 @@ const HomeScreen = () => {
             style={{ flex: 1 }}
             initialPage={0}
         >
-            <View style={styles.container}>
-                <Header />
-                <Question title={currentPoll == [] ? "" : currentPoll.title} />
-                <PollStats id={currentPoll.key} likes={currentPoll.likes} dislikes={currentPoll.dislikes} comments={currentPoll.comments} shares={currentPoll.shares} db={db} />
-                {options == [] ? <View></View> : options.map((option) => {
-                    return (
-                        <Answer title={option} key={option} />
-                    )
-                })}
-            </View>
-            <View style={styles.container}>
-                <Header />
-                <Question title={currentPoll == [] ? "" : currentPoll.title} />
-                <PollStats id={currentPoll.key} likes={currentPoll.likes} dislikes={currentPoll.dislikes} comments={currentPoll.comments} shares={currentPoll.shares} db={db} />
-                {options == [] ? <View></View> : options.map((option) => {
-                    return (
-                        <Answer title={option} key={option} />
-                    )
-                })}
-            </View>
+            {pollsArray.map((poll) => {
+                return (
+                    <View style={styles.container}>
+                        <Header />
+                        <Question title={poll.title} />
+                        <PollStats id={poll.key} likes={poll.likes} dislikes={poll.dislikes} comments={poll.comments} shares={poll.shares} db={db} />
+                        {poll.options.map((option) => {
+                            return (
+                                <Answer title={option} key={option} />
+                            )
+                        })}
+                    </View>
+
+                )
+            })}
         </ViewPager>
 
     );

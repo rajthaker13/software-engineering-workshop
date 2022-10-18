@@ -100,11 +100,11 @@ export default function PollStats(props) {
                     </TouchableOpacity>
                 </View >
                 <View style={styles.statsContainer}>
-                    <Text style={styles.statsText}>{props.likes}</Text>
+                    <Text style={styles.statsText}>{likes}</Text>
                     <Feather name="arrow-up" size={26} color="green" />
                 </View>
                 <View style={styles.statsContainer}>
-                    <Text style={styles.statsText}>{props.dislikes}</Text>
+                    <Text style={styles.statsText}>{dislikes}</Text>
                     <Feather name="arrow-down" size={26} color="red" />
                 </View>
             </View>
@@ -121,7 +121,7 @@ export default function PollStats(props) {
                     <Fontisto name="share-a" size={26} color="white" />
                 </TouchableOpacity>
                 <View style={styles.statsContainer}>
-                    <Text style={styles.statsText}>{props.shares}</Text>
+                    <Text style={styles.statsText}>{shares}</Text>
                 </View>
 
             </View>
