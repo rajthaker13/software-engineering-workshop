@@ -10,25 +10,27 @@ import { useNavigation } from '@react-navigation/native';
 
 
 export default function CreatePollScreen() {
-    const[inputs, setInputs] = useState([])
-    const[pollName, setPollName] = useState('')
-    const[pollAnswers, setPollAnswers] = useState([])
+    const [inputs, setInputs] = useState([])
+    const [pollName, setPollName] = useState('')
+    const [pollAnswers, setPollAnswers] = useState([])
     const [username, setUsername] = useState('')
-    const[indices, setIndices] = useState(0)
+    const [indices, setIndices] = useState(0)
 
     const navigator = useNavigation()
     const auth = getAuth()
 
     const addInput = () => {
-        setInputs([...inputs, 
-            {input: <View style={{flexDirection: 'row'}}>
-                <TextInput defaultValue='Type Here' onChangeText={(text) => updateText(text, indices)}/>
+        setInputs([...inputs,
+        {
+            input: <View style={{ flexDirection: 'row' }}>
+                <TextInput defaultValue='Type Here' onChangeText={(text) => updateText(text, indices)} />
                 <TouchableOpacity onPress={() => deleteInput(indices)}>
                     <MaterialCommunityIcons name="close-circle" color='red' />
                 </TouchableOpacity>
-            </View>, index: indices} 
+            </View>, index: indices
+        }
         ])
-        setIndices(indices + 1)  
+        setIndices(indices + 1)
     }
 
     const updateText = (text, indices) => {
@@ -58,18 +60,22 @@ export default function CreatePollScreen() {
             get(refUsername).then(snapshot => {
                 setUsername(snapshot.val())
             })
-            
+
             set(reference, {
-                creator: username,
+                uid: auth.currentUser.uid,
                 title: pollName,
                 options: pollAnswers,
+                likes: 0,
+                dislikes: 0,
+                shares: 0,
+                comments: 0,
             })
-            .then(() => {
-                setInputs([])
-                setPollAnswers([])
-                setIndices(0)
-            })    
-        }  
+                .then(() => {
+                    setInputs([])
+                    setPollAnswers([])
+                    setIndices(0)
+                })
+        }
     }
 
     return (
@@ -79,23 +85,23 @@ export default function CreatePollScreen() {
             </View>
             <View>
                 <Text>Title:</Text>
-                <TextInput onChangeText={(text) => setPollName(text)}/>
+                <TextInput onChangeText={(text) => setPollName(text)} />
             </View>
             <View>
                 <Text>Options:</Text>
                 <ScrollView>
                     {inputs.map((input, index) => {
                         return (
-                           input.input
+                            input.input
                         )
                     })}
                 </ScrollView>
             </View>
             <TouchableHighlight>
-                <Button title="Add Option" onPress={addInput}/>
+                <Button title="Add Option" onPress={addInput} />
             </TouchableHighlight>
             <TouchableHighlight>
-                <Button title="Submit" onPress={finishPoll}/>
+                <Button title="Submit" onPress={finishPoll} />
             </TouchableHighlight>
         </SafeAreaView>
     )
@@ -104,5 +110,5 @@ export default function CreatePollScreen() {
 
 
 const styles = StyleSheet.create({
-    
+
 });

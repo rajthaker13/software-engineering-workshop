@@ -17,6 +17,8 @@ const HomeScreen = () => {
     const [currentPoll, setCurrentPoll] = useState([])
     const [question, setQuestion] = useState('')
     const [options, setOptions] = useState(["Loading"])
+    const [likes, setLikes] = useState(0)
+    const [dislikes, setDislikes] = useState(0)
 
 
     const auth = getAuth()
@@ -35,7 +37,9 @@ const HomeScreen = () => {
             setPollsArray(arr)
             setCurrentPoll(arr[0])
             setOptions(arr[0].options)
-            console.log(arr[0])
+            setLikes(arr[0].likes)
+            setDislikes(arr[0].dislikes)
+            console.log(arr[0].dislikes)
 
         })
     }, [])
@@ -44,7 +48,7 @@ const HomeScreen = () => {
         <View style={styles.container}>
             <Header />
             <Question title={currentPoll == [] ? "" : currentPoll.title} />
-            <PollStats likes={currentPoll.likes} dislikes={currentPoll.dislikes} comments={currentPoll.comments} shares={currentPoll.shares} />
+            <PollStats id={currentPoll.key} likes={currentPoll.likes} dislikes={currentPoll.dislikes} comments={currentPoll.comments} shares={currentPoll.shares} db={db} />
             {options == [] ? <View></View> : options.map((option) => {
                 return (
                     <Answer title={option} key={option} />

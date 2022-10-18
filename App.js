@@ -37,12 +37,12 @@ const Stack = createNativeStackNavigator();
 function Home() {
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName="HomeScreen"
       activeColor="#e91e63"
       barStyle={{ backgroundColor: 'black' }}
     >
       <Tab.Screen
-        name="Home"
+        name="HomeScreen"
         component={HomeScreen}
         options={{
           tabBarLabel: 'Home',

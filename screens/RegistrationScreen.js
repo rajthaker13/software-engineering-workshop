@@ -15,49 +15,50 @@ export default function RegistrationScreen() {
         createUserWithEmailAndPassword(auth, email, password)
             .then(userCredentials => {
                 const user = userCredentials.user;
-                sendEmailVerification(user, {handleCodeInApp: true, url: 'https://pollme-24549.firebaseapp.com'})
+                sendEmailVerification(user, { handleCodeInApp: true, url: 'https://pollme-24549.firebaseapp.com' })
             })
-                .then(() => {
-                    alert('Verification email sent')
-                })
-                .catch(error => alert(error.message))
-                .then(() => {
-                    const db = getDatabase();
-                    const reference = ref(db, 'users/' + auth.currentUser.uid)
+            .then(() => {
+                alert('Verification email sent')
+            })
+            .catch(error => alert(error.message))
+            .then(() => {
+                const db = getDatabase();
+                const reference = ref(db, 'users/' + auth.currentUser.uid)
 
-                    set(reference, {
-                        username: username,
-                        profile_picture_url: '',
-                        followers: 0,
-                        following: 0,
-                        firstName: 'John',
-                        lastName: 'Doe',
-                        likes: 0,
-                        dislikes: 0,
-                        numPolls: 0,
-                        description: '',
-                        polls: [],
-                        groups: [],
-                    })
-                    
-                    navigator.replace("Login")
+                set(reference, {
+                    username: username,
+                    profile_picture_url: '',
+                    followers: 0,
+                    following: 0,
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    likes: 0,
+                    dislikes: 0,
+                    numPolls: 0,
+                    description: '',
+                    polls: [],
+                    groups: [],
+                    activity: ''
                 })
+
+                navigator.replace("Login")
+            })
             .catch(error => alert(error.message))
     );
 
     return (
         <SafeAreaView>
             <Text >Email</Text>
-            <TextInput keyboardType='email-address' 
-                value={email} 
-                onChangeText={text => setEmail(text)}/>
+            <TextInput keyboardType='email-address'
+                value={email}
+                onChangeText={text => setEmail(text)} />
             <Text>Password</Text>
             <TextInput secureTextEntry="true"
-                value={password} 
-                onChangeText={text => setPassword(text)}/>
+                value={password}
+                onChangeText={text => setPassword(text)} />
             <Text>Username</Text>
-            <TextInput value={username} 
-                onChangeText={text => setUsername(text)}/>
+            <TextInput value={username}
+                onChangeText={text => setUsername(text)} />
             <TouchableHighlight onPress={handleSignup}>
                 <Text>Sign Up</Text>
             </TouchableHighlight>
