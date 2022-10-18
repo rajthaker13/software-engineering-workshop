@@ -9,6 +9,8 @@ export default function ProfileScreen() {
     const [firstname, setFirstname] = useState('');
     const [followers, setFollowers] = useState('');
     const [following, setFollowing] = useState('');
+    const [followersNum, setFollowersNum] = useState('');
+    const [followingNum, setFollowingNum] = useState('');
     const [lastname, setLastname] = useState('');
     const [likes, setLikes] = useState('');
     const [pfp, setPfp] = useState('');
@@ -46,9 +48,21 @@ export default function ProfileScreen() {
         })
         get(refFollowers).then(snapshot => {
             setFollowers(snapshot.val())
+            if (snapshot.val() == false) {
+                setFollowersNum(0)
+            }
+            else {
+                setFollowersNum(followers.length())
+            }
         })
         get(refFollowing).then(snapshot => {
             setFollowing(snapshot.val())
+            if (snapshot.val() == false) {
+                setFollowingNum(0)
+            }
+            else {
+                setFollowingNum(following.length())
+            }
         })
         get(refLastname).then(snapshot => {
             setLastname(snapshot.val())
@@ -92,8 +106,8 @@ export default function ProfileScreen() {
                         <View style={{ flex: 1, flexDirection: "column" }}>
                             <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-around" }}>
                                 <Text style={{color: "white"}}>{numpolls}</Text>
-                                <Text style={{color: "white"}}>{followers}</Text>
-                                <Text style={{color: "white"}}>{following}</Text>
+                                <Text style={{color: "white"}}>{followersNum}</Text>
+                                <Text style={{color: "white"}}>{followingNum}</Text>
                             </View>
                             <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-around", left: 10, bottom: 15 }}>
                                 <Text style={{color: "white"}}>Polls</Text>

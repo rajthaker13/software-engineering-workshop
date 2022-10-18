@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableHighlight, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getDatabase, ref, set, get } from "firebase/database";
@@ -40,6 +40,14 @@ export default function CreatePollScreen() {
         setIndices(indices - 1)
     }
 
+    const db = getDatabase();
+    const refUsername = ref(db, '/users/' + auth.currentUser.uid + '/username')
+    useEffect(() => {
+        get(refUsername).then(snapshot => {
+            setUsername(snapshot.val())
+        })
+    })
+
     const finishPoll = () => {
         if (pollName == '') {
             alert('Poll Title is required')
@@ -51,18 +59,17 @@ export default function CreatePollScreen() {
             alert('A minimum of 2 inputs is required')
         }
         else {
-            const db = getDatabase();
             const reference = ref(db, 'polls/' + pollName + auth.currentUser.uid)
-            const refUsername = ref(db, '/users/' + auth.currentUser.uid + '/username')
-
-            get(refUsername).then(snapshot => {
-                setUsername(snapshot.val())
-            })
             
             set(reference, {
                 creator: username,
+                uid: auth.currentUser.uid,
                 title: pollName,
                 options: pollAnswers,
+                likes: 0,
+                dislikes: 0,
+                comments: 0, 
+                shares: 0
             })
             .then(() => {
                 setInputs([])
