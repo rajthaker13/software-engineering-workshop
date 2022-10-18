@@ -7,6 +7,7 @@ import Header from '../components/common/Header';
 import Question from '../components/home/Question';
 import Answer from '../components/home/Answer';
 import PollStats from '../components/home/PollStats';
+import ViewPager from 'react-native-pager-view';
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -19,7 +20,6 @@ const HomeScreen = () => {
     const [options, setOptions] = useState(["Loading"])
     const [likes, setLikes] = useState(0)
     const [dislikes, setDislikes] = useState(0)
-
 
     const auth = getAuth()
     const db = getDatabase()
@@ -44,16 +44,32 @@ const HomeScreen = () => {
     }, [])
 
     return (
-        <View style={styles.container}>
-            <Header />
-            <Question title={currentPoll == [] ? "" : currentPoll.title} />
-            <PollStats id={currentPoll.key} likes={currentPoll.likes} dislikes={currentPoll.dislikes} comments={currentPoll.comments} shares={currentPoll.shares} db={db} />
-            {options == [] ? <View></View> : options.map((option) => {
-                return (
-                    <Answer title={option} key={option} />
-                )
-            })}
-        </View>
+        <ViewPager
+            orientation="vertical"
+            style={{ flex: 1 }}
+            initialPage={0}
+        >
+            <View style={styles.container}>
+                <Header />
+                <Question title={currentPoll == [] ? "" : currentPoll.title} />
+                <PollStats id={currentPoll.key} likes={currentPoll.likes} dislikes={currentPoll.dislikes} comments={currentPoll.comments} shares={currentPoll.shares} db={db} />
+                {options == [] ? <View></View> : options.map((option) => {
+                    return (
+                        <Answer title={option} key={option} />
+                    )
+                })}
+            </View>
+            <View style={styles.container}>
+                <Header />
+                <Question title={currentPoll == [] ? "" : currentPoll.title} />
+                <PollStats id={currentPoll.key} likes={currentPoll.likes} dislikes={currentPoll.dislikes} comments={currentPoll.comments} shares={currentPoll.shares} db={db} />
+                {options == [] ? <View></View> : options.map((option) => {
+                    return (
+                        <Answer title={option} key={option} />
+                    )
+                })}
+            </View>
+        </ViewPager>
 
     );
 }
@@ -63,7 +79,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#3B3C3B',
         width: windowWidth,
         height: windowHeight,
-        paddingTop: 10
+        paddingTop: 10,
+        zIndex: -1,
     },
     pollmeText: {
         color: 'white',
