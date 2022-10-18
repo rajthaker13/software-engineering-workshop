@@ -1,18 +1,22 @@
 import { View, Text, Dimensions, SafeAreaView, ScrollView } from 'react-native';
-import Header from '../components/common/Header';
 import { StyleSheet } from 'react-native';
-import Question from '../components/home/Question';
 import React, { useEffect, useReducer, useState } from 'react';
 import { Database, get, getDatabase, onValue, ref, set } from "firebase/database";
 import { getAuth } from 'firebase/auth';
+import Header from '../components/common/Header';
+import Question from '../components/home/Question';
+import Answer from '../components/home/Answer';
+
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 const HomeScreen = () => {
     const [pollsArray, setPollsArray] = useState([])
-    const [currentPoll, setCurrentPoll] = useState()
+    const [currentPoll, setCurrentPoll] = useState('')
     const [question, setQuestion] = useState('')
+    const [options, setOptions] = useState()
+
 
     const auth = getAuth()
     const db = getDatabase()
@@ -29,6 +33,8 @@ const HomeScreen = () => {
             })
             setPollsArray(arr)
             setCurrentPoll(arr[0])
+            setOptions(arr[0].options)
+            console.log(options)
 
         })
     }, [])
@@ -36,8 +42,14 @@ const HomeScreen = () => {
     return (
         <View style={styles.container}>
             <Header />
-            <Question title={currentPoll.title} />
+            <Question title={currentPoll == "" ? "" : currentPoll.title} />
+            {options == [] ? <View></View> : options.map((option) => {
+                return (
+                    <Answer title={option} key={option} />
+                )
+            })}
         </View>
+
     );
 }
 
@@ -53,7 +65,8 @@ const styles = StyleSheet.create({
         marginTop: '10%',
         fontFamily: "Federo",
         fontSize: 20,
-        marginLeft: '5%'
+        marginLeft: '5%',
+        flex: 1,
 
     }
 

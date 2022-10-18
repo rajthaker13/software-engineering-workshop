@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
         marginTop: '10%',
         fontFamily: "Federo",
         fontSize: 20,
-        marginLeft: '5%'
+        marginLeft: '5%',
 
     }
 

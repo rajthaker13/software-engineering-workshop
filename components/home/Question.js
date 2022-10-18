@@ -11,7 +11,7 @@ export default function Question(props) {
                 backgroundColor: '#D9D9D9', borderWidth: 10, borderColor: '#010101', borderRadius: 20,
                 width: windowWidth * .9,
                 height: windowHeight * .2,
-                marginTop: windowHeight * .1,
+                marginTop: windowHeight * .08,
                 marginLeft: windowWidth * .05,
                 marginBottom: 15,
                 padding: 5,
