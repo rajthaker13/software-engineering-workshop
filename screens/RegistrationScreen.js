@@ -40,6 +40,7 @@ export default function RegistrationScreen() {
                     description: '',
                     polls: [],
                     groups: [],
+                    activity: '',
                 })
 
                 navigator.replace("Login")
