@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { getAuth } from 'firebase/auth';
 import { StyleSheet, Text, View, SafeAreaView, Image, TouchableHighlight, Pressable, FlatList } from 'react-native';
-import { Database, get, getDatabase, onValue, ref, set} from "firebase/database";
+import { Database, get, getDatabase, onValue, ref, set } from "firebase/database";
 import React, { useEffect, useReducer, useState } from 'react';
 export default function ProfileScreen() {
     const [username, setUsername] = useState('');
@@ -22,7 +22,7 @@ export default function ProfileScreen() {
     const navigation = useNavigation()
     const auth = getAuth()
     const db = getDatabase()
-    
+
     const refUsername = ref(db, '/users/' + auth.currentUser.uid + '/username')
     const refDislikes = ref(db, 'users/' + auth.currentUser.uid + '/dislikes')
     const refFirstname = ref(db, 'users/' + auth.currentUser.uid + '/firstName')
@@ -93,29 +93,29 @@ export default function ProfileScreen() {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: "black", justifyContent: "center", alignContent: "center", }}>
             <View>
-                <Text style={{ fontSize: 16, color: "white"}}>{username}</Text>
+                <Text style={{ fontSize: 16, color: "white" }}>{username}</Text>
             </View>
-            <View style={{ flex: 1}}>
+            <View style={{ flex: 1 }}>
                 <View style={{ flex: 1, backgroundColor: "black", flexDirection: "row" }}>
                     <View style={{ flex: 0.4, flexDirection: "column" }}>
-                        <View style={{ flex: 1, justifyContent: "center", alignContent: "center", alignItems: "center" }}><Image source={{pfp}} /></View>
+                        <View style={{ flex: 1, justifyContent: "center", alignContent: "center", alignItems: "center" }}><Image source={{ pfp }} /></View>
                         <Text style={{ flex: 0.5, color: "white" }}>{firstname} {lastname}</Text>
-                        <Text style={{ flex: 0.5, color: "white"}}>{description}</Text>
+                        <Text style={{ flex: 0.5, color: "white" }}>{description}</Text>
                     </View>
                     <View style={{ flex: 0.6, flexDirection: "column" }}>
                         <View style={{ flex: 1, flexDirection: "column" }}>
                             <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-around" }}>
-                                <Text style={{color: "white"}}>{numpolls}</Text>
-                                <Text style={{color: "white"}}>{followersNum}</Text>
-                                <Text style={{color: "white"}}>{followingNum}</Text>
+                                <Text style={{ color: "white" }}>{numpolls}</Text>
+                                <Text style={{ color: "white" }}>{followersNum}</Text>
+                                <Text style={{ color: "white" }}>{followingNum}</Text>
                             </View>
                             <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-around", left: 10, bottom: 15 }}>
-                                <Text style={{color: "white"}}>Polls</Text>
-                                <Text style={{color: "white"}}>Followers</Text>
-                                <Text style={{color: "white"}}>Following</Text>
+                                <Text style={{ color: "white" }}>Polls</Text>
+                                <Text style={{ color: "white" }}>Followers</Text>
+                                <Text style={{ color: "white" }}>Following</Text>
                             </View>
                         </View>
-                        <View style={{flex: 1}} />
+                        <View style={{ flex: 1 }} />
                     </View>
                 </View>
                 <View style={{ flex: 0.25, justifyContent: "center", flexDirection: "row" }}>
@@ -125,13 +125,13 @@ export default function ProfileScreen() {
                     <TouchableHighlight style={{ flex: 0.3, right: 10 }}><Pressable style={styles.button}><Text style={styles.text}>{likes}</Text><Text style={styles.text}> Up</Text></Pressable></TouchableHighlight>
                     <TouchableHighlight style={{ flex: 0.3, left: 10 }}><Pressable style={styles.button}><Text style={styles.text}>{dislikes}</Text><Text style={styles.text}> Down</Text></Pressable></TouchableHighlight>
                 </View>
-                <View style={{ flex: 0.25}}>
+                <View style={{ flex: 0.25 }}>
                     <Text style={styles.textHeading}>Your Polls</Text>
                 </View>
                 <View style={{ flex: 1 }}>
                     {/* <FlatList data={} renderItem={} keyExtractor={item => item.id} horizontal='true'/>  */}
                 </View>
-                <View style={{ flex: 0.25}}>
+                <View style={{ flex: 0.25 }}>
                     <Text style={styles.textHeading}>Your Groups</Text>
                 </View>
                 <View style={{ flex: 1.5 }}>
