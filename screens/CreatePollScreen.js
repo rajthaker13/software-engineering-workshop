@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableHighlight, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getDatabase, ref, set, get } from "firebase/database";
@@ -10,25 +10,27 @@ import { useNavigation } from '@react-navigation/native';
 
 
 export default function CreatePollScreen() {
-    const[inputs, setInputs] = useState([])
-    const[pollName, setPollName] = useState('')
-    const[pollAnswers, setPollAnswers] = useState([])
+    const [inputs, setInputs] = useState([])
+    const [pollName, setPollName] = useState('')
+    const [pollAnswers, setPollAnswers] = useState([])
     const [username, setUsername] = useState('')
-    const[indices, setIndices] = useState(0)
+    const [indices, setIndices] = useState(0)
 
     const navigator = useNavigation()
     const auth = getAuth()
 
     const addInput = () => {
-        setInputs([...inputs, 
-            {input: <View style={{flexDirection: 'row'}}>
-                <TextInput defaultValue='Type Here' onChangeText={(text) => updateText(text, indices)}/>
+        setInputs([...inputs,
+        {
+            input: <View style={{ flexDirection: 'row' }}>
+                <TextInput defaultValue='Type Here' onChangeText={(text) => updateText(text, indices)} />
                 <TouchableOpacity onPress={() => deleteInput(indices)}>
                     <MaterialCommunityIcons name="close-circle" color='red' />
                 </TouchableOpacity>
-            </View>, index: indices} 
+            </View>, index: indices
+        }
         ])
-        setIndices(indices + 1)  
+        setIndices(indices + 1)
     }
 
     const updateText = (text, indices) => {
@@ -39,6 +41,14 @@ export default function CreatePollScreen() {
         setInputs(inputs.filter((value, index) => value.index !== deleteIndex))
         setIndices(indices - 1)
     }
+
+    const db = getDatabase();
+    const refUsername = ref(db, '/users/' + auth.currentUser.uid + '/username')
+    useEffect(() => {
+        get(refUsername).then(snapshot => {
+            setUsername(snapshot.val())
+        })
+    })
 
     const finishPoll = () => {
         if (pollName == '') {
@@ -51,25 +61,24 @@ export default function CreatePollScreen() {
             alert('A minimum of 2 inputs is required')
         }
         else {
-            const db = getDatabase();
             const reference = ref(db, 'polls/' + pollName + auth.currentUser.uid)
-            const refUsername = ref(db, '/users/' + auth.currentUser.uid + '/username')
 
-            get(refUsername).then(snapshot => {
-                setUsername(snapshot.val())
-            })
-            
             set(reference, {
                 creator: username,
+                uid: auth.currentUser.uid,
                 title: pollName,
                 options: pollAnswers,
+                likes: 0,
+                dislikes: 0,
+                comments: 0,
+                shares: 0
             })
-            .then(() => {
-                setInputs([])
-                setPollAnswers([])
-                setIndices(0)
-            })    
-        }  
+                .then(() => {
+                    setInputs([])
+                    setPollAnswers([])
+                    setIndices(0)
+                })
+        }
     }
 
     return (
@@ -79,23 +88,23 @@ export default function CreatePollScreen() {
             </View>
             <View>
                 <Text>Title:</Text>
-                <TextInput onChangeText={(text) => setPollName(text)}/>
+                <TextInput onChangeText={(text) => setPollName(text)} />
             </View>
             <View>
                 <Text>Options:</Text>
                 <ScrollView>
                     {inputs.map((input, index) => {
                         return (
-                           input.input
+                            input.input
                         )
                     })}
                 </ScrollView>
             </View>
             <TouchableHighlight>
-                <Button title="Add Option" onPress={addInput}/>
+                <Button title="Add Option" onPress={addInput} />
             </TouchableHighlight>
             <TouchableHighlight>
-                <Button title="Submit" onPress={finishPoll}/>
+                <Button title="Submit" onPress={finishPoll} />
             </TouchableHighlight>
         </SafeAreaView>
     )
@@ -104,5 +113,5 @@ export default function CreatePollScreen() {
 
 
 const styles = StyleSheet.create({
-    
+
 });

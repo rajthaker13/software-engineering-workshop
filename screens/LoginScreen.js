@@ -6,6 +6,7 @@ import { getDatabase, ref, set } from "firebase/database";
 import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { FirebaseError } from 'firebase/app';
 
+
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -51,6 +52,7 @@ export default function LoginScreen() {
                     keyboardType='email-address' 
                     value={email} 
                     onChangeText={text => setEmail(text)} 
+                    autoCapitalize={'none'}
                     style={styles.input}/>
                 </View>
                 <View style={styles.inputContainer}>
@@ -60,7 +62,8 @@ export default function LoginScreen() {
                     placeholderTextColor={"white"}
                     secureTextEntry="true"
                     value={password} 
-                    onChangeText={text => setPassword(text)}  
+                    onChangeText={text => setPassword(text)}
+                    autoCapitalize={'none'}  
                     style={styles.input}/>
                 </View>
                 <View style={styles.buttonContainer}>

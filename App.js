@@ -37,71 +37,72 @@ const Stack = createNativeStackNavigator();
 function Home() {
   return (
     <Tab.Navigator
-        initialRouteName="Home"
-        activeColor="#e91e63"
-        barStyle={{ backgroundColor: 'black' }}
-      >
-        <Tab.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{
-            tabBarLabel: 'Home',
-            tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons name="home" color={color} size={26} />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Search"
-          component={SearchScreen}
-          options={{
-            tabBarLabel: 'Search',
-            tabBarIcon: ({ color }) => (
-              <Ionicons name="search" color={color} size={26} />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Create"
-          component={CreatePollScreen}
-          options={{
-            tabBarLabel: 'Create',
-            tabBarIcon: ({ color }) => (
-              <Ionicons name="add" color={color} size={26} />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Activity"
-          component={ActivityScreen}
-          options={{
-            tabBarLabel: 'Activity',
-            tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons name="cards-heart" color={color} size={26} />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Profile"
-          component={ProfileScreen}
-          options={{
-            tabBarLabel: 'Profile',
-            tabBarIcon: ({ color }) => (
-              <AntDesign name="user" color={color} size={26} />
-            ),
-          }}
-        />
-      </Tab.Navigator>
+      initialRouteName="HomeScreen"
+      activeColor="#e91e63"
+      barStyle={{ backgroundColor: 'black' }}
+    >
+      <Tab.Screen
+        name="HomeScreen"
+        component={HomeScreen}
+        options={{
+          tabBarLabel: 'Home',
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="home" color={color} size={26} />
+          ),
+          unmountOnBlur: true
+        }}
+      />
+      <Tab.Screen
+        name="Search"
+        component={SearchScreen}
+        options={{
+          tabBarLabel: 'Search',
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="search" color={color} size={26} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Create"
+        component={CreatePollScreen}
+        options={{
+          tabBarLabel: 'Create',
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="add" color={color} size={26} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Activity"
+        component={ActivityScreen}
+        options={{
+          tabBarLabel: 'Activity',
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="cards-heart" color={color} size={26} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({ color }) => (
+            <AntDesign name="user" color={color} size={26} />
+          ),
+        }}
+      />
+    </Tab.Navigator>
   );
 }
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }}/>
-        <Stack.Screen name="Registration" component={RegistrationScreen} options={{ headerShown: false }}/>
-        <Stack.Screen name="Home" component={Home} options={{ headerShown: false }}/>
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Registration" component={RegistrationScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
