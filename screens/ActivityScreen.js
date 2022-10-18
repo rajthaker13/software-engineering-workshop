@@ -32,15 +32,20 @@ export default function ActivityScreen() {
   useEffect(() => {
     get(userRef).then(snapshot => {
       let likeArr = []
+      let dislikeArr = []
       let data = snapshot.val().activity
 
       data.forEach((a) => {
         if (a.type == "like") {
           likeArr.push(a)
         }
+        if (a.type == "dislike") {
+          dislikeArr.push(a)
+        }
       })
 
       setLikes(likeArr)
+      setDislikes(dislikeArr)
 
 
     })
@@ -60,7 +65,7 @@ export default function ActivityScreen() {
         flex: 1
       }}>
         <LikesWrapper title="Likes" likeActivity={likes} />
-        {/* <DislikesWrapper title="Dislikes" dislikeActivity={dislikes} /> */}
+        <DislikesWrapper title="Dislikes" dislikeActivity={dislikes} />
 
 
       </View>
