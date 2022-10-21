@@ -2,7 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { getDatabase, ref, set } from "firebase/database";
 import { useState } from "react";
-import { SafeAreaView, Text, TextInput, TouchableHighlight } from "react-native";
+import { Button, SafeAreaView, Text, TextInput, TouchableHighlight } from "react-native";
 
 export default function RegistrationScreen() {
     const [email, setEmail] = useState('');
@@ -74,6 +74,9 @@ export default function RegistrationScreen() {
                 onChangeText={text => setLastname(text)} />
             <TouchableHighlight onPress={handleSignup}>
                 <Text>Sign Up</Text>
+            </TouchableHighlight>
+            <TouchableHighlight onPress={() => navigator.replace("Login")}>
+                <Text>Go Back</Text>
             </TouchableHighlight>
         </SafeAreaView>
     );
