@@ -7,7 +7,7 @@ export default function GroupWrapper(props) {
     return (
         <>
             <View style={{ height: 270 }}>
-                <Text style={{ marginLeft: 20, color: 'white', fontFamily: "Federo", fontSize: 20 }}> {props.title}</Text>
+                <Text style={{ marginLeft: 20, color: 'white', fontFamily: 'Federo', fontSize: 20 }}> {props.title}</Text>
                 <SafeAreaView>
                     <ScrollView horizontal={true}>
                         <Group name="Group 1" admin="User" type="Public" membersNum="432" />
