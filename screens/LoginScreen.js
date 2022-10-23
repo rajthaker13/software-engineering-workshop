@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { ActionSheetIOS, Alert, Image, KeyboardAvoidingView, SafeAreaView, StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, applyActionCode, sendEmailVerification, ActionCodeOperation, reload } from "firebase/auth";
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { getDatabase, ref, set } from "firebase/database";
 import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { FirebaseError } from 'firebase/app';
@@ -12,16 +12,6 @@ export default function LoginScreen() {
     const [password, setPassword] = useState('');
 
     const navigation = useNavigation()
-    
-    useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(user => {
-            if (user.emailVerified) {
-                navigation.replace("Home")
-            }
-        })
-
-        return unsubscribe
-    }, [])
 
     const auth = getAuth()
     
@@ -29,14 +19,17 @@ export default function LoginScreen() {
         navigation.replace("Registration")
     );
 
-    const handleLogin = () => {
+    const handleLogin = (() => {
         signInWithEmailAndPassword(auth, email, password)
             .then(userCredentials => {
                 const user = userCredentials.user;
                 user.reload()
+                if (user.emailVerified) {
+                    navigation.replace("Home")
+                }
             })
             .catch(error => alert(error.message))
-    }
+    })
 
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: 'black'}}>
