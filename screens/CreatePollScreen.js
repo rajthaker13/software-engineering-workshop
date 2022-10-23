@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableHighlight, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { getDatabase, ref, set, get } from "firebase/database";
+import { getDatabase, ref, set, get, update } from "firebase/database";
 import { getAuth } from 'firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 
@@ -15,6 +15,8 @@ export default function CreatePollScreen() {
     const [pollAnswers, setPollAnswers] = useState([])
     const [username, setUsername] = useState('')
     const [indices, setIndices] = useState(0)
+    const [userPolls, setUserPolls] = useState([''])
+    const [numPolls, setNumPolls] = useState(0)
 
     const navigator = useNavigation()
     const auth = getAuth()
@@ -44,10 +46,23 @@ export default function CreatePollScreen() {
 
     const db = getDatabase();
     const refUsername = ref(db, '/users/' + auth.currentUser.uid + '/username')
+    const userRef = ref(db, 'users/' + auth.currentUser.uid)
+
     useEffect(() => {
         get(refUsername).then(snapshot => {
             setUsername(snapshot.val())
         })
+        get(userRef).then(snapshot => {
+            let pollArr = []
+            let data = snapshot.val().polls
+            
+            data.forEach((a) => {
+                pollArr.push(a)
+            })
+
+            setUserPolls(pollArr)
+            setNumPolls(snapshot.val().numPolls)
+            })
     })
 
     const finishPoll = () => {
@@ -61,9 +76,10 @@ export default function CreatePollScreen() {
             alert('A minimum of 2 inputs is required')
         }
         else {
-            const reference = ref(db, 'polls/' + pollName + auth.currentUser.uid)
-
-            set(reference, {
+            const pollsRef = ref(db, 'polls/' + pollName + auth.currentUser.uid)
+            let userPollsArr = userPolls
+            userPollsArr.push(pollName + auth.currentUser.uid)
+            set(pollsRef, {
                 creator: username,
                 uid: auth.currentUser.uid,
                 title: pollName,
@@ -73,10 +89,15 @@ export default function CreatePollScreen() {
                 comments: 0,
                 shares: 0
             })
+            update(userRef, {
+                polls: userPollsArr,
+                numPolls: numPolls + 1
+            })
                 .then(() => {
                     setInputs([])
                     setPollAnswers([])
                     setIndices(0)
+                    setPollName('')
                 })
         }
     }
@@ -88,7 +109,7 @@ export default function CreatePollScreen() {
             </View>
             <View>
                 <Text>Title:</Text>
-                <TextInput onChangeText={(text) => setPollName(text)} />
+                <TextInput onChangeText={(text) => setPollName(text)} value={pollName}/>
             </View>
             <View>
                 <Text>Options:</Text>

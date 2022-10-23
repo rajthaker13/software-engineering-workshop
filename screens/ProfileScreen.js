@@ -1,9 +1,12 @@
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { Dimensions } from 'react-native';
 import { getAuth } from 'firebase/auth';
 import { StyleSheet, Text, View, SafeAreaView, Image, TouchableHighlight, Pressable, FlatList } from 'react-native';
 import { Database, get, getDatabase, onValue, ref, set } from "firebase/database";
 import React, { useEffect, useReducer, useState } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 export default function ProfileScreen() {
     const [username, setUsername] = useState('');
@@ -18,6 +21,8 @@ export default function ProfileScreen() {
     const [pfp, setPfp] = useState('');
     const [numpolls, setNumpolls] = useState('');
     const [description, setDescription] = useState('');
+    const [pollsArray, setPollsArray] = useState([])
+    const [groupsArray, setGroupsArray] = useState([])
 
 
 
@@ -25,7 +30,7 @@ export default function ProfileScreen() {
     const auth = getAuth()
     const db = getDatabase()
 
-    const refUsername = ref(db, '/users/' + auth.currentUser.uid + '/username')
+    const refUsername = ref(db, 'users/' + auth.currentUser.uid + '/username')
     const refDislikes = ref(db, 'users/' + auth.currentUser.uid + '/dislikes')
     const refFirstname = ref(db, 'users/' + auth.currentUser.uid + '/firstName')
     const refFollowers = ref(db, 'users/' + auth.currentUser.uid + '/followers')
@@ -81,7 +86,7 @@ export default function ProfileScreen() {
         get(refDescription).then(snapshot => {
             setDescription(snapshot.val())
         })
-    })
+    }, [useIsFocused()])
 
     
 
@@ -96,7 +101,7 @@ export default function ProfileScreen() {
             <View style={{ flex: 1 }}>
                 <View style={{ flex: 1, backgroundColor: "black", flexDirection: "row" }}>
                     <View style={{ flex: 0.4, flexDirection: "column" }}>
-                        <View style={{ flex: 1, justifyContent: "center", alignContent: "center", alignItems: "center" }}><Image source={{ pfp }} /></View>
+                        <View style={{ flex: 1, justifyContent: "center", alignContent: "center", alignItems: "center" }}><Image style={styles.image} source={{uri: pfp}} /></View>
                         <Text style={{ flex: 0.5, color: "white" }}>{firstname} {lastname}</Text>
                         <Text style={{ flex: 0.5, color: "white" }}>{description}</Text>
                     </View>
@@ -140,11 +145,14 @@ export default function ProfileScreen() {
     );
 }
 
-function editProfile() {
-    return 1;
-}
 
 const styles = StyleSheet.create({
+    image: {
+               resizeMode: 'cover',
+               width: SCREEN_HEIGHT * 0.08,
+               height: SCREEN_HEIGHT * 0.08,
+               borderRadius: (SCREEN_HEIGHT * 0.08)/2,
+    },
     button: {
         alignItems: 'center',
         justifyContent: 'center',

@@ -38,9 +38,10 @@ export default function RegistrationScreen() {
                     dislikes: 0,
                     numPolls: 0,
                     description: '',
-                    polls: [],
-                    groups: [],
+                    polls: false,
+                    groups: false,
                     activity: '',
+
                 })
 
                 navigator.replace("Login")
