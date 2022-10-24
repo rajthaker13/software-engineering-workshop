@@ -1,9 +1,13 @@
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { Dimensions } from 'react-native';
 import { getAuth } from 'firebase/auth';
 import { StyleSheet, Text, View, SafeAreaView, Image, TouchableHighlight, Pressable, FlatList } from 'react-native';
 import { Database, get, getDatabase, onValue, ref, set } from "firebase/database";
 import React, { useEffect, useReducer, useState } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+const SCREEN_HEIGHT = Dimensions.get('window').height;
+const SCREEN_WIDTH = Dimensions.get('window').width;
 
 export default function ProfileScreen() {
     const [username, setUsername] = useState('');
@@ -18,6 +22,8 @@ export default function ProfileScreen() {
     const [pfp, setPfp] = useState('');
     const [numpolls, setNumpolls] = useState('');
     const [description, setDescription] = useState('');
+    const [pollsArray, setPollsArray] = useState([])
+    const [groupsArray, setGroupsArray] = useState([])
 
 
 
@@ -25,7 +31,7 @@ export default function ProfileScreen() {
     const auth = getAuth()
     const db = getDatabase()
 
-    const refUsername = ref(db, '/users/' + auth.currentUser.uid + '/username')
+    const refUsername = ref(db, 'users/' + auth.currentUser.uid + '/username')
     const refDislikes = ref(db, 'users/' + auth.currentUser.uid + '/dislikes')
     const refFirstname = ref(db, 'users/' + auth.currentUser.uid + '/firstName')
     const refFollowers = ref(db, 'users/' + auth.currentUser.uid + '/followers')
@@ -35,6 +41,7 @@ export default function ProfileScreen() {
     const refPFP = ref(db, 'users/' + auth.currentUser.uid + '/profile_picture_url')
     const refDescription = ref(db, 'users/' + auth.currentUser.uid + '/description')
     const refNumpolls = ref(db, 'users/' + auth.currentUser.uid + '/numPolls')
+    const refPollsArray = ref(db, 'users/' + auth.currentUser.uid + '/polls')
 
 
 
@@ -81,7 +88,10 @@ export default function ProfileScreen() {
         get(refDescription).then(snapshot => {
             setDescription(snapshot.val())
         })
-    })
+        get(refPollsArray).then(snapshot => {
+            setPollsArray(snapshot.val())
+        })
+    }, [useIsFocused()])
 
     
 
@@ -96,7 +106,7 @@ export default function ProfileScreen() {
             <View style={{ flex: 1 }}>
                 <View style={{ flex: 1, backgroundColor: "black", flexDirection: "row" }}>
                     <View style={{ flex: 0.4, flexDirection: "column" }}>
-                        <View style={{ flex: 1, justifyContent: "center", alignContent: "center", alignItems: "center" }}><Image source={{ pfp }} /></View>
+                        <View style={{ flex: 1, justifyContent: "center", alignContent: "center", alignItems: "center" }}><Image style={styles.image} source={{uri: pfp}} /></View>
                         <Text style={{ flex: 0.5, color: "white" }}>{firstname} {lastname}</Text>
                         <Text style={{ flex: 0.5, color: "white" }}>{description}</Text>
                     </View>
@@ -126,8 +136,17 @@ export default function ProfileScreen() {
                 <View style={{ flex: 0.25 }}>
                     <Text style={styles.textHeading}>Your Polls</Text>
                 </View>
-                <View style={{ flex: 1 }}>
-                    {/* <FlatList data={} renderItem={} keyExtractor={item => item.id} horizontal='true'/>  */}
+                <View style={{ flex: 1}} >
+                    <FlatList 
+                    numColumns={3}
+                    data={pollsArray} 
+                    renderItem={(item) => (
+                        <View style={styles.pollsContainer}>
+                            <Text style={{color: 'white'}}>{(item.item).replace(auth.currentUser.uid, "")}</Text>
+                        </View>
+                    )} 
+                    keyExtractor={(item) => item.index} 
+                    /> 
                 </View>
                 <View style={{ flex: 0.25 }}>
                     <Text style={styles.textHeading}>Your Groups</Text>
@@ -140,11 +159,14 @@ export default function ProfileScreen() {
     );
 }
 
-function editProfile() {
-    return 1;
-}
 
 const styles = StyleSheet.create({
+    image: {
+               resizeMode: 'cover',
+               width: SCREEN_HEIGHT * 0.08,
+               height: SCREEN_HEIGHT * 0.08,
+               borderRadius: (SCREEN_HEIGHT * 0.08)/2,
+    },
     button: {
         alignItems: 'center',
         justifyContent: 'center',
@@ -165,5 +187,16 @@ const styles = StyleSheet.create({
         fontSize: 16,
         letterSpacing: 0.25,
         color: 'white',
-    }
+    },
+    pollsContainer: {
+        width: SCREEN_WIDTH * 0.30,
+        height: SCREEN_HEIGHT * 0.1,
+        borderColor: "#e91e63",
+        borderRadius: 10,
+        borderWidth: 2,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginHorizontal: 5,
+        marginBottom: 5,
+    },
 })
