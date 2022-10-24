@@ -3,7 +3,7 @@ import { Button, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, Tex
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getDatabase, ref, set, get, update } from "firebase/database";
 import { getAuth } from 'firebase/auth';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 
 //Used ideas from
 //https://javascript.plainenglish.io/build-a-todo-list-app-using-react-native-526f8fe11ff1
@@ -15,7 +15,7 @@ export default function CreatePollScreen() {
     const [pollAnswers, setPollAnswers] = useState([])
     const [username, setUsername] = useState('')
     const [indices, setIndices] = useState(0)
-    const [userPolls, setUserPolls] = useState([''])
+    const [userPolls, setUserPolls] = useState([])
     const [numPolls, setNumPolls] = useState(0)
 
     const navigator = useNavigation()
@@ -46,26 +46,54 @@ export default function CreatePollScreen() {
 
     const db = getDatabase();
     const refUsername = ref(db, '/users/' + auth.currentUser.uid + '/username')
-    const userRef = ref(db, 'users/' + auth.currentUser.uid)
+    const userPollsRef = ref(db, 'users/' + auth.currentUser.uid + '/polls')
+    const numPollsRef = ref(db, 'users/' + auth.currentUser.uid + '/numPolls')
+    const userRef = ref(db, '/users/' + auth.currentUser.uid)
 
     useEffect(() => {
         get(refUsername).then(snapshot => {
             setUsername(snapshot.val())
         })
-        get(userRef).then(snapshot => {
+        get(userPollsRef).then(snapshot => {
             let pollArr = []
-            let data = snapshot.val().polls
+            let data = snapshot.val()
             
             data.forEach((a) => {
                 pollArr.push(a)
             })
 
             setUserPolls(pollArr)
-            setNumPolls(snapshot.val().numPolls)
             })
-    })
+        get(numPollsRef).then(snapshot => {
+            setNumPolls(snapshot.val())
+        })
+    }, [useIsFocused()])
 
     const finishPoll = () => {
+
+        for (let i = 0; i < pollName.length; i++) {
+            if (pollName.charAt(i) == '.') {
+                alert('Poll Title cannot contain \'.\'')
+                return
+            }
+            if (pollName.charAt(i) == '#') {
+                alert('Poll Title cannot contain \'#\'')
+                return
+            }
+            if (pollName.charAt(i) == '$') {
+                alert('Poll Title cannot contain \'$\'')
+                return
+            }
+            if (pollName.charAt(i) == '[') {
+                alert('Poll Title cannot contain \'[\'')
+                return
+            }
+            if (pollName.charAt(i) == ']') {
+                alert('Poll Title cannot contain \']\'')
+                return
+            }
+        }
+
         if (pollName == '') {
             alert('Poll Title is required')
         }
