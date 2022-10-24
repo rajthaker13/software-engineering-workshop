@@ -1,5 +1,5 @@
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { Button, Dimensions } from 'react-native';
+import { Dimensions } from 'react-native';
 import { getAuth } from 'firebase/auth';
 import { StyleSheet, Text, View, SafeAreaView, Image, TouchableHighlight, Pressable, FlatList } from 'react-native';
 import { Database, get, getDatabase, onValue, ref, set } from "firebase/database";

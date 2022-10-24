@@ -4,6 +4,10 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { getDatabase, ref, set, get, update } from "firebase/database";
 import { getAuth } from 'firebase/auth';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { Dimensions } from 'react-native';
+
+const SCREEN_HEIGHT = Dimensions.get('window').height;
+const SCREEN_WIDTH = Dimensions.get('window').width;
 
 //Used ideas from
 //https://javascript.plainenglish.io/build-a-todo-list-app-using-react-native-526f8fe11ff1
@@ -24,10 +28,10 @@ export default function CreatePollScreen() {
     const addInput = () => {
         setInputs([...inputs,
         {
-            input: <View style={{ flexDirection: 'row' }}>
-                <TextInput defaultValue='Type Here' onChangeText={(text) => updateText(text, indices)} />
-                <TouchableOpacity onPress={() => deleteInput(indices)}>
-                    <MaterialCommunityIcons name="close-circle" color='red' />
+            input: <View style={styles.option}>
+                <TextInput style={{color: 'white', flex: 0.9, paddingLeft: 5}} defaultValue='Type Here' onChangeText={(text) => updateText(text, indices)} />
+                <TouchableOpacity style={{flex: 0.1}} onPress={() => deleteInput(indices)}>
+                    <MaterialCommunityIcons name="close-circle" color='red' size={15}/>
                 </TouchableOpacity>
             </View>, index: indices
         }
@@ -131,16 +135,20 @@ export default function CreatePollScreen() {
     }
 
     return (
-        <SafeAreaView>
+        <SafeAreaView style={{flex: 1, backgroundColor: 'black'}}>
             <View>
-                <Text>Create Poll</Text>
+                <Text style={styles.pageTitle}>Create Poll</Text>
             </View>
             <View>
-                <Text>Title:</Text>
-                <TextInput onChangeText={(text) => setPollName(text)} value={pollName}/>
+                <View style={styles.headerContainer}>
+                    <Text style={styles.header}>Title:</Text>
+                </View>
+                <TextInput style={styles.input} onChangeText={(text) => setPollName(text)} value={pollName}/>
             </View>
             <View>
-                <Text>Options:</Text>
+                <View style={styles.headerContainer}>
+                    <Text style={styles.header}>Options:</Text>
+                </View>
                 <ScrollView>
                     {inputs.map((input, index) => {
                         return (
@@ -149,11 +157,11 @@ export default function CreatePollScreen() {
                     })}
                 </ScrollView>
             </View>
-            <TouchableHighlight>
-                <Button title="Add Option" onPress={addInput} />
+            <TouchableHighlight style={[styles.button, {borderColor: '#e91e63'}]} onPress={addInput}>
+                <Text style={{color: '#e91e63', fontWeight: '700', fontSize: 16}}>Add Option</Text>
             </TouchableHighlight>
-            <TouchableHighlight>
-                <Button title="Submit" onPress={finishPoll} />
+            <TouchableHighlight style={[styles.button, {backgroundColor: '#e91e63'}]} onPress={finishPoll}>
+                <Text style={{color: 'black', fontWeight: '700', fontSize: 16}}>Submit</Text>
             </TouchableHighlight>
         </SafeAreaView>
     )
@@ -162,5 +170,53 @@ export default function CreatePollScreen() {
 
 
 const styles = StyleSheet.create({
-
+    option: {
+        height: SCREEN_HEIGHT * 0.05,
+        width: SCREEN_WIDTH * 0.75,
+        alignSelf: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        borderColor: 'white',
+        borderWidth: 2,
+        color:'white',
+        marginBottom: 5,
+        borderRadius: 10
+    },
+    header: {
+        width: SCREEN_WIDTH * 0.75,
+        alignSelf: 'center',
+        fontSize: 16,
+        color:'white',
+    },
+    headerContainer: {
+        height: SCREEN_HEIGHT * 0.05,
+        justifyContent: 'center'
+    },
+    button: {
+        height: SCREEN_HEIGHT * 0.05,
+        width: SCREEN_WIDTH * 0.75,
+        borderRadius: 10,
+        alignSelf: 'center',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 5,
+        borderWidth: 3
+    },
+    pageTitle: {
+        height: SCREEN_HEIGHT * 0.05,
+        alignSelf: 'center',
+        fontSize: 24,
+        color:'white'
+    },
+    input: {
+        width: SCREEN_WIDTH * 0.75,
+        height: SCREEN_HEIGHT * 0.03,
+        borderColor: 'white',
+        borderWidth: 2,
+        alignSelf: 'center',
+        color:'white',
+        borderRadius: 10,
+        paddingLeft: 5
+    }
 });
