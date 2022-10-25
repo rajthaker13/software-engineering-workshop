@@ -24,7 +24,7 @@ export default function DislikesWrapper(props) {
     return (
         <>
             <View style={{ height: windowHeight * .22 }}>
-                <Text style={{ marginLeft: 20, color: 'white', fontFamily: "Federo", fontSize: 20 }}> {props.title}</Text>
+                <Text style={{ marginLeft: 20, color: 'white', fontSize: 20 }}> {props.title}</Text>
                 <SafeAreaView>
                     <ScrollView horizontal={true}>
                         {dislikesActivity.sort((a, b) => a.timestamp > b.timestamp ? -1 : 1).map((dislike) => {

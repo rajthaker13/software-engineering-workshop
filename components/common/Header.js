@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     pollmeText: {
         color: 'white',
         marginTop: '10%',
-        fontFamily: "Federo",
+        // fontFamily: "Federo",
         fontSize: 20,
         marginLeft: '5%',
 
