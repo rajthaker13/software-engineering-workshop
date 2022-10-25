@@ -28,8 +28,12 @@ function SearchScreen() {
         })
     })
 
+    arr.forEach(poll => {
+        console.warn(poll.creator)
+    });
 
-
+    
+   
     return (
         <ScrollView>
 
@@ -45,7 +49,7 @@ function SearchScreen() {
 
                 
 
-                <NearYouPollWrapper polls={arr} />
+                <NearYouPollWrapper polls={arr}  />
                 
                 <TrendingPollWrapper title="Trending Polls" />
                 <GroupWrapper title="Groups for You" />

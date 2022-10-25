@@ -39,6 +39,8 @@ const HomeScreen = () => {
         })
     }, [isFocused])
 
+
+
     return (
         <ViewPager
             orientation="vertical"

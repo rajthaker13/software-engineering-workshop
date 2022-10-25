@@ -13,9 +13,7 @@ export default function NearYouPollWrapper(props) {
     
     let pollArray = props.polls
     
-    pollArray.map((poll) => {
-        console.warn(poll.creator)
-    })
+  
 
     return (
         <>
