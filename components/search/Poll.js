@@ -1,13 +1,17 @@
 import React from 'react'
-import { StyleSheet, View, Text, TextInput, ScrollView, SafeAreaView, Dimensions } from 'react-native'
-
+import { Button,Pressable, StyleSheet, View, Text, TextInput, ScrollView, SafeAreaView, Dimensions } from 'react-native'
+import { useNavigation } from '@react-navigation/native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default function Poll(props) {
-    return (
 
+    const navigation = useNavigation();
+
+
+    return (
+        
         <View style={{
             backgroundColor: '#D9D9D9', borderWidth: 10, borderColor: '#010101', borderRadius: 20,
             width: 150,
@@ -21,7 +25,15 @@ export default function Poll(props) {
         }}>
             <Text style={{ fontSize: 10 }}>{props.time}</Text>
             <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1 }}>{props.title}</Text>
-            <Text style={{ fontSize: 10, textAlign: 'center', bottom: 0 }}>{props.answerNum} answers</Text>
+            <Text style={{ fontSize: 10, textAlign: 'center', bottom: 0 }}>{props.answerNum} likes</Text>
+            <Button 
+                title = "Detail"
+                onPress={()=>{
+                    navigation.navigate("HomeScreen")
+                }}
+            ></Button>
         </View>
+        
+      
     )
 }
