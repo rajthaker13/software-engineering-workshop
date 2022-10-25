@@ -15,6 +15,7 @@ const windowHeight = Dimensions.get('window').height;
 
 
 
+
 function SearchScreen() {
 
     const [pollsArray, setPollsArray] = useState([])
@@ -29,18 +30,13 @@ function SearchScreen() {
         get(refPolls).then(snapshot => {
             snapshot.forEach((snap) => {
                 var item = snap.val()
-                console.warn(item.likes)
                 item.key = snap.key
                 arr.push(item)
-                
             })
             setPollsArray(arr)
         })
     }, [isFocused])
 
-    pollsArray.forEach((poll)=>{
-        console.warn(poll.creator)
-    })
     
    
     return (
@@ -58,10 +54,10 @@ function SearchScreen() {
 
                 
 
-                <NearYouPollWrapper polls={pollsArray}  />
-                
-                <TrendingPollWrapper title="Trending Polls" />
+                <NearYouPollWrapper polls={pollsArray} title="Trending Polls" />
+                <TrendingPollWrapper polls={pollsArray} title="Polls Near You" />
                 <GroupWrapper title="Groups for You" />
+
             </View>
 
         </ScrollView >
