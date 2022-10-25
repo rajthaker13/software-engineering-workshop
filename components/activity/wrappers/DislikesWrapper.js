@@ -2,29 +2,34 @@ import React from 'react'
 import { StyleSheet, View, Text, TextInput, ScrollView, SafeAreaView, Dimensions } from 'react-native'
 import { useEffect, useState } from 'react/cjs/react.development';
 import Dislikes from '../Dislikes';
-import Likes from '../Likes';
+import Timestamp from '../Timestamp';
+import ResponseCount from '../ResponseCount';
+import moment from "moment";
+import { useIsFocused } from '@react-navigation/native';
+
 
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
+ 
 
 export default function DislikesWrapper(props) {
-    const [dislikesActivity, setLDislikesActivity] = useState([])
+    const [dislikesActivity, setDislikesActivity] = useState([])
+    const isFocused = useIsFocused();
     useEffect(() => {
-        setLDislikesActivity(props.dislikesActivity)
+        setDislikesActivity(props.dislikeActivity)
 
-    }, [])
+    }, [isFocused])
     return (
         <>
             <View style={{ height: windowHeight * .22 }}>
                 <Text style={{ marginLeft: 20, color: 'white', fontFamily: "Federo", fontSize: 20 }}> {props.title}</Text>
                 <SafeAreaView>
                     <ScrollView horizontal={true}>
-                        {dislikesActivity.map((dislike) => {
+                        {dislikesActivity.sort((a, b) => a.timestamp > b.timestamp ? -1 : 1).map((dislike) => {
                             return (
-                                <Dislikes title={dislike.timestamp} time="1h" answerNum="432" />
-
+                                <Dislikes title={dislike.pollID.slice(0, -28)} time={<Timestamp time = {dislike.timestamp} />} answerNum="432" />
                             )
                         })}
 

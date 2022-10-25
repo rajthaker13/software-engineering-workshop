@@ -6,6 +6,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import React, { useEffect, useReducer, useState } from 'react';
 import { Database, get, getDatabase, onValue, ref, set, update } from "firebase/database";
 import { getAuth } from 'firebase/auth';
+import { useIsFocused } from '@react-navigation/native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -22,6 +23,7 @@ export default function PollStats(props) {
     const [comments, setComments] = useState(props.comments)
     const [shares, setShares] = useState(props.shares)
     const pollRef = ref(db, '/polls/' + pollID)
+    const isFocused = useIsFocused();
 
     useEffect(() => {
         get(pollRef).then(snapshot => {
@@ -32,7 +34,7 @@ export default function PollStats(props) {
 
         })
 
-    }, [])
+    }, [isFocused])
 
     function onPress(type) {
         if (type == "like") {
@@ -75,10 +77,38 @@ export default function PollStats(props) {
 
         if (type == "dislike") {
             let numDislikes = 0
+            let creatorID = ""
             get(pollRef).then(snapshot => {
                 numDislikes = snapshot.val().dislikes + 1
+                creatorID = snapshot.val().uid
                 update(pollRef, { dislikes: numDislikes })
                 setDislikes(numDislikes)
+                const userRef = ref(db, 'users/' + creatorID)
+                get(userRef).then(snapshot => {
+                    let creatorActivity = snapshot.val().activity
+                    if (creatorActivity == '') {
+                        let activityArray = []
+                        const newActivity = {
+                            timestamp: Date.now(),
+                            type: "dislike",
+                            pollID: pollID,
+                            uid: auth.currentUser.uid
+                        }
+                        activityArray.push(newActivity)
+                        update(userRef, { activity: activityArray })
+                    }
+                    else {
+                        const newActivity = {
+                            timestamp: Date.now(),
+                            type: "dislike",
+                            pollID: pollID,
+                            uid: auth.currentUser.uid
+                        }
+                        creatorActivity.push(newActivity)
+                        update(userRef, { activity: creatorActivity })
+                    }
+                })
+
             })
         }
 
