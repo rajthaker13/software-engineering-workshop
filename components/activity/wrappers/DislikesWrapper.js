@@ -5,6 +5,7 @@ import Dislikes from '../Dislikes';
 import Timestamp from '../Timestamp';
 import ResponseCount from '../ResponseCount';
 import moment from "moment";
+import { useIsFocused } from '@react-navigation/native';
 
 
 
@@ -15,10 +16,11 @@ const windowHeight = Dimensions.get('window').height;
 
 export default function DislikesWrapper(props) {
     const [dislikesActivity, setDislikesActivity] = useState([])
+    const isFocused = useIsFocused();
     useEffect(() => {
         setDislikesActivity(props.dislikeActivity)
 
-    }, [])
+    }, [isFocused])
     return (
         <>
             <View style={{ height: windowHeight * .22 }}>
