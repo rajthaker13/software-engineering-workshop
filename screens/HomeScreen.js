@@ -34,10 +34,12 @@ const HomeScreen = () => {
                 var item = snap.val()
                 item.key = snap.key
                 arr.push(item)
+                
             })
             setPollsArray(arr)
         })
     }, [isFocused])
+
 
     return (
         <ViewPager
