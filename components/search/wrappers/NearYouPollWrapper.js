@@ -23,7 +23,7 @@ export default function NearYouPollWrapper(props) {
                     <ScrollView horizontal={true}>
                         {pollArray.map((poll) => {
                             return(
-                                <Poll title={poll.title} time="1h" answerNum={poll.comments}/>
+                                <Poll title={poll.title} time="1h" answerNum={poll.likes}/>
 
                             )
                             

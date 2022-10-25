@@ -1,11 +1,12 @@
-import React from 'react'
+import React,{useState,useEffect}from 'react'
 import { StyleSheet, View, Text, TextInput, ScrollView, SafeAreaView, Dimensions } from 'react-native'
 import SearchBar from '../components/search/SearchBar'
 import GroupWrapper from '../components/search/wrappers/GroupWrapper';
 import NearYouPollWrapper from '../components/search/wrappers/NearYouPollWrapper';
 import TrendingPollWrapper from '../components/search/wrappers/TrendingPollWrapper';
 import Header from '../components/common/Header';
-import { Database, get, getDatabase, onValue, ref, set } from "firebase/database";
+import { Database, get, getDatabase, onValue, ref, set, } from "firebase/database";
+import { useIsFocused } from '@react-navigation/native';
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -16,22 +17,30 @@ const windowHeight = Dimensions.get('window').height;
 
 function SearchScreen() {
 
-    const db = getDatabase()
-    const refPolls = ref(db, '/polls/')
+    const [pollsArray, setPollsArray] = useState([])
+    const isFocused = useIsFocused();
 
-    let arr = []
-    get(refPolls).then(snapshot => {
-        snapshot.forEach((snap) => {
-            var item = snap.val()
-            item.key = snap.key
-            arr.push(item)
+    let db = getDatabase()
+    let refPolls = ref(db,'/polls/')
+
+    
+    useEffect(() => {
+        let arr=[]
+        get(refPolls).then(snapshot => {
+            snapshot.forEach((snap) => {
+                var item = snap.val()
+                console.warn(item.likes)
+                item.key = snap.key
+                arr.push(item)
+                
+            })
+            setPollsArray(arr)
         })
-    })
+    }, [isFocused])
 
-    arr.forEach(poll => {
+    pollsArray.forEach((poll)=>{
         console.warn(poll.creator)
-    });
-
+    })
     
    
     return (
@@ -49,7 +58,7 @@ function SearchScreen() {
 
                 
 
-                <NearYouPollWrapper polls={arr}  />
+                <NearYouPollWrapper polls={pollsArray}  />
                 
                 <TrendingPollWrapper title="Trending Polls" />
                 <GroupWrapper title="Groups for You" />
