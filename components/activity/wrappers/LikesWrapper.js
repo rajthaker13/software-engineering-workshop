@@ -2,11 +2,15 @@ import React from 'react'
 import { StyleSheet, View, Text, TextInput, ScrollView, SafeAreaView, Dimensions } from 'react-native'
 import { useEffect, useState } from 'react/cjs/react.development';
 import Likes from '../Likes';
+<<<<<<< HEAD
 import ResponseCount from '../ResponseCount';
 import Timestamp from '../Timestamp';
 import moment from "moment";
 import { useIsFocused } from '@react-navigation/native';
 
+=======
+import { useIsFocused } from '@react-navigation/native';
+>>>>>>> a0300da04631fddf16937d446fceb169087c7bc5
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
