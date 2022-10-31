@@ -2,7 +2,7 @@ import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { Dimensions } from 'react-native';
 import { getAuth } from 'firebase/auth';
 import { StyleSheet, Text, View, SafeAreaView, Image, TouchableHighlight, Pressable, FlatList } from 'react-native';
-import { Database, get, getDatabase, onValue, ref, set } from "firebase/database";
+import { Database, get, getDatabase, onValue, ref, remove, set, update } from "firebase/database";
 import React, { useEffect, useReducer, useState } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -93,7 +93,23 @@ export default function ProfileScreen() {
         })
     }, [useIsFocused()])
 
-    
+    const deletePoll = (item) => {
+        const refUser = ref(db, 'users/' + auth.currentUser.uid)
+        const refUserPoll = ref(db, 'polls/'+ item.item)
+
+        remove(refUserPoll)
+
+        var newNumpolls = numpolls - 1
+        setNumpolls(newNumpolls)
+
+        var newArray = pollsArray.filter((value) => value != item.item)
+        setPollsArray(newArray)
+        
+        update(refUser, {
+            numPolls: newNumpolls,
+            polls: newArray
+        })
+    }
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: "black", justifyContent: "center", alignContent: "center", }}>
@@ -136,23 +152,22 @@ export default function ProfileScreen() {
                 <View style={{ flex: 0.25 }}>
                     <Text style={styles.textHeading}>Your Polls</Text>
                 </View>
-                <View style={{ flex: 1}} >
+                <View style={{ width: SCREEN_WIDTH, height: 0.5 * SCREEN_HEIGHT}} >
                     <FlatList 
                     numColumns={3}
                     data={pollsArray} 
                     renderItem={(item) => (
                         <View style={styles.pollsContainer}>
-                            <Text style={{color: 'white'}}>{(item.item).replace(auth.currentUser.uid, "")}</Text>
+                            <TouchableHighlight onPress={() => deletePoll(item)} style={{alignSelf: "flex-end"}}>
+                                <MaterialCommunityIcons name="close-circle" color='red' size={15}/>
+                            </TouchableHighlight>
+                            <View style={{flexGrow: 0.3, justifyContent:'center'}}>
+                                <Text style={{color: 'white', alignSelf:'center'}}>{(item.item).replace(auth.currentUser.uid, "")}</Text>
+                            </View>
                         </View>
                     )} 
                     keyExtractor={(item) => item.index} 
                     /> 
-                </View>
-                <View style={{ flex: 0.25 }}>
-                    <Text style={styles.textHeading}>Your Groups</Text>
-                </View>
-                <View style={{ flex: 1.5 }}>
-                    {/* <FlatList data={} renderItem={} keyExtractor={item => item.id} horizontal='true'/> */}
                 </View>
             </View>
         </SafeAreaView>
@@ -194,8 +209,6 @@ const styles = StyleSheet.create({
         borderColor: "#e91e63",
         borderRadius: 10,
         borderWidth: 2,
-        alignItems: 'center',
-        justifyContent: 'center',
         marginHorizontal: 5,
         marginBottom: 5,
     },

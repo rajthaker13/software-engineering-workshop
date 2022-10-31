@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import { getAuth } from "firebase/auth";
-import { View, Button, SafeAreaView } from "react-native";
+import { View, Button, SafeAreaView, TouchableHighlight, Text } from "react-native";
 
 export default function SettingsScreen() {
     const auth = getAuth()
@@ -17,7 +17,12 @@ export default function SettingsScreen() {
 
     return (
         <SafeAreaView>
-            <Button title="Sign Out" onPress={() => handleSignOut()}/>
+            <TouchableHighlight onPress={() => handleSignOut()}>
+                <Text>Sign out</Text>
+            </TouchableHighlight>
+            <TouchableHighlight onPress={() => navigation.navigate("Home", {screen: "Profile"})}>
+                <Text>Go Back</Text>
+            </TouchableHighlight>
         </SafeAreaView>
     );
   }

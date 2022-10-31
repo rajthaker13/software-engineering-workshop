@@ -2,7 +2,7 @@ import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { getAuth } from "firebase/auth";
 import { get, getDatabase, ref, set, update } from "firebase/database";
 import { useEffect, useState } from "react";
-import { View, Text, SafeAreaView, TextInput, Button } from "react-native";
+import { View, Text, SafeAreaView, TextInput, Button, TouchableHighlight } from "react-native";
 
 export default function EditProfileScreen() {
     const [username, setUsername] = useState('')
@@ -50,7 +50,7 @@ export default function EditProfileScreen() {
         username: username,
       })
       .then(() => {
-        navigator.replace("Home")
+        navigator.navigate("Home", {screen: "Profile"})
       })
     })
 
@@ -76,9 +76,12 @@ export default function EditProfileScreen() {
           <Text>Change Profile Pic URL:</Text>
           <TextInput  autoCapitalize="none" value={pfp} onChangeText={text => setPFP(text)}/>
         </View>
-        <View>
-          <Button title="submit" onPress={() => handleSubmit()}/>
-        </View>
+        <TouchableHighlight onPress={() => handleSubmit()}>
+          <Text>Submit</Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={() => navigator.navigate("Home", {screen: "Profile"})}>
+            <Text>Cancel</Text>
+        </TouchableHighlight>
       </SafeAreaView>
 
     );

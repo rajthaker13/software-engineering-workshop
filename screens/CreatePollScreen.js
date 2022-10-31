@@ -39,13 +39,13 @@ export default function CreatePollScreen() {
         setIndices(indices + 1)
     }
 
-    const updateText = (text, indices) => {
-        pollAnswers[indices] = text
+    const updateText = (text, index) => {
+        pollAnswers[index] = text
     }
 
     const deleteInput = (deleteIndex) => {
-        setInputs(inputs.filter((value, index) => value.index !== deleteIndex))
-        setIndices(indices - 1)
+        pollAnswers[deleteIndex] = null
+        setInputs(inputs.filter((value) => value.index != deleteIndex))
     }
 
     const db = getDatabase();
@@ -150,17 +150,17 @@ export default function CreatePollScreen() {
                     <Text style={styles.header}>Options:</Text>
                 </View>
                 <ScrollView>
-                    {inputs.map((input, index) => {
+                    {inputs.map((input) => {
                         return (
                             input.input
                         )
                     })}
                 </ScrollView>
             </View>
-            <TouchableHighlight style={[styles.button, {borderColor: '#e91e63'}]} onPress={addInput}>
+            <TouchableHighlight style={[styles.button, {borderColor: '#e91e63'}]} onPress={() => addInput()}>
                 <Text style={{color: '#e91e63', fontWeight: '700', fontSize: 16}}>Add Option</Text>
             </TouchableHighlight>
-            <TouchableHighlight style={[styles.button, {backgroundColor: '#e91e63'}]} onPress={finishPoll}>
+            <TouchableHighlight style={[styles.button, {backgroundColor: '#e91e63'}]} onPress={() => finishPoll()}>
                 <Text style={{color: 'black', fontWeight: '700', fontSize: 16}}>Submit</Text>
             </TouchableHighlight>
         </SafeAreaView>
