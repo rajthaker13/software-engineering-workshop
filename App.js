@@ -17,7 +17,7 @@ import EditProfileScreen from './screens/EditProfileScreen'
 import SettingsScreen from './screens/SettingsScreen'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
+import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAN3OCr7y5e7I_ba_ASonj2HoAgrnSQbYU",
@@ -32,6 +32,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
+const auth = getAuth()
+
 
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -87,6 +89,7 @@ function Home() {
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
+        initialParams={{id: auth.currentUser.uid.toString()}}
         options={{
           tabBarLabel: 'Profile',
           tabBarIcon: ({ color }) => (

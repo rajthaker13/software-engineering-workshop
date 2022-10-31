@@ -1,15 +1,16 @@
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { Dimensions } from 'react-native';
+import { Button, Dimensions } from 'react-native';
 import { getAuth } from 'firebase/auth';
 import { StyleSheet, Text, View, SafeAreaView, Image, TouchableHighlight, Pressable, FlatList } from 'react-native';
-import { Database, get, getDatabase, onValue, ref, remove, set, update } from "firebase/database";
-import React, { useEffect, useReducer, useState } from 'react';
+import { get, getDatabase, ref, remove, update } from "firebase/database";
+import React, { useEffect, useState } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { propsFlattener } from 'native-base/lib/typescript/hooks/useThemeProps/propsFlattener';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ route }) {
     const [username, setUsername] = useState('');
     const [dislikes, setDislikes] = useState('');
     const [firstname, setFirstname] = useState('');
@@ -23,25 +24,29 @@ export default function ProfileScreen() {
     const [numpolls, setNumpolls] = useState('');
     const [description, setDescription] = useState('');
     const [pollsArray, setPollsArray] = useState([])
-    const [groupsArray, setGroupsArray] = useState([])
-
-
 
     const navigator = useNavigation()
     const auth = getAuth()
     const db = getDatabase()
 
-    const refUsername = ref(db, 'users/' + auth.currentUser.uid + '/username')
-    const refDislikes = ref(db, 'users/' + auth.currentUser.uid + '/dislikes')
-    const refFirstname = ref(db, 'users/' + auth.currentUser.uid + '/firstName')
-    const refFollowers = ref(db, 'users/' + auth.currentUser.uid + '/followers')
-    const refFollowing = ref(db, 'users/' + auth.currentUser.uid + '/following')
-    const refLastname = ref(db, 'users/' + auth.currentUser.uid + '/lastName')
-    const refLikes = ref(db, 'users/' + auth.currentUser.uid + '/likes')
-    const refPFP = ref(db, 'users/' + auth.currentUser.uid + '/profile_picture_url')
-    const refDescription = ref(db, 'users/' + auth.currentUser.uid + '/description')
-    const refNumpolls = ref(db, 'users/' + auth.currentUser.uid + '/numPolls')
-    const refPollsArray = ref(db, 'users/' + auth.currentUser.uid + '/polls')
+    const currentUid = route.params.id
+    let authorizedUser = false
+    
+    if (auth.currentUser.uid == currentUid) {
+        authorizedUser = true
+    }
+
+    const refUsername = ref(db, 'users/' + currentUid + '/username')
+    const refDislikes = ref(db, 'users/' + currentUid + '/dislikes')
+    const refFirstname = ref(db, 'users/' + currentUid + '/firstName')
+    const refFollowers = ref(db, 'users/' + currentUid + '/followers')
+    const refFollowing = ref(db, 'users/' + currentUid + '/following')
+    const refLastname = ref(db, 'users/' + currentUid + '/lastName')
+    const refLikes = ref(db, 'users/' + currentUid + '/likes')
+    const refPFP = ref(db, 'users/' + currentUid + '/profile_picture_url')
+    const refDescription = ref(db, 'users/' + currentUid + '/description')
+    const refNumpolls = ref(db, 'users/' + currentUid + '/numPolls')
+    const refPollsArray = ref(db, 'users/' + currentUid + '/polls')
 
 
 
@@ -94,7 +99,7 @@ export default function ProfileScreen() {
     }, [useIsFocused()])
 
     const deletePoll = (item) => {
-        const refUser = ref(db, 'users/' + auth.currentUser.uid)
+        const refUser = ref(db, 'users/' + currentUid)
         const refUserPoll = ref(db, 'polls/'+ item.item)
 
         remove(refUserPoll)
@@ -115,9 +120,9 @@ export default function ProfileScreen() {
         <SafeAreaView style={{ flex: 1, backgroundColor: "black", justifyContent: "center", alignContent: "center", }}>
             <View style={{flexDirection: 'row', flex: 0.05}}>
                 <Text style={{ flex: 0.5, fontSize: 16, color: "white", alignSelf: 'center' }}>{username}</Text>
-                <TouchableHighlight onPress={() => navigator.replace("Settings")}style={{flex: 0.5, alignSelf: 'center', alignItems: 'flex-end'}}>
+                {authorizedUser && <TouchableHighlight onPress={() => navigator.replace("Settings")}style={{flex: 0.5, alignSelf: 'center', alignItems: 'flex-end'}}>
                     <MaterialCommunityIcons name="cog" color="white" size={25}/>
-                </TouchableHighlight>
+                </TouchableHighlight>}
             </View>
             <View style={{ flex: 1 }}>
                 <View style={{ flex: 1, backgroundColor: "black", flexDirection: "row" }}>
@@ -143,7 +148,7 @@ export default function ProfileScreen() {
                     </View>
                 </View>
                 <View style={{ flex: 0.25, justifyContent: "center", flexDirection: "row" }}>
-                    <TouchableHighlight style={{ flex: 0.4 }}><Pressable style={styles.button} onPress={() => navigator.replace("Edit Profile")}><Text style={styles.text}>Edit Profile</Text></Pressable></TouchableHighlight>
+                    {authorizedUser && <TouchableHighlight style={{ flex: 0.4 }}><Pressable style={styles.button} onPress={() => navigator.replace("Edit Profile")}><Text style={styles.text}>Edit Profile</Text></Pressable></TouchableHighlight>}
                 </View>
                 <View style={{ flex: 0.5, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
                     <TouchableHighlight style={{ flex: 0.3, right: 10 }}><Pressable style={styles.button}><Text style={styles.text}>{likes}</Text><Text style={styles.text}> Up</Text></Pressable></TouchableHighlight>
@@ -158,11 +163,11 @@ export default function ProfileScreen() {
                     data={pollsArray} 
                     renderItem={(item) => (
                         <View style={styles.pollsContainer}>
-                            <TouchableHighlight onPress={() => deletePoll(item)} style={{alignSelf: "flex-end"}}>
+                            {authorizedUser && <TouchableHighlight onPress={() => deletePoll(item)} style={{alignSelf: "flex-end"}}>
                                 <MaterialCommunityIcons name="close-circle" color='red' size={15}/>
-                            </TouchableHighlight>
+                            </TouchableHighlight>}
                             <View style={{flexGrow: 0.3, justifyContent:'center'}}>
-                                <Text style={{color: 'white', alignSelf:'center'}}>{(item.item).replace(auth.currentUser.uid, "")}</Text>
+                                <Text style={{color: 'white', alignSelf:'center'}}>{(item.item).replace(currentUid, "")}</Text>
                             </View>
                         </View>
                     )} 
@@ -170,6 +175,8 @@ export default function ProfileScreen() {
                     /> 
                 </View>
             </View>
+            {authorizedUser && <Button title="test" onPress={() => navigator.navigate("Profile", {id: 'dwnr6k0lubh5zonII35fFL0KFHZ2'})}/>}
+            {!authorizedUser && <Button title="GoBack" onPress={() => navigator.navigate("Profile", {id: auth.currentUser.uid})}/>}
         </SafeAreaView>
     );
 }

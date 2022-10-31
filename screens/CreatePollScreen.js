@@ -26,26 +26,25 @@ export default function CreatePollScreen() {
     const auth = getAuth()
 
     const addInput = () => {
-        setInputs([...inputs,
-        {
-            input: <View style={styles.option}>
-                <TextInput style={{color: 'white', flex: 0.9, paddingLeft: 5}} defaultValue='Type Here' onChangeText={(text) => updateText(text, indices)} />
-                <TouchableOpacity style={{flex: 0.1}} onPress={() => deleteInput(indices)}>
-                    <MaterialCommunityIcons name="close-circle" color='red' size={15}/>
-                </TouchableOpacity>
-            </View>, index: indices
-        }
-        ])
+        setInputs([...inputs, indices])
         setIndices(indices + 1)
     }
 
     const updateText = (text, index) => {
-        pollAnswers[index] = text
+        let pollAnswersCopy = pollAnswers
+        pollAnswersCopy[index] = text
+        setPollAnswers(pollAnswersCopy)
     }
 
     const deleteInput = (deleteIndex) => {
-        pollAnswers[deleteIndex] = null
-        setInputs(inputs.filter((value) => value.index != deleteIndex))
+        let inputsCopy = [...inputs]
+        inputsCopy = inputsCopy.filter((index) => deleteIndex != index)
+        console.log(inputsCopy)
+        setInputs(inputsCopy)
+
+        let pollAnswersCopy = pollAnswers
+        pollAnswersCopy[deleteIndex] = null
+        setPollAnswers(pollAnswersCopy)
     }
 
     const db = getDatabase();
@@ -150,9 +149,14 @@ export default function CreatePollScreen() {
                     <Text style={styles.header}>Options:</Text>
                 </View>
                 <ScrollView>
-                    {inputs.map((input) => {
+                    {inputs.map((index) => {                            
                         return (
-                            input.input
+                            <View style={styles.option}>
+                                <TextInput style={{color: 'white', flex: 0.9, paddingLeft: 5}} defaultValue='Type Here' value={pollAnswers[index]} onChangeText={(text) => updateText(text, index)} />
+                                <TouchableOpacity style={{flex: 0.1}} onPress={() => deleteInput(index)}>
+                                    <MaterialCommunityIcons name="close-circle" color='red' size={15}/>
+                                </TouchableOpacity>
+                            </View>
                         )
                     })}
                 </ScrollView>
