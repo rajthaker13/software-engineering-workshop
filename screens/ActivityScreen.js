@@ -62,8 +62,10 @@ export default function ActivityScreen() {
         width: windowWidth,
         height: windowHeight,
         paddingTop: 10,
-        flex: 1
+        flex: 1,
+        flexDirection: 'row' 
       }}>
+        <Text></Text>
         <LikesWrapper title="Likes" likeActivity={likes} />
         <DislikesWrapper title="Dislikes" dislikeActivity={dislikes} />
 
