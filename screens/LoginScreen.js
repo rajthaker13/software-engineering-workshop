@@ -5,6 +5,8 @@ import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { getDatabase, ref, set } from "firebase/database";
 import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { FirebaseError } from 'firebase/app';
+import { COLORS } from '../components/Colors/ColorScheme'
+
 
 
 export default function LoginScreen() {
@@ -32,7 +34,7 @@ export default function LoginScreen() {
     })
 
     return (
-        <SafeAreaView style={{flex: 1, backgroundColor: 'black'}}>
+        <SafeAreaView style={{flex: 1, backgroundColor: COLORS.Background}}>
             <View style={styles.image}>
                  <Image source={require("../assets/favicon.png")} />
             </View>
@@ -82,7 +84,7 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         fontSize: 16,
         letterSpacing: 0.5,
-        color: "white"
+        color: COLORS.Headline
     },
     image: {
         flex: 0.2,
@@ -95,14 +97,14 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     input: {
-        backgroundColor: "black",
-        color: "white",
+        backgroundColor: COLORS.Background,
+        color: COLORS.Headline,
         paddingHorizontal: 15,
         paddingVertical: 10,
         borderRadius: 10,
         marginTop: 2.5,
         marginBottom: 5,
-        borderColor: "#e91e63",
+        borderColor: COLORS.Button,
         borderRadius: 10,
         borderWidth: 2,
     },
@@ -116,25 +118,25 @@ const styles = StyleSheet.create({
         marginTop: 40
     },
     button: {
-        backgroundColor: '#e91e63',
+        backgroundColor: COLORS.Button,
         width: '100%',
         padding: 15,
         borderRadius: 10,
         alignItems: 'center',     
     },
     buttonText: {
-        color: 'black',
+        color: COLORS.Background,
         fontWeight: '700',
         fontSize: 20,
     },
     buttonOutline: {
-        backgroundColor: 'black',
+        backgroundColor: COLORS.Background,
         marginTop: 5,
-        borderColor: '#e91e63',
+        borderColor: COLORS.Button,
         borderWidth: 2
     },
     buttonOutlineText: {
-        color: '#e91e63',
+        color: COLORS.Button,
         fontWeight: '700',
         fontSize: 20
     },

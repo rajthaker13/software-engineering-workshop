@@ -5,6 +5,8 @@ import { getDatabase, ref, set, get, update } from "firebase/database";
 import { getAuth } from 'firebase/auth';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { Dimensions } from 'react-native';
+import { COLORS } from '../components/Colors/ColorScheme'
+import {MStyles} from '../components/Mason Styles/MStyles'
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -26,26 +28,24 @@ export default function CreatePollScreen() {
     const auth = getAuth()
 
     const addInput = () => {
-        setInputs([...inputs,
-        {
-            input: <View style={styles.option}>
-                <TextInput style={{color: 'white', flex: 0.9, paddingLeft: 5}} defaultValue='Type Here' onChangeText={(text) => updateText(text, indices)} />
-                <TouchableOpacity style={{flex: 0.1}} onPress={() => deleteInput(indices)}>
-                    <MaterialCommunityIcons name="close-circle" color='red' size={15}/>
-                </TouchableOpacity>
-            </View>, index: indices
-        }
-        ])
+        setInputs([...inputs, indices])
         setIndices(indices + 1)
     }
 
-    const updateText = (text, indices) => {
-        pollAnswers[indices] = text
+    const updateText = (text, index) => {
+        let pollAnswersCopy = pollAnswers
+        pollAnswersCopy[index] = text
+        setPollAnswers(pollAnswersCopy)
     }
 
     const deleteInput = (deleteIndex) => {
-        setInputs(inputs.filter((value, index) => value.index !== deleteIndex))
-        setIndices(indices - 1)
+        let inputsCopy = [...inputs]
+        inputsCopy = inputsCopy.filter((index) => deleteIndex != index)
+        setInputs(inputsCopy)
+
+        let pollAnswersCopy = pollAnswers
+        pollAnswersCopy[deleteIndex] = null
+        setPollAnswers(pollAnswersCopy)
     }
 
     const db = getDatabase();
@@ -135,88 +135,39 @@ export default function CreatePollScreen() {
     }
 
     return (
-        <SafeAreaView style={{flex: 1, backgroundColor: 'black'}}>
+        <SafeAreaView style={{flex: 1, backgroundColor: COLORS.Background}}>
             <View>
-                <Text style={styles.pageTitle}>Create Poll</Text>
+                <Text style={MStyles.pageTitle}>Create Poll</Text>
             </View>
             <View>
-                <View style={styles.headerContainer}>
-                    <Text style={styles.header}>Title:</Text>
+                <View style={MStyles.headerContainer}>
+                    <Text style={MStyles.header}>Title:</Text>
                 </View>
-                <TextInput style={styles.input} onChangeText={(text) => setPollName(text)} value={pollName}/>
+                <TextInput style={MStyles.input} onChangeText={(text) => setPollName(text)} value={pollName}/>
             </View>
             <View>
-                <View style={styles.headerContainer}>
-                    <Text style={styles.header}>Options:</Text>
+                <View style={MStyles.headerContainer}>
+                    <Text style={MStyles.header}>Options:</Text>
                 </View>
                 <ScrollView>
-                    {inputs.map((input, index) => {
+                    {inputs.map((index) => {                            
                         return (
-                            input.input
+                            <View style={MStyles.option}>
+                                <TextInput style={{color: COLORS.Headline, flex: 0.9, paddingLeft: 5}} defaultValue='Type Here' value={pollAnswers[index]} onChangeText={(text) => updateText(text, index)} />
+                                <TouchableOpacity style={{flex: 0.1}} onPress={() => deleteInput(index)}>
+                                    <MaterialCommunityIcons name="close-circle" color={COLORS.Paragraph} size={15}/>
+                                </TouchableOpacity>
+                            </View>
                         )
                     })}
                 </ScrollView>
             </View>
-            <TouchableHighlight style={[styles.button, {borderColor: '#e91e63'}]} onPress={addInput}>
-                <Text style={{color: '#e91e63', fontWeight: '700', fontSize: 16}}>Add Option</Text>
+            <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={() => addInput()}>
+                <Text style={MStyles.buttonSolidBackgroundText}>Add Option</Text>
             </TouchableHighlight>
-            <TouchableHighlight style={[styles.button, {backgroundColor: '#e91e63'}]} onPress={finishPoll}>
-                <Text style={{color: 'black', fontWeight: '700', fontSize: 16}}>Submit</Text>
+            <TouchableHighlight style={MStyles.buttonTranslucentBackground} onPress={() => finishPoll()}>
+                <Text style={MStyles.buttonTranslucentBackgroundText}>Submit</Text>
             </TouchableHighlight>
         </SafeAreaView>
     )
 }
-
-
-
-const styles = StyleSheet.create({
-    option: {
-        height: SCREEN_HEIGHT * 0.05,
-        width: SCREEN_WIDTH * 0.75,
-        alignSelf: 'center',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'row',
-        borderColor: 'white',
-        borderWidth: 2,
-        color:'white',
-        marginBottom: 5,
-        borderRadius: 10
-    },
-    header: {
-        width: SCREEN_WIDTH * 0.75,
-        alignSelf: 'center',
-        fontSize: 16,
-        color:'white',
-    },
-    headerContainer: {
-        height: SCREEN_HEIGHT * 0.05,
-        justifyContent: 'center'
-    },
-    button: {
-        height: SCREEN_HEIGHT * 0.05,
-        width: SCREEN_WIDTH * 0.75,
-        borderRadius: 10,
-        alignSelf: 'center',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 5,
-        borderWidth: 3
-    },
-    pageTitle: {
-        height: SCREEN_HEIGHT * 0.05,
-        alignSelf: 'center',
-        fontSize: 24,
-        color:'white'
-    },
-    input: {
-        width: SCREEN_WIDTH * 0.75,
-        height: SCREEN_HEIGHT * 0.03,
-        borderColor: 'white',
-        borderWidth: 2,
-        alignSelf: 'center',
-        color:'white',
-        borderRadius: 10,
-        paddingLeft: 5
-    }
-});

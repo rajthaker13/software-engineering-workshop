@@ -2,7 +2,10 @@ import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { getAuth } from "firebase/auth";
 import { get, getDatabase, ref, set, update } from "firebase/database";
 import { useEffect, useState } from "react";
-import { View, Text, SafeAreaView, TextInput, Button } from "react-native";
+import { View, Text, SafeAreaView, TextInput, Button, TouchableHighlight } from "react-native";
+import { COLORS } from '../components/Colors/ColorScheme'
+import { MStyles } from "../components/Mason Styles/MStyles";
+
 
 export default function EditProfileScreen() {
     const [username, setUsername] = useState('')
@@ -50,35 +53,39 @@ export default function EditProfileScreen() {
         username: username,
       })
       .then(() => {
-        navigator.replace("Home")
+        navigator.navigate("Home", {screen: "Profile"})
       })
     })
 
     return (
-      <SafeAreaView>
-        <View>
-          <Text>Change Username:</Text>
-          <TextInput autoCapitalize="none" value={username} onChangeText={text => setUsername(text)}/>
+      <SafeAreaView style={{flex:1, backgroundColor:COLORS.Background}}>
+        <Text style={MStyles.pageTitle}>Edit Profile</Text>
+        <View style={MStyles.headerContainer}>
+          <Text style={MStyles.header}>Change Username:</Text>
         </View>
-        <View>
-          <Text>Change Profile Description:</Text>
-          <TextInput maxLength={150} autoCapitalize="none" value={description} onChangeText={text => setDescription(text)}/>
+        <TextInput style={MStyles.input} autoCapitalize="none" value={username} onChangeText={text => setUsername(text)}/>
+        <View style={MStyles.headerContainer}>
+          <Text style={MStyles.header}>Change Profile Description:</Text>
         </View>
-        <View>
-          <Text>Change First Name:</Text>
-          <TextInput autoCapitalize="none" value={firstName} onChangeText={text => setFirstName(text)}/>
+        <TextInput style={MStyles.input} maxLength={150} autoCapitalize="none" value={description} onChangeText={text => setDescription(text)}/>
+        <View style={MStyles.headerContainer}>
+          <Text style={MStyles.header}>Change First Name:</Text>
         </View>
-        <View>
-          <Text>Change Last Name:</Text>
-          <TextInput autoCapitalize="none" value={lastName} onChangeText={text => setLastName(text)}/>
+        <TextInput style={MStyles.input} autoCapitalize="none" value={firstName} onChangeText={text => setFirstName(text)}/>
+        <View style={MStyles.headerContainer}>
+          <Text style={MStyles.header}>Change Last Name:</Text>
         </View>
-        <View>
-          <Text>Change Profile Pic URL:</Text>
-          <TextInput  autoCapitalize="none" value={pfp} onChangeText={text => setPFP(text)}/>
+        <TextInput style={MStyles.input} autoCapitalize="none" value={lastName} onChangeText={text => setLastName(text)}/>
+        <View style={MStyles.headerContainer}>
+          <Text style={MStyles.header}>Change Profile Pic URL:</Text>
         </View>
-        <View>
-          <Button title="submit" onPress={() => handleSubmit()}/>
-        </View>
+        <TextInput style={MStyles.input} autoCapitalize="none" value={pfp} onChangeText={text => setPFP(text)}/>
+        <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={() => handleSubmit()}>
+          <Text style={MStyles.buttonSolidBackgroundText}>Submit</Text>
+        </TouchableHighlight>
+        <TouchableHighlight style={MStyles.buttonTranslucentBackground} onPress={() => navigator.navigate("Home", {screen: "Profile"})}>
+            <Text style={MStyles.buttonTranslucentBackgroundText} >Cancel</Text>
+        </TouchableHighlight>
       </SafeAreaView>
 
     );
