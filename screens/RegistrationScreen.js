@@ -2,7 +2,10 @@ import { useNavigation } from "@react-navigation/native";
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { getDatabase, ref, set } from "firebase/database";
 import { useState } from "react";
-import { Button, SafeAreaView, Text, TextInput, TouchableHighlight } from "react-native";
+import { Button, SafeAreaView, Text, TextInput, TouchableHighlight, View } from "react-native";
+import { COLORS } from '../components/Colors/ColorScheme'
+import { MStyles } from "../components/Mason Styles/MStyles";
+
 
 export default function RegistrationScreen() {
     const [email, setEmail] = useState('');
@@ -29,7 +32,7 @@ export default function RegistrationScreen() {
 
                 set(reference, {
                     username: username,
-                    profile_picture_url: '',
+                    profile_picture_url: 'http://tny.im/tGI',
                     followers: false,
                     following: false,
                     firstName: firstname,
@@ -50,34 +53,50 @@ export default function RegistrationScreen() {
     );
 
     return (
-        <SafeAreaView>
-            <Text >Email</Text>
+        <SafeAreaView style={{flex: 1, backgroundColor: COLORS.Background}}>
+            <Text style={MStyles.pageTitle}>User Registration</Text>
+            <View style={MStyles.headerContainer}>
+                <Text style={MStyles.header}>Email</Text>
+            </View>
             <TextInput keyboardType='email-address'
                 autoCapitalize={'none'}
                 value={email}
-                onChangeText={text => setEmail(text)} />
-            <Text>Password</Text>
+                onChangeText={text => setEmail(text)}
+                style={MStyles.input}/>
+            <View style={MStyles.headerContainer}>
+                <Text style={MStyles.header}>Password</Text>
+            </View>
             <TextInput secureTextEntry="true"
                 autoCapitalize={'none'}
                 value={password}
-                onChangeText={text => setPassword(text)} />
-            <Text>Username</Text>
+                onChangeText={text => setPassword(text)} 
+                style={MStyles.input}/>
+            <View style={MStyles.headerContainer}>
+                <Text style={MStyles.header}>Username</Text>
+            </View>
             <TextInput value={username}
                 autoCapitalize={'none'}
-                onChangeText={text => setUsername(text)} />
-            <Text>First Name</Text>
+                onChangeText={text => setUsername(text)} 
+                style={MStyles.input}/>
+            <View style={MStyles.headerContainer}>
+                <Text style={MStyles.header}>First Name</Text>
+            </View>
             <TextInput value={firstname}
                 autoCapitalize={'none'}
-                onChangeText={text => setFirstname(text)} />
-            <Text>Last Name</Text>
+                onChangeText={text => setFirstname(text)} 
+                style={MStyles.input}/>
+            <View style={MStyles.headerContainer}>
+                <Text style={MStyles.header}>Last Name</Text>
+            </View>
             <TextInput value={lastname}
                 autoCapitalize={'none'}
-                onChangeText={text => setLastname(text)} />
-            <TouchableHighlight onPress={handleSignup}>
-                <Text>Sign Up</Text>
+                onChangeText={text => setLastname(text)} 
+                style={MStyles.input}/>
+            <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={handleSignup}>
+                <Text style={MStyles.buttonSolidBackgroundText}>Sign Up</Text>
             </TouchableHighlight>
-            <TouchableHighlight onPress={() => navigator.replace("Login")}>
-                <Text>Go Back</Text>
+            <TouchableHighlight style={MStyles.buttonTranslucentBackground} onPress={() => navigator.replace("Login")}>
+                <Text style={MStyles.buttonTranslucentBackgroundText}>Go Back</Text>
             </TouchableHighlight>
         </SafeAreaView>
     );
