@@ -119,7 +119,8 @@ export default function CreatePollScreen() {
                 likes: 0,
                 dislikes: 0,
                 comments: 0,
-                shares: 0
+                shares: 0,
+                activities:['']
             })
             update(userRef, {
                 polls: userPollsArr,

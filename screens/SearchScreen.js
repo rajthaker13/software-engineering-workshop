@@ -19,14 +19,16 @@ const windowHeight = Dimensions.get('window').height;
 function SearchScreen() {
 
     const [pollsArray, setPollsArray] = useState([])
+    const [actArray, setActArray] = useState([])
     const isFocused = useIsFocused();
 
     let db = getDatabase()
     let refPolls = ref(db,'/polls/')
-
+    let refUsers = ref(db,'/users/WoruXPBJ0PXcTebnm2u5555dVpq2/')
     
     useEffect(() => {
         let arr=[]
+        let actArr=[]
         get(refPolls).then(snapshot => {
             snapshot.forEach((snap) => {
                 var item = snap.val()
@@ -35,8 +37,16 @@ function SearchScreen() {
             })
             setPollsArray(arr)
         })
+        get(refUsers).then(snapshot => {
+            var user = snapshot.val()
+            user.activity.forEach((act) =>{
+                console.warn(act.timestamp)
+            })
+        })
+
     }, [isFocused])
 
+    
     
    
     return (

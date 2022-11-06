@@ -40,7 +40,10 @@ export default function PollStats(props) {
         if (type == "like") {
             let numLikes = 0
             let creatorID = ""
+
             get(pollRef).then(snapshot => {
+
+
                 numLikes = snapshot.val().likes + 1
                 creatorID = snapshot.val().uid
                 update(pollRef, { likes: numLikes })
