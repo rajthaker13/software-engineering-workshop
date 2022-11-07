@@ -23,10 +23,10 @@ export default function DislikesWrapper(props) {
     }, [isFocused])
     return (
         <>
-            <View style={{ height: windowHeight * .22 }}>
-                <Text style={{ marginLeft: 20, color: 'white', fontSize: 20 }}> {props.title}</Text>
+            <View style={{ height: windowHeight * .4 }}>
+                <Text style={{ marginLeft: 'auto', marginRight: 'auto', color: 'white', fontSize: 22.5, fontWeight: '700' }}>{props.title}</Text>
                 <SafeAreaView>
-                    <ScrollView horizontal={true}>
+                    <ScrollView>
                         {dislikesActivity.sort((a, b) => a.timestamp > b.timestamp ? -1 : 1).map((dislike) => {
                             return (
                                 <Dislikes title={dislike.pollID.slice(0, -28)} time={<Timestamp time = {dislike.timestamp} />} answerNum="432" />

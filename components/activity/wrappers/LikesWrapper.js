@@ -22,10 +22,10 @@ export default function LikesWrapper(props) {
     }, [isFocused])
     return (
         <>
-            <View style={{ height: windowHeight * .22 }}>
-                <Text style={{ marginLeft: 20, color: 'white', fontSize: 20 }}> {props.title}</Text>
+            <View style={{ height: windowHeight * .4 }}>
+                <Text style={{ marginLeft: 'auto', marginRight: 'auto', color: 'white', fontSize: 22.5, fontWeight: '700' }}> {props.title}</Text>
                 <SafeAreaView>
-                    <ScrollView horizontal={true}>
+                    <ScrollView>
                         {likesActivity.sort((a, b) => a.timestamp > b.timestamp ? -1 : 1).map((like) => {
                             return (
                                 <Likes title={like.pollID.slice(0, -28)} time={<Timestamp time = {like.timestamp} />} answerNum="12" />
