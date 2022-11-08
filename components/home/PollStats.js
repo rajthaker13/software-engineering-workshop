@@ -74,7 +74,7 @@ export default function PollStats(props) {
                     const newActivity = {
                         timestamp: Date.now(),
                         type: "like",
-                        uid: auth.currentUser.uid
+                        from: auth.currentUser.uid
                     }
                     pollAct.push(newActivity)
                     update(pollRef, { activities: pollAct})
@@ -83,7 +83,6 @@ export default function PollStats(props) {
                 
                 
                 numLikes = snapshot.val().likes + 1
-                console.warn(numLikes)
                 creatorID = snapshot.val().uid
                 update(pollRef, { likes: numLikes })
                 setLikes(numLikes)
@@ -95,7 +94,6 @@ export default function PollStats(props) {
                         const newActivity = {
                             timestamp: Date.now(),
                             type: "like",
-                            pollID: pollID,
                             uid: auth.currentUser.uid
                         }
                         activityArray.push(newActivity)
@@ -105,7 +103,6 @@ export default function PollStats(props) {
                         const newActivity = {
                             timestamp: Date.now(),
                             type: "like",
-                            pollID: pollID,
                             uid: auth.currentUser.uid
                         }
                         creatorActivity.push(newActivity)
@@ -142,7 +139,7 @@ export default function PollStats(props) {
                     const newActivity = {
                         timestamp: Date.now(),
                         type: "dislike",
-                        uid: auth.currentUser.uid
+                        from: auth.currentUser.uid
                     }
                     pollAct.push(newActivity)
                     update(pollRef, { activities: pollAct})

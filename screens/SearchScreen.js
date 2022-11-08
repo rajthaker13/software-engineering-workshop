@@ -14,17 +14,14 @@ const windowHeight = Dimensions.get('window').height;
 
 
 
-
-
 function SearchScreen() {
 
     const [pollsArray, setPollsArray] = useState([])
-    const [actArray, setActArray] = useState([])
+    const [actsArray, setActsArray] = useState([])
     const isFocused = useIsFocused();
 
     let db = getDatabase()
     let refPolls = ref(db,'/polls/')
-    let refUsers = ref(db,'/users/WoruXPBJ0PXcTebnm2u5555dVpq2/')
     
     useEffect(() => {
         let arr=[]
@@ -33,14 +30,48 @@ function SearchScreen() {
                 var item = snap.val()
                 item.key = snap.key
                 arr.push(item)
+
             })
             setPollsArray(arr)
         })
 
+
+
+
+
     }, [isFocused])
 
+
+    let arrr =[]
+    pollsArray.forEach((poll) => {
+        if ("activities" in poll){
+            if(poll.activities["0"]!=""){
+
+                var likeInMin = 0
+
+                poll.activities.forEach((act) =>{
+                    if((act.type == "like")&&(Date.now() - act.timestamp < 60000))
+                    likeInMin ++
+                })
+
+                arrr.push([poll.title,likeInMin])
+
+            }
+            
+        }
+    })
+
+    var sorted = arrr.sort(function(a, b) {
+        return b[1] - a[1];
+    });
     
-    
+    var finalArr = []
+
+    sorted.forEach((poll)=>{
+        finalArr.push({title:poll[0],likes:poll[1]})
+    })
+
+
    
     return (
         <ScrollView>
@@ -54,11 +85,8 @@ function SearchScreen() {
                 paddingTop: 10,
                 flex: 1
             }}>
-
-                
-
-                <NearYouPollWrapper polls={pollsArray} title="Trending Polls" />
-                <TrendingPollWrapper polls={pollsArray} title="Polls Near You" />
+                <TrendingPollWrapper polls={finalArr} title="Trending Polls" />
+                <NearYouPollWrapper polls={pollsArray} title="Polls Near You" />
                 <GroupWrapper title="Groups for You" />
 
             </View>
