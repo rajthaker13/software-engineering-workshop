@@ -65,7 +65,6 @@ export default function ActivityScreen() {
         flex: 1,
         flexDirection: 'row' 
       }}>
-        <Text></Text>
         <LikesWrapper title="Likes" likeActivity={likes} />
         <DislikesWrapper title="Dislikes" dislikeActivity={dislikes} />
 
