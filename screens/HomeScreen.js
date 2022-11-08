@@ -18,23 +18,12 @@ import { getFirestore } from "firebase/firestore";
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-const HomeScreen = () => {
+const HomeScreen = (props) => {
     const [pollsArray, setPollsArray] = useState([])
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyAN3OCr7y5e7I_ba_ASonj2HoAgrnSQbYU",
-        authDomain: "pollme-24549.firebaseapp.com",
-        databaseURL: "https://pollme-24549-default-rtdb.firebaseio.com",
-        projectId: "pollme-24549",
-        storageBucket: "pollme-24549.appspot.com",
-        messagingSenderId: "517411271651",
-        appId: "1:517411271651:web:2ce5925cd5faf436eba6d6",
-        measurementId: "G-TMWX0CVP82"
-    };
 
-    const app = initializeApp(firebaseConfig);
     const auth = getAuth()
-    const db = getFirestore(app);
+    const db = getFirestore();
 
     const isFocused = useIsFocused();
 
