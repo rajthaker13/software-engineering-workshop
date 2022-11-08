@@ -19,7 +19,7 @@ export default function LikesWrapper(props) {
     useEffect(() => {
         setLikesActivity(props.likeActivity)
 
-    }, [isFocused])
+    }, [props, isFocused])
     return (
         <>
             <View style={{ height: windowHeight * .4 }}>
@@ -28,10 +28,10 @@ export default function LikesWrapper(props) {
                     <ScrollView>
                         {likesActivity.sort((a, b) => a.timestamp > b.timestamp ? -1 : 1).map((like) => {
                             return (
-                                <Likes title={like.pollID.slice(0, -28)} time={<Timestamp time = {like.timestamp} pollID ={like.pollID}/>} answerNum="12" />
+                                <Likes title={like.pollID.slice(0, -28)} time={<Timestamp time={like.timestamp} pollID={like.pollID} />} answerNum="12" />
                                 // <Likes title={like.pollID.slice(0, -28)} time={<Timestamp time = {like.timestamp} />} answerNum={<ResponseCount answerNum = {like} />} />
                                 // <Likes title={like.pollID.slice(0, -28)} time={<Timestamp time = {like.timestamp} />} answerNum={<ResponseCount answerNum = {like.pollID} />} />
-                                
+
                             )
                         }, [isFocused])}
 

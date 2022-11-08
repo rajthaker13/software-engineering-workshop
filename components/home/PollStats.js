@@ -43,7 +43,7 @@ export default function PollStats(props) {
         getPollStats()
 
 
-    }, [isFocused])
+    }, [props, isFocused])
 
     async function onPress(type) {
         if (type == "like") {
