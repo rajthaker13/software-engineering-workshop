@@ -12,7 +12,7 @@ import { useIsFocused } from '@react-navigation/native';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
- 
+
 
 export default function DislikesWrapper(props) {
     const [dislikesActivity, setDislikesActivity] = useState([])
@@ -20,7 +20,7 @@ export default function DislikesWrapper(props) {
     useEffect(() => {
         setDislikesActivity(props.dislikeActivity)
 
-    }, [isFocused])
+    }, [props, isFocused])
     return (
         <>
             <View style={{ height: windowHeight * .4 }}>
@@ -29,7 +29,7 @@ export default function DislikesWrapper(props) {
                     <ScrollView>
                         {dislikesActivity.sort((a, b) => a.timestamp > b.timestamp ? -1 : 1).map((dislike) => {
                             return (
-                                <Dislikes title={dislike.pollID.slice(0, -28)} time={<Timestamp time = {dislike.timestamp} />} answerNum="432" />
+                                <Dislikes title={dislike.pollID.slice(0, -28)} time={<Timestamp time={dislike.timestamp} />} answerNum="432" />
                             )
                         })}
 
