@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { get, onValue, ref,} from "firebase/database";
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { MStyles } from '../Mason Styles/MStyles';
+import { doc, getDoc } from 'firebase/firestore';
 
 
 
@@ -17,10 +18,7 @@ export default function RenderPerson(props) {
     const navigation = props.navigation
     const prevId = props.prevId
 
-    const firstRef = ref(db, 'users/' + uid +'/firstName')
-    const lastRef = ref(db, 'users/' + uid + '/lastName')
-    const usernameRef = ref(db, 'users/' + uid + '/username')
-    const pfpRef = ref(db, 'users/' + uid + '/profile_picture_url')
+    const userRef = doc(db, 'users', uid)
 
 
     const [first, setFirst] = useState('')
@@ -30,19 +28,19 @@ export default function RenderPerson(props) {
 
 
     useEffect(() => {
-        onValue(firstRef, snapshot => {
-            setFirst(snapshot.val())
-        })
-        onValue(lastRef, snapshot => {
-            setLast(snapshot.val())
-        })
-        onValue(usernameRef, snapshot => {
-            setUsername(snapshot.val())
-        })
-        onValue(pfpRef, snapshot => {
-            setPFP(snapshot.val())
-        })
-    }, [])
+        async function getPersonData() {
+                        
+            const docSnap = await getDoc(userRef)
+
+            if (docSnap.exists()) {
+                setFirst(docSnap.data()['firstName'])
+                setLast(docSnap.data()['lastName'])
+                setUsername(docSnap.data()['username'])
+                setPFP(docSnap.data()['profile_picture_url'])
+            }
+          }
+        getPersonData()
+    }, [useIsFocused()])
 
     return (
         <View>

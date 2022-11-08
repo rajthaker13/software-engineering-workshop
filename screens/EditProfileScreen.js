@@ -1,6 +1,7 @@
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { getAuth } from "firebase/auth";
 import { get, getDatabase, ref, set, update } from "firebase/database";
+import { collection, doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { View, Text, SafeAreaView, TextInput, Button, TouchableHighlight } from "react-native";
 import { COLORS } from '../components/Colors/ColorScheme'
@@ -14,38 +15,35 @@ export default function EditProfileScreen() {
     const [lastName, setLastName] = useState('')
     const [pfp, setPFP] = useState('')
 
-    const db = getDatabase()
+    const db = getFirestore()
     const auth = getAuth()
-    const userRef = ref(db, 'users/' + auth.currentUser.uid)
-    const usernameRef = ref(db, 'users/' + auth.currentUser.uid + '/username')
-    const descriptionRef = ref(db, 'users/' + auth.currentUser.uid + '/description')
-    const firstnameRef = ref(db, 'users/' + auth.currentUser.uid + '/firstName')
-    const lastnameRef = ref(db, 'users/' + auth.currentUser.uid + '/lastName')
-    const pfpRef = ref(db, 'users/' + auth.currentUser.uid + '/profile_picture_url')
+    const userRef = doc(db, 'users', auth.currentUser.uid)
+    const usernameRef = doc(db, 'users', auth.currentUser.uid + 'username')
+    const descriptionRef = doc(db, 'users', auth.currentUser.uid + 'description')
+    const firstnameRef = doc(db, 'users', auth.currentUser.uid + 'firstName')
+    const lastnameRef = doc(db, 'users', auth.currentUser.uid + 'lastName')
+    const pfpRef = doc(db, 'users', auth.currentUser.uid + 'profile_picture_url')
 
     
     useEffect(() => {
-      get(usernameRef).then(snapshot => {
-        setUsername(snapshot.val())
-      })
-      get(descriptionRef).then(snapshot => {
-        setDescription(snapshot.val())
-      })
-      get(firstnameRef).then(snapshot => {
-        setFirstName(snapshot.val())
-      })
-      get(lastnameRef).then(snapshot => {
-        setLastName(snapshot.val())
-      })
-      get(pfpRef).then(snapshot => {
-        setPFP(snapshot.val())
-      })
+      async function getEditData() {
+        const userRef = doc(collection(db, 'users'), auth.currentUser.uid)
+        const docSnap = await getDoc(userRef);
+        if (docSnap.exists()) {
+          setUsername(docSnap.data()['username'])
+          setDescription(docSnap.data()['description'])
+          setFirstName(docSnap.data()['firstName'])
+          setLastName(docSnap.data()['lastName'])
+          setPFP(docSnap.data()['profile_picture_url'])
+        } 
+      }
+      getEditData()
     }, [useIsFocused()])
 
     const navigator = useNavigation()
 
     const handleSubmit = (() => {
-      update(userRef, {
+      updateDoc(userRef, {
         firstName: firstName,
         lastName: lastName,
         description: description,

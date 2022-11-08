@@ -35,28 +35,24 @@ export default function CreatePollScreen() {
     const db = getFirestore();
 
     const handleUniqueness = async () => {
-        const pollExists = doc(db, 'users', auth.currentUser.uid)
+        const pollExists = doc(collection(db, 'users'), auth.currentUser.uid)
         let exists = false
-        const userPollsSnapshot = await getDoc(pollExists)
-        if (userPollsSnapshot.exists()) {
-            const polls = userPollsSnapshot.data()['polls']
-            if (polls != false) {
-                polls.forEach(val => {
-                    if (val == '' + pollName + auth.currentUser.uid) {
-                        exists = true
-                    }
-                })
-                if (!exists) {
-                    finishPoll()
+        const userPollsSnapshot = (await getDoc(pollExists)).data()
+        const polls = userPollsSnapshot['polls']
+        if (polls != false) {
+            polls.forEach(val => {
+                if (val == '' + pollName + auth.currentUser.uid) {
+                    exists = true
                 }
-                else {
-                    alert("You already created a poll with that name!")
-                }
-
-            }
+            })  
         }
-
-
+        if (!exists) {
+            finishPoll()
+        }
+        else {
+            alert("You already created a poll with that name!")
+        }
+        
     }
 
     const addInput = () => {
@@ -158,13 +154,11 @@ export default function CreatePollScreen() {
                 polls: userPollsArr,
                 numPolls: numPolls + 1
 
-            }).then(() => {
-                setInputs([])
-                setPollAnswers([])
-                setIndices(0)
-                setPollName('')
-
             })
+            setInputs([])
+            setPollAnswers([])
+            setIndices(0)
+            setPollName('')
         }
     }
 
