@@ -6,7 +6,11 @@ import { getAuth } from 'firebase/auth';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { Dimensions } from 'react-native';
 import { COLORS } from '../components/Colors/ColorScheme'
-import {MStyles} from '../components/Mason Styles/MStyles'
+import { MStyles } from '../components/Mason Styles/MStyles'
+import { collection, addDoc, setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -25,7 +29,9 @@ export default function CreatePollScreen() {
     const [numPolls, setNumPolls] = useState(0)
 
     const navigator = useNavigation()
+
     const auth = getAuth()
+    const db = getFirestore();
 
     const addInput = () => {
         setInputs([...inputs, indices])
@@ -48,32 +54,28 @@ export default function CreatePollScreen() {
         setPollAnswers(pollAnswersCopy)
     }
 
-    const db = getDatabase();
-    const refUsername = ref(db, '/users/' + auth.currentUser.uid + '/username')
-    const userPollsRef = ref(db, 'users/' + auth.currentUser.uid + '/polls')
-    const numPollsRef = ref(db, 'users/' + auth.currentUser.uid + '/numPolls')
-    const userRef = ref(db, '/users/' + auth.currentUser.uid)
-
     useEffect(() => {
-        get(refUsername).then(snapshot => {
-            setUsername(snapshot.val())
-        })
-        get(userPollsRef).then(snapshot => {
-            let pollArr = []
-            let data = snapshot.val()
-            
-            data.forEach((a) => {
-                pollArr.push(a)
-            })
+        async function getData() {
+            const docRef = doc(db, "users", auth.currentUser.uid);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                setUsername(docSnap.data()["username"])
+                let pollArr = []
+                let data = docSnap.data()["polls"]
+                if (data != false) {
+                    data.forEach((a) => {
+                        pollArr.push(a)
+                    })
+                }
+                setUserPolls(pollArr)
+                setNumPolls(docSnap.data()["numPolls"])
+            }
 
-            setUserPolls(pollArr)
-            })
-        get(numPollsRef).then(snapshot => {
-            setNumPolls(snapshot.val())
-        })
+        }
+        getData()
     }, [useIsFocused()])
 
-    const finishPoll = () => {
+    const finishPoll = async () => {
 
         for (let i = 0; i < pollName.length; i++) {
             if (pollName.charAt(i) == '.') {
@@ -108,10 +110,9 @@ export default function CreatePollScreen() {
             alert('A minimum of 2 inputs is required')
         }
         else {
-            const pollsRef = ref(db, 'polls/' + pollName + auth.currentUser.uid)
             let userPollsArr = userPolls
             userPollsArr.push(pollName + auth.currentUser.uid)
-            set(pollsRef, {
+            const pollsRef = await setDoc(doc(db, "polls", pollName + auth.currentUser.uid), {
                 creator: username,
                 uid: auth.currentUser.uid,
                 title: pollName,
@@ -121,21 +122,23 @@ export default function CreatePollScreen() {
                 comments: 0,
                 shares: 0
             })
-            update(userRef, {
+            const userRef = doc(db, "users", auth.currentUser.uid);
+            await updateDoc(userRef, {
                 polls: userPollsArr,
                 numPolls: numPolls + 1
+
+            }).then(() => {
+                setInputs([])
+                setPollAnswers([])
+                setIndices(0)
+                setPollName('')
+
             })
-                .then(() => {
-                    setInputs([])
-                    setPollAnswers([])
-                    setIndices(0)
-                    setPollName('')
-                })
         }
     }
 
     return (
-        <SafeAreaView style={{flex: 1, backgroundColor: COLORS.Background}}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.Background }}>
             <View>
                 <Text style={MStyles.pageTitle}>Create Poll</Text>
             </View>
@@ -143,19 +146,19 @@ export default function CreatePollScreen() {
                 <View style={MStyles.headerContainer}>
                     <Text style={MStyles.header}>Title:</Text>
                 </View>
-                <TextInput style={MStyles.input} onChangeText={(text) => setPollName(text)} value={pollName}/>
+                <TextInput style={MStyles.input} onChangeText={(text) => setPollName(text)} value={pollName} />
             </View>
             <View>
                 <View style={MStyles.headerContainer}>
                     <Text style={MStyles.header}>Options:</Text>
                 </View>
                 <ScrollView>
-                    {inputs.map((index) => {                            
+                    {inputs.map((index) => {
                         return (
                             <View style={MStyles.option}>
-                                <TextInput style={{color: COLORS.Headline, flex: 0.9, paddingLeft: 5}} defaultValue='Type Here' value={pollAnswers[index]} onChangeText={(text) => updateText(text, index)} />
-                                <TouchableOpacity style={{flex: 0.1}} onPress={() => deleteInput(index)}>
-                                    <MaterialCommunityIcons name="close-circle" color={COLORS.Paragraph} size={15}/>
+                                <TextInput style={{ color: COLORS.Headline, flex: 0.9, paddingLeft: 5 }} defaultValue='Type Here' value={pollAnswers[index]} onChangeText={(text) => updateText(text, index)} />
+                                <TouchableOpacity style={{ flex: 0.1 }} onPress={() => deleteInput(index)}>
+                                    <MaterialCommunityIcons name="close-circle" color={COLORS.Paragraph} size={15} />
                                 </TouchableOpacity>
                             </View>
                         )
