@@ -53,7 +53,7 @@ export default function PollStats(props) {
             if (docSnap.exists()) {
                 numLikes = docSnap.data()["likes"] + 1
                 creatorID = docSnap.data()["uid"]
-                await updateDoc(docSnap, {
+                await updateDoc(pollRef, {
                     likes: numLikes
                 }).then(async () => {
                     setLikes(numLikes)
@@ -70,7 +70,7 @@ export default function PollStats(props) {
                                 uid: auth.currentUser.uid
                             }
                             activityArray.push(newActivity)
-                            await updateDoc(userSnap, {
+                            await updateDoc(userRef, {
                                 activity: activityArray
                             })
 
@@ -83,8 +83,8 @@ export default function PollStats(props) {
                                 uid: auth.currentUser.uid
                             }
                             creatorActivity.push(newActivity)
-                            await updateDoc(userSnap, {
-                                activity: activityArray
+                            await updateDoc(userRef, {
+                                activity: creatorActivity
                             })
 
                         }
@@ -102,7 +102,7 @@ export default function PollStats(props) {
             if (docSnap.exists()) {
                 numDislikes = docSnap.data()["dislikes"] + 1
                 creatorID = docSnap.data()["uid"]
-                await updateDoc(docSnap, {
+                await updateDoc(pollRef, {
                     dislikes: numDislikes
                 }).then(async () => {
                     setDislikes(numDislikes)
@@ -119,7 +119,7 @@ export default function PollStats(props) {
                                 uid: auth.currentUser.uid
                             }
                             activityArray.push(newActivity)
-                            await updateDoc(userSnap, {
+                            await updateDoc(userRef, {
                                 activity: activityArray
                             })
 
@@ -132,8 +132,8 @@ export default function PollStats(props) {
                                 uid: auth.currentUser.uid
                             }
                             creatorActivity.push(newActivity)
-                            await updateDoc(userSnap, {
-                                activity: activityArray
+                            await updateDoc(userRef, {
+                                activity: creatorActivity
                             })
 
                         }
@@ -142,38 +142,6 @@ export default function PollStats(props) {
 
                 })
             }
-            // get(pollRef).then(snapshot => {
-            //     numDislikes = snapshot.val().dislikes + 1
-            //     creatorID = snapshot.val().uid
-            //     update(pollRef, { dislikes: numDislikes })
-            //     setDislikes(numDislikes)
-            //     const userRef = ref(db, 'users/' + creatorID)
-            //     get(userRef).then(snapshot => {
-            //         let creatorActivity = snapshot.val().activity
-            //         if (creatorActivity == '') {
-            //             let activityArray = []
-            //             const newActivity = {
-            //                 timestamp: Date.now(),
-            //                 type: "dislike",
-            //                 pollID: pollID,
-            //                 uid: auth.currentUser.uid
-            //             }
-            //             activityArray.push(newActivity)
-            //             update(userRef, { activity: activityArray })
-            //         }
-            //         else {
-            //             const newActivity = {
-            //                 timestamp: Date.now(),
-            //                 type: "dislike",
-            //                 pollID: pollID,
-            //                 uid: auth.currentUser.uid
-            //             }
-            //             creatorActivity.push(newActivity)
-            //             update(userRef, { activity: creatorActivity })
-            //         }
-            //     })
-
-            // })
         }
 
         if (type == "comment") {
@@ -186,9 +154,10 @@ export default function PollStats(props) {
             if (docSnap.exists()) {
                 numShares = docSnap.data()["shares"] + 1
             }
-            await updateDoc(docSnap, {
+            await updateDoc(pollRef, {
                 shares: numShares
             })
+            setShares(numShares)
         }
 
     }
