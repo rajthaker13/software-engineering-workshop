@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { ActionSheetIOS, Alert, Image, KeyboardAvoidingView, SafeAreaView, StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, applyActionCode, sendEmailVerification, ActionCodeOperation, reload } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, applyActionCode, sendEmailVerification, ActionCodeOperation, reload, sendPasswordResetEmail } from "firebase/auth";
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { getDatabase, ref, set } from "firebase/database";
 import { ReactNativeFirebase } from '@react-native-firebase/app';
@@ -32,6 +32,17 @@ export default function LoginScreen() {
             })
             .catch(error => alert(error.message))
     })
+
+    const handlePasswordReset = (() => {
+        sendPasswordResetEmail(auth, email)
+            .then(() => {
+                alert("Password Reset Email Sent")
+            })
+            .catch((e) => {
+                alert(e.message)
+            })
+    })
+    
 
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: COLORS.Background}}>
@@ -71,6 +82,11 @@ export default function LoginScreen() {
                     onPress={handleSignup}
                     style={[styles.button, styles.buttonOutline]}>
                         <Text style={styles.buttonOutlineText}>Sign Up</Text>
+                    </TouchableHighlight>
+                    <TouchableHighlight
+                    onPress={handlePasswordReset}
+                    style={styles.button}>
+                        <Text style={styles.buttonText}>Reset Password</Text>
                     </TouchableHighlight>
                 </View> 
             </KeyboardAvoidingView>
@@ -133,7 +149,8 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.Background,
         marginTop: 5,
         borderColor: COLORS.Button,
-        borderWidth: 2
+        borderWidth: 2,
+        marginBottom: 5
     },
     buttonOutlineText: {
         color: COLORS.Button,

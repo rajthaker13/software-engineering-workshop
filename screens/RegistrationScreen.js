@@ -1,8 +1,8 @@
 import { useNavigation } from "@react-navigation/native";
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
-import { getDatabase, ref, set } from "firebase/database";
+import { get, getDatabase, ref, set, update } from "firebase/database";
 import { useState } from "react";
-import { Button, SafeAreaView, Text, TextInput, TouchableHighlight, View } from "react-native";
+import { SafeAreaView, Text, TextInput, TouchableHighlight, View } from "react-native";
 import { COLORS } from '../components/Colors/ColorScheme'
 import { MStyles } from "../components/Mason Styles/MStyles";
 
@@ -15,8 +15,23 @@ export default function RegistrationScreen() {
     const [lastname, setLastname] = useState('');
     const navigator = useNavigation()
     const auth = getAuth()
+    const db = getDatabase();
+
+    const handleUniqueness = () => {
+        const userExists = ref(db, 'usernames/' + username)
+        get(userExists).then(snapshot => {
+            if (snapshot.val() == null) {
+                handleSignup()
+            }
+            else {
+                alert("Username Already Taken")
+            }
+        })
+            .catch(error => alert(error.message))
+    }
 
     const handleSignup = () => (
+        
         createUserWithEmailAndPassword(auth, email, password)
             .then(userCredentials => {
                 const user = userCredentials.user;
@@ -24,33 +39,36 @@ export default function RegistrationScreen() {
             })
             .then(() => {
                 alert('Verification email sent')
-            })
-            .catch(error => alert(error.message))
-            .then(() => {
-                const db = getDatabase();
-                const reference = ref(db, 'users/' + auth.currentUser.uid)
-
-                set(reference, {
-                    username: username,
-                    profile_picture_url: 'http://tny.im/tGI',
-                    followers: false,
-                    following: false,
-                    firstName: firstname,
-                    lastName: lastname,
-                    likes: 0,
-                    dislikes: 0,
-                    numPolls: 0,
-                    description: '',
-                    polls: false,
-                    groups: false,
-                    activity: '',
-
-                })
-
-                navigator.replace("Login")
+                ifNoError()
             })
             .catch(error => alert(error.message))
     );
+
+    const ifNoError = () => {
+        const reference = ref(db, 'users/' + auth.currentUser.uid)
+        const usernamesRef = ref(db, '/usernames')
+
+        set(reference, {
+            username: username,
+            profile_picture_url: 'http://tny.im/tGI',
+            followers: {false: false},
+            following: {false: false},
+            firstName: firstname,
+            lastName: lastname,
+            likes: 0,
+            dislikes: 0,
+            numPolls: 0,
+            description: '',
+            polls: false,
+            groups: false,
+            activity: '',
+        })
+        update(usernamesRef, {
+            [username]: true
+        })
+
+        navigator.replace("Login")
+    }
 
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: COLORS.Background}}>
@@ -92,7 +110,7 @@ export default function RegistrationScreen() {
                 autoCapitalize={'none'}
                 onChangeText={text => setLastname(text)} 
                 style={MStyles.input}/>
-            <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={handleSignup}>
+            <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={handleUniqueness}>
                 <Text style={MStyles.buttonSolidBackgroundText}>Sign Up</Text>
             </TouchableHighlight>
             <TouchableHighlight style={MStyles.buttonTranslucentBackground} onPress={() => navigator.replace("Login")}>

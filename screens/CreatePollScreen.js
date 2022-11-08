@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableHighlight, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableHighlight, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getDatabase, ref, set, get, update } from "firebase/database";
 import { getAuth } from 'firebase/auth';
@@ -23,13 +23,40 @@ export default function CreatePollScreen() {
     const [indices, setIndices] = useState(0)
     const [userPolls, setUserPolls] = useState([])
     const [numPolls, setNumPolls] = useState(0)
+    const [numOptions, setNumOptions] = useState(0)
 
     const navigator = useNavigation()
     const auth = getAuth()
 
+    const handleUniqueness = () => {
+        const pollExists = ref(db, 'users/' + auth.currentUser.uid + '/polls/')
+        let exists = false
+        get(pollExists).then(snapshot => {
+            let arr = snapshot.val()
+            arr.forEach(val => {
+                if (val == '' + pollName + auth.currentUser.uid) {
+                    exists = true
+                }
+            })
+            if (!exists) {
+                finishPoll()
+            }
+            else {
+                alert("You already created a poll with that name!")
+            }
+        })
+            .catch(error => alert(error.message))
+    }
+
     const addInput = () => {
-        setInputs([...inputs, indices])
-        setIndices(indices + 1)
+        if (numOptions >= 5) {
+            alert("Maximum of 5 Options Allowed")
+        }
+        else {
+            setInputs([...inputs, indices])
+            setIndices(indices + 1)
+            setNumOptions(numOptions + 1)
+        }
     }
 
     const updateText = (text, index) => {
@@ -46,6 +73,7 @@ export default function CreatePollScreen() {
         let pollAnswersCopy = pollAnswers
         pollAnswersCopy[deleteIndex] = null
         setPollAnswers(pollAnswersCopy)
+        setNumOptions(numOptions - 1)
     }
 
     const db = getDatabase();
@@ -65,7 +93,6 @@ export default function CreatePollScreen() {
             data.forEach((a) => {
                 pollArr.push(a)
             })
-
             setUserPolls(pollArr)
             })
         get(numPollsRef).then(snapshot => {
@@ -101,13 +128,11 @@ export default function CreatePollScreen() {
         if (pollName == '') {
             alert('Poll Title is required')
         }
-        else if (inputs.length > 5) {
-            alert('A maximum of 5 inputs is allowed')
-        }
         else if (inputs.length < 2) {
             alert('A minimum of 2 inputs is required')
         }
         else {
+            let pollAnswersCopy = pollAnswers.filter(val => val)
             const pollsRef = ref(db, 'polls/' + pollName + auth.currentUser.uid)
             let userPollsArr = userPolls
             userPollsArr.push(pollName + auth.currentUser.uid)
@@ -115,7 +140,7 @@ export default function CreatePollScreen() {
                 creator: username,
                 uid: auth.currentUser.uid,
                 title: pollName,
-                options: pollAnswers,
+                options: pollAnswersCopy,
                 likes: 0,
                 dislikes: 0,
                 comments: 0,
@@ -130,6 +155,7 @@ export default function CreatePollScreen() {
                     setPollAnswers([])
                     setIndices(0)
                     setPollName('')
+                    setNumOptions(0)
                 })
         }
     }
@@ -153,9 +179,9 @@ export default function CreatePollScreen() {
                     {inputs.map((index) => {                            
                         return (
                             <View style={MStyles.option}>
-                                <TextInput style={{color: COLORS.Headline, flex: 0.9, paddingLeft: 5}} defaultValue='Type Here' value={pollAnswers[index]} onChangeText={(text) => updateText(text, index)} />
+                                <TextInput style={{color: COLORS.Paragraph, flex: 0.9, paddingLeft: 5}} defaultValue='Type Here' value={pollAnswers[index]} onChangeText={(text) => updateText(text, index)} />
                                 <TouchableOpacity style={{flex: 0.1}} onPress={() => deleteInput(index)}>
-                                    <MaterialCommunityIcons name="close-circle" color={COLORS.Paragraph} size={15}/>
+                                    <MaterialCommunityIcons name="window-close" color={COLORS.Paragraph} size={20}/>
                                 </TouchableOpacity>
                             </View>
                         )
@@ -165,7 +191,7 @@ export default function CreatePollScreen() {
             <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={() => addInput()}>
                 <Text style={MStyles.buttonSolidBackgroundText}>Add Option</Text>
             </TouchableHighlight>
-            <TouchableHighlight style={MStyles.buttonTranslucentBackground} onPress={() => finishPoll()}>
+            <TouchableHighlight style={MStyles.buttonTranslucentBackground} onPress={() => handleUniqueness()}>
                 <Text style={MStyles.buttonTranslucentBackgroundText}>Submit</Text>
             </TouchableHighlight>
         </SafeAreaView>
