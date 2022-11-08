@@ -18,7 +18,6 @@ export default function RegistrationScreen(props) {
     const [lastname, setLastname] = useState('');
     const navigator = useNavigation()
 
-    const app = initializeApp(firebaseConfig);
     const auth = getAuth()
     const db = getFirestore();
 
