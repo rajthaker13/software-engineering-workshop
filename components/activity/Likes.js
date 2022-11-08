@@ -8,6 +8,8 @@ import Fontisto from 'react-native-vector-icons/Fontisto';
 import Feather from 'react-native-vector-icons/Feather';
 import { useIsFocused } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { getFirestore } from "firebase/firestore";
+import { getAuth } from 'firebase/auth';
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -15,9 +17,13 @@ const windowHeight = Dimensions.get('window').height;
 
 
 export default function Likes(props) {
-  const db = getDatabase()
+  const db = getFirestore();
+  const [pollsArray, setPollsArray] = useState([])
+
+
+  const auth = getAuth()
   // const refPolls = ref(db, '/polls/' + props.pollID)
-  const [pollInfo, setPollInfo] = useState([])
+  // const [pollInfo, setPollInfo] = useState([])
   const isFocused = useIsFocused();
   const [modalVisible, setModalVisible] = useState(false);
   // const auth = getAuth()
@@ -34,45 +40,83 @@ title
 */
 
   const [comments, setComments] = useState('');
-  const [creator, setCreator] = useState('');
+  // const [creator, setCreator] = useState('');
   const [dislikes, setDislikes] = useState('');
   const [likes, setLikes] = useState('');
   // const [options, setOptions] = useState([]);
   const [shares, setShares] = useState('');
   const [title, setTitle] = useState('');
 
-  // const refPolls = ref(db, '/polls/' + props.pollID)
-  const refComments = ref(db, '/polls/' + props.pollID + '/comments')
-  const refCreator = ref(db, '/polls/' + props.pollID + '/creator')
-  const refDislikes = ref(db, '/polls/' + props.pollID + '/dislikes')
-  const refLikes = ref(db, '/polls/' + props.pollID + '/likes')
-  // const refOptions = ref(db, '/polls/' + props.pollID + '/options')
-  const refShares = ref(db, '/polls/' + props.pollID + '/shares')
-  const refTitle = ref(db, '/polls/' + props.pollID + '/title')
+  // // const refPolls = ref(db, '/polls/' + props.pollID)
+  // const refComments = ref(db, "/polls/" + props.pollID + "/comments")
+  // const refCreator = ref(db, "/polls/" + props.pollID + "/creator")
+  // const refDislikes = ref(db, "/polls/" + props.pollID + "/dislikes")
+  // const refLikes = ref(db, "/polls/" + props.pollID + "/likes")
+  // // const refOptions = ref(db, "/polls/" + props.pollID + "/options")
+  // const refShares = ref(db, "/polls/" + props.pollID + "/shares")
+  // const refTitle = ref(db, "/polls/" + props.pollID + "/title")
 
 
   useEffect(() => {
-    get(refComments).then(snapshot => {
-      setComments(snapshot.val())
-    })
-    get(refCreator).then(snapshot => {
-      setCreator(snapshot.val())
-    })
-    get(refDislikes).then(snapshot => {
-      setDislikes(snapshot.val())
-    })
-    get(refLikes).then(snapshot => {
-      setLikes(snapshot.val())
-    })
-    // get(refOptions).then(snapshot => {
-    //   setOptions(snapshot.val())
+    // get(refComments).then(snapshot => {
+    //   setComments(snapshot.val())
     // })
-    get(refShares).then(snapshot => {
-      setShares(snapshot.val())
-    })
-    get(refTitle).then(snapshot => {
-      setTitle(snapshot.val())
-    })
+    // get(refCreator).then(snapshot => {
+    //   setCreator(snapshot.val())
+    // })
+    // get(refDislikes).then(snapshot => {
+    //   setDislikes(snapshot.val())
+    // })
+    // get(refLikes).then(snapshot => {
+    //   setLikes(snapshot.val())
+    // })
+    // // get(refOptions).then(snapshot => {
+    // //   setOptions(snapshot.val())
+    // // })
+    // get(refShares).then(snapshot => {
+    //   setShares(snapshot.val())
+    // })
+    // get(refTitle).then(snapshot => {
+    //   setTitle(snapshot.val())
+    // })
+
+    
+    async function getPollsData() {
+      
+      const userRef = doc(db, "users", currentUid);
+      const docSnap = await getDoc(userRef);
+      if (docSnap.exists()) {
+        
+        
+        
+        
+        
+        
+        setComments(docSnap.data()['comments'])
+        setShares(docSnap.data()['shares'])
+        setDislikes(docSnap.data()['dislikes'])
+        setLikes(docSnap.data()['likes'])
+        // setOptions(docSnap.data()['options'])
+        setTitle(docSnap.data()['title'])
+      }
+      
+      // let arr = []
+      // const pollsSnapshot = await getDocs(collection(db, "polls", props.pollID));
+      // pollsSnapshot.forEach((doc) => {
+      //     var item = doc.data()
+      //     item.key = doc.id
+      //     arr.push(item)
+
+      // })
+      // setPollsArray(arr)
+
+    }
+    getPollsData()
+
+
+
+
+
     // get(refDislikes).then(snapshot => {
     //   setDislikes(snapshot.val())
     // })
@@ -92,7 +136,6 @@ title
     //   setPollInfo(arr)
     // })
   }, [isFocused])
-
     return (
         <View style={{
             backgroundColor: '#D9D9D9', borderWidth: 10, borderColor: '#010101', borderRadius: 20,
@@ -105,6 +148,7 @@ title
             padding: 5,
             flex: 1
         }}>
+          
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -131,7 +175,7 @@ title
                     </Pressable>
                         <Text style={{ fontSize: 100 }}>
                           
-                          {creator}
+                          {title}
                           <View style={{
                               backgroundColor: '#16161a', borderWidth: 3, borderColor: '#7f5af0', borderRadius: 20,
                               width: windowWidth * .7,
@@ -191,12 +235,12 @@ title
             <Pressable
                 onPress={() => setModalVisible(true)}
             >
-                <Text style={{ fontSize: 10 }}>{props.time}</Text>
-                <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1 }}>{props.title}</Text>
+                <Text style={{ fontSize: 10 }}>{title}</Text>
+                {/* <Text style={{ fontSize: 10 }}>{props.time}</Text>
+                <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1 }}>{props.title}</Text> */}
             </Pressable>
         </View>
-    )
-}
+    )}
 const styles = StyleSheet.create({
     centeredView: {
       flex: 1,
