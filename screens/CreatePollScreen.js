@@ -142,6 +142,16 @@ export default function CreatePollScreen() {
         }
         else {
             let pollAnswersCopy = pollAnswers.filter(val => val)
+            let optionsArray = []
+            pollAnswersCopy.forEach((answer) => {
+                var obj = {
+                    choice: answer,
+                    numVotes: 0,
+                    votes: []
+                }
+                optionsArray.push(obj)
+
+            })
             let userPollsArr = userPolls
             userPollsArr.push(pollName + auth.currentUser.uid)
             let { status } = await Location.requestForegroundPermissionsAsync();
@@ -149,6 +159,7 @@ export default function CreatePollScreen() {
                 setErrorMsg('Permission to access location was denied');
                 return;
             }
+            console.log(pollAnswersCopy)
 
             let location = await Location.getCurrentPositionAsync({});
             const pollsRef = await setDoc(doc(db, "polls", pollName + auth.currentUser.uid), {
@@ -160,7 +171,10 @@ export default function CreatePollScreen() {
                 dislikes: 0,
                 comments: 0,
                 shares: 0,
-                location: location
+                location: location,
+                numVotes: 0,
+                votes: optionsArray,
+
             })
             const userRef = doc(db, "users", auth.currentUser.uid);
             await updateDoc(userRef, {
