@@ -44,7 +44,46 @@ export default function PollStats(props) {
             get(pollRef).then(snapshot => {
 
 
+                // poll = snapshot.val().creator
+                // console.warn(poll)
+                // if (pollActivity == '') {
+                //     let activityArray = []
+                //     const newActivity = {
+                //         timestamp: Date.now(),
+                //         type: "like",
+                //         pollID: pollID,
+                //         uid: auth.currentUser.uid
+                //     }
+                //     activityArray.push(newActivity)
+                //     update(userRef, { activity: activityArray })
+                // }
+
+                
+                pollAct = snapshot.val().activities
+                if (pollAct == ""){
+                    let activityArray = []
+                    const newActivity = {
+                        timestamp: Date.now(),
+                        type: "like",
+                        from: auth.currentUser.uid
+                    }
+                    activityArray.push(newActivity)
+                    update(pollRef, { activities: activityArray })
+                }
+                else{
+                    const newActivity = {
+                        timestamp: Date.now(),
+                        type: "like",
+                        uid: auth.currentUser.uid
+                    }
+                    pollAct.push(newActivity)
+                    update(pollRef, { activities: pollAct})
+                }
+                    
+                
+                
                 numLikes = snapshot.val().likes + 1
+                console.warn(numLikes)
                 creatorID = snapshot.val().uid
                 update(pollRef, { likes: numLikes })
                 setLikes(numLikes)
@@ -79,9 +118,37 @@ export default function PollStats(props) {
         }
 
         if (type == "dislike") {
+
+           
+
+
+
             let numDislikes = 0
             let creatorID = ""
             get(pollRef).then(snapshot => {
+
+                pollAct = snapshot.val().activities
+                if (pollAct == ""){
+                    let activityArray = []
+                    const newActivity = {
+                        timestamp: Date.now(),
+                        type: "dislike",
+                        from: auth.currentUser.uid
+                    }
+                    activityArray.push(newActivity)
+                    update(pollRef, { activities: activityArray })
+                }
+                else{
+                    const newActivity = {
+                        timestamp: Date.now(),
+                        type: "dislike",
+                        uid: auth.currentUser.uid
+                    }
+                    pollAct.push(newActivity)
+                    update(pollRef, { activities: pollAct})
+                }
+
+
                 numDislikes = snapshot.val().dislikes + 1
                 creatorID = snapshot.val().uid
                 update(pollRef, { dislikes: numDislikes })

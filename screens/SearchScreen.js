@@ -28,7 +28,6 @@ function SearchScreen() {
     
     useEffect(() => {
         let arr=[]
-        let actArr=[]
         get(refPolls).then(snapshot => {
             snapshot.forEach((snap) => {
                 var item = snap.val()
@@ -36,12 +35,6 @@ function SearchScreen() {
                 arr.push(item)
             })
             setPollsArray(arr)
-        })
-        get(refUsers).then(snapshot => {
-            var user = snapshot.val()
-            user.activity.forEach((act) =>{
-                console.warn(act.timestamp)
-            })
         })
 
     }, [isFocused])
