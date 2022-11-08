@@ -74,7 +74,7 @@ const HomeScreen = (props) => {
                         <PollStats id={poll.key} likes={poll.likes} dislikes={poll.dislikes} comments={poll.comments} shares={poll.shares} db={db} auth={auth} />
                         {poll.options.map((option) => {
                             return (
-                                <Answer title={option} key={option} />
+                                <Answer title={option} key={option} id={poll.key} />
                             )
                         })}
                     </View>
