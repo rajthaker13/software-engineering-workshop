@@ -39,16 +39,20 @@ const HomeScreen = () => {
     const isFocused = useIsFocused();
 
 
-    useEffect(async () => {
-        let arr = []
-        const pollsSnapshot = await getDocs(collection(db, "polls"));
-        pollsSnapshot.forEach((doc) => {
-            var item = doc.data()
-            item.key = doc.id
-            arr.push(item)
+    useEffect(() => {
+        async function getPollsData() {
+            let arr = []
+            const pollsSnapshot = await getDocs(collection(db, "polls"));
+            pollsSnapshot.forEach((doc) => {
+                var item = doc.data()
+                item.key = doc.id
+                arr.push(item)
 
-        })
-        setPollsArray(arr)
+            })
+            setPollsArray(arr)
+
+        }
+        getPollsData()
 
     }, [isFocused])
 

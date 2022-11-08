@@ -29,14 +29,19 @@ export default function PollStats(props) {
     const pollRef = doc(db, "polls", pollID);
 
 
-    useEffect(async () => {
-        const docSnap = await getDoc(pollRef);
-        if (docSnap.exists()) {
-            setLikes(docSnap.data()['likes'])
-            setDislikes(docSnap.data()['dislikes'])
-            setComments(docSnap.data()['comments'])
-            setShares(docSnap.data()['shares'])
+    useEffect(() => {
+        async function getPollStats() {
+            const docSnap = await getDoc(pollRef);
+            if (docSnap.exists()) {
+                setLikes(docSnap.data()['likes'])
+                setDislikes(docSnap.data()['dislikes'])
+                setComments(docSnap.data()['comments'])
+                setShares(docSnap.data()['shares'])
+            }
+
         }
+        getPollStats()
+
 
     }, [isFocused])
 

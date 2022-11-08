@@ -25,15 +25,20 @@ export default function PollBanner(props) {
     const [name, setName] = useState('')
 
 
-    useEffect(async () => {
-        const docSnap = await getDoc(userRef);
-        if (docSnap.exists()) {
-            const firstName = docSnap.data()['firstName']
-            const lastName = docSnap.data()['lastName']
-            const fullName = firstName + " " + lastName
-            setName(fullName)
+    useEffect(() => {
+        async function getPollBanner() {
+            const docSnap = await getDoc(userRef);
+            if (docSnap.exists()) {
+                const firstName = docSnap.data()['firstName']
+                const lastName = docSnap.data()['lastName']
+                const fullName = firstName + " " + lastName
+                setName(fullName)
+
+            }
 
         }
+        getPollBanner()
+
 
 
     }, [])

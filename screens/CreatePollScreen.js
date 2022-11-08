@@ -65,21 +65,25 @@ export default function CreatePollScreen() {
         setPollAnswers(pollAnswersCopy)
     }
 
-    useEffect(async () => {
-        const docRef = doc(db, "users", auth.currentUser.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-            setUsername(docSnap.data()["username"])
-            let pollArr = []
-            let data = docSnap.data()["polls"]
-            if (data != false) {
-                data.forEach((a) => {
-                    pollArr.push(a)
-                })
+    useEffect(() => {
+        async function getData() {
+            const docRef = doc(db, "users", auth.currentUser.uid);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                setUsername(docSnap.data()["username"])
+                let pollArr = []
+                let data = docSnap.data()["polls"]
+                if (data != false) {
+                    data.forEach((a) => {
+                        pollArr.push(a)
+                    })
+                }
+                setUserPolls(pollArr)
+                setNumPolls(docSnap.data()["numPolls"])
             }
-            setUserPolls(pollArr)
-            setNumPolls(docSnap.data()["numPolls"])
+
         }
+        getData()
     }, [useIsFocused()])
 
     const finishPoll = async () => {

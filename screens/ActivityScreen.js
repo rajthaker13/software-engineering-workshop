@@ -10,6 +10,9 @@ import Header from '../components/common/Header';
 import LikesWrapper from '../components/activity/wrappers/LikesWrapper';
 import { useIsFocused } from '@react-navigation/native';
 import DislikesWrapper from '../components/activity/wrappers/DislikesWrapper';
+import { collection, addDoc, setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -21,34 +24,50 @@ export default function ActivityScreen() {
   const [likes, setLikes] = useState([])
   const [dislikes, setDislikes] = useState([])
 
-  const db = getDatabase()
+  const firebaseConfig = {
+    apiKey: "AIzaSyAN3OCr7y5e7I_ba_ASonj2HoAgrnSQbYU",
+    authDomain: "pollme-24549.firebaseapp.com",
+    databaseURL: "https://pollme-24549-default-rtdb.firebaseio.com",
+    projectId: "pollme-24549",
+    storageBucket: "pollme-24549.appspot.com",
+    messagingSenderId: "517411271651",
+    appId: "1:517411271651:web:2ce5925cd5faf436eba6d6",
+    measurementId: "G-TMWX0CVP82"
+  };
+
+  const app = initializeApp(firebaseConfig);
   const auth = getAuth()
+  const db = getFirestore(app);
 
 
   const isFocused = useIsFocused();
 
-  const userRef = ref(db, 'users/' + auth.currentUser.uid)
-
   useEffect(() => {
-    get(userRef).then(snapshot => {
+    async function getActivity() {
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      const userSnap = await getDoc(userRef);
       let likeArr = []
       let dislikeArr = []
-      let data = snapshot.val().activity
+      if (userSnap.exists()) {
+        let data = userSnap.data()['polls']
+        if (data != false) {
+          data.forEach((a) => {
+            if (a.type == "like") {
+              likeArr.push(a)
+            }
+            if (a.type == "dislike") {
+              dislikeArr.push(a)
+            }
+          })
 
-      data.forEach((a) => {
-        if (a.type == "like") {
-          likeArr.push(a)
         }
-        if (a.type == "dislike") {
-          dislikeArr.push(a)
-        }
-      })
-
+      }
       setLikes(likeArr)
       setDislikes(dislikeArr)
+    }
+    getActivity()
 
 
-    })
 
 
   }, [isFocused])
@@ -63,7 +82,7 @@ export default function ActivityScreen() {
         height: windowHeight,
         paddingTop: 10,
         flex: 1,
-        flexDirection: 'row' 
+        flexDirection: 'row'
       }}>
         <Text></Text>
         <LikesWrapper title="Likes" likeActivity={likes} />
