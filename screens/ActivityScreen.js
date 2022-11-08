@@ -38,7 +38,7 @@ export default function ActivityScreen() {
       let likeArr = []
       let dislikeArr = []
       if (userSnap.exists()) {
-        let data = userSnap.data()['polls']
+        let data = userSnap.data()['activity']
         if (data != false) {
           data.forEach((a) => {
             if (a.type == "like") {
