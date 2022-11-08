@@ -33,94 +33,52 @@ export default function ProfileScreen({ route, navigation }) {
     const currentUid = route.params.id
     const prevId = route.params.prevId
     let authorizedUser = false
-    
+
     if (auth.currentUser.uid == currentUid) {
         authorizedUser = true
     }
 
-    const refUsername = ref(db, 'users/' + currentUid + '/username')
-    const refDislikes = ref(db, 'users/' + currentUid + '/dislikes')
-    const refFirstname = ref(db, 'users/' + currentUid + '/firstName')
-    const refFollowers = ref(db, 'users/' + currentUid + '/followers')
-    const refFollowing = ref(db, 'users/' + currentUid + '/following')
-    const refLastname = ref(db, 'users/' + currentUid + '/lastName')
-    const refLikes = ref(db, 'users/' + currentUid + '/likes')
-    const refPFP = ref(db, 'users/' + currentUid + '/profile_picture_url')
-    const refDescription = ref(db, 'users/' + currentUid + '/description')
-    const refNumpolls = ref(db, 'users/' + currentUid + '/numPolls')
-    const refPollsArray = ref(db, 'users/' + currentUid + '/polls')
 
 
 
     useEffect(() => {
-        onValue(refUsername, snapshot => {
-            setUsername(snapshot.val())
-        })
-        onValue(refDislikes, snapshot => {
-            setDislikes(snapshot.val())
-        })
-        onValue(refFirstname, snapshot => {
-            setFirstname(snapshot.val())
-        })
-        onValue(refFollowers, snapshot => {
-            let snapVal = snapshot.val()
-            
-            let arr = Object.values(snapVal)
-            let temp = []
-            arr.forEach(val => {
-                if (val != false) {
-                    temp.push(val)
+        async function getProfileData() {
+            const userRef = doc(db, "users", currentUid);
+            const docSnap = await getDoc(userRef);
+            if (docSnap.exists()) {
+                setUsername(docSnap.data()['username'])
+                setLikes(docSnap.data()['likes'])
+                setDislikes(docSnap.data()['dislikes'])
+                setFirstname(docSnap.data()['firstName'])
+                setLastname(docSnap.data()['lastName'])
+                setFollowers(docSnap.data()['followers'])
+                if (docSnap.data()['followers'] == false) {
+                    setFollowersNum(0)
                 }
-            })
-            setFollowers(temp)            
-            setFollowersNum(temp.length)
-             
-        })
-        onValue(refFollowing, snapshot => {
-            let snapVal = snapshot.val()
-            let arr = Object.values(snapVal)
-            let temp = []
-            arr.forEach(val => {
-                if (val != false) {
-                    temp.push(val)
+                else {
+                    setFollowersNum(followers.length())
                 }
-            })
-            setFollowing(temp)
-            setFollowingNum(temp.length) 
-             
-        })
-        onValue(refLastname, snapshot => {
-            setLastname(snapshot.val())
-        })
-        onValue(refLikes, snapshot => {
-            setLikes(snapshot.val())
-        })
-        onValue(refPFP, snapshot => {
-            setPfp(snapshot.val())
-        })
-        onValue(refNumpolls, snapshot => {
-            setNumpolls(snapshot.val())
-        })
-        onValue(refDescription, snapshot => {
-            setDescription(snapshot.val())
-        })
-        onValue(refPollsArray, snapshot => {
-            setPollsArray(snapshot.val())
-        })
-        const followerRef = ref(db, 'users/' + currentUid + '/followers/' + auth.currentUser.uid)
-        {!authorizedUser && onValue(followerRef, snapshot => {
-            if (snapshot.val() == null) {
-                setFollow(false)
+                setFollowing(docSnap.data()['following'])
+                if (docSnap.data()['following'] == false) {
+                    setFollowingNum(0)
+                }
+                else {
+                    setFollowingNum(following.length())
+                }
+                setPfp(docSnap.data()['profile_picture_url'])
+                setNumpolls(docSnap.data()['numPolls'])
+                setDescription(docSnap.data()['description'])
+                setPollsArray(docSnap.data()['polls'])
             }
-            else {
-                setFollow(true)
-            }
-        })}
+        }
+        getProfileData()
+
+
     }, [useIsFocused()])
 
     const deletePoll = (item) => {
         const refUser = ref(db, 'users/' + currentUid)
-        const refUserPoll = ref(db, 'polls/'+ item.item)
+        const refUserPoll = ref(db, 'polls/' + item.item)
 
         remove(refUserPoll)
 
@@ -129,7 +87,7 @@ export default function ProfileScreen({ route, navigation }) {
 
         var newArray = pollsArray.filter((value) => value != item.item)
         setPollsArray(newArray)
-        
+
         update(refUser, {
             numPolls: newNumpolls,
             polls: newArray
@@ -177,70 +135,70 @@ export default function ProfileScreen({ route, navigation }) {
     }
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.Background}}>
-            <View style={[styles.layer, {width: SCREEN_WIDTH, flexDirection: 'row', alignItems: 'center'}]}>
-                {!authorizedUser && 
-                <MaterialCommunityIcons onPress={() => navigation.navigate("Follow", {id: prevId})} name="chevron-left" color={COLORS.Paragraph} size={25}/>}
-                <Text style={[MStyles.header, authorizedUser ? {marginLeft: SCREEN_WIDTH * 0.38} : {marginLeft: SCREEN_WIDTH * 0.355}]} >{firstname} {lastname}</Text>
-                {authorizedUser && 
-                <TouchableHighlight onPress={() => navigation.push("Settings")} style={{marginLeft: 'auto', marginRight: 15}}>
-                    <MaterialCommunityIcons name="cog" color={COLORS.Paragraph} size={25}/>
-                </TouchableHighlight>}
+        <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.Background }}>
+            <View style={[styles.layer, { width: SCREEN_WIDTH, flexDirection: 'row', alignItems: 'center' }]}>
+                {!authorizedUser &&
+                    <MaterialCommunityIcons onPress={() => navigation.navigate("Follow", { id: prevId })} name="chevron-left" color={COLORS.Paragraph} size={25} />}
+                <Text style={[MStyles.header, authorizedUser ? { marginLeft: SCREEN_WIDTH * 0.38 } : { marginLeft: SCREEN_WIDTH * 0.355 }]} >{firstname} {lastname}</Text>
+                {authorizedUser &&
+                    <TouchableHighlight onPress={() => navigation.push("Settings")} style={{ marginLeft: 'auto', marginRight: 15 }}>
+                        <MaterialCommunityIcons name="cog" color={COLORS.Paragraph} size={25} />
+                    </TouchableHighlight>}
             </View>
-            <View style={[styles.layer, {alignItems: 'center'}]}>
-                <Image style={styles.image} source={{uri: pfp}}/>
-                <Text style={[MStyles.header, {width: SCREEN_WIDTH, marginLeft: SCREEN_WIDTH * 0.75}]}>@{username}</Text>
+            <View style={[styles.layer, { alignItems: 'center' }]}>
+                <Image style={styles.image} source={{ uri: pfp }} />
+                <Text style={[MStyles.header, { width: SCREEN_WIDTH, marginLeft: SCREEN_WIDTH * 0.75 }]}>@{username}</Text>
             </View>
-            <View style={[styles.layer, {flexDirection: "row"}]}>
-                <TouchableOpacity onPress={() => navigation.push("Follow", {id: currentUid, start: 'FollowersList'})} style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: SCREEN_WIDTH * 0.17}}>
+            <View style={[styles.layer, { flexDirection: "row" }]}>
+                <TouchableOpacity onPress={() => navigation.push("Follow", { id: currentUid, start: 'FollowersList' })} style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: SCREEN_WIDTH * 0.17 }}>
                     <Text style={MStyles.text}>{followersNum}</Text>
                     <Text style={MStyles.text}>Followers</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.push("Follow", {id: currentUid, start: 'FollowingList'})} style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: SCREEN_WIDTH * 0.1}}>
+                <TouchableOpacity onPress={() => navigation.push("Follow", { id: currentUid, start: 'FollowingList' })} style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: SCREEN_WIDTH * 0.1 }}>
                     <Text style={MStyles.text}>{followingNum}</Text>
                     <Text style={MStyles.text}>Following</Text>
                 </TouchableOpacity>
-                <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: SCREEN_WIDTH * 0.1}}>
+                <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: SCREEN_WIDTH * 0.1 }}>
                     <Text style={MStyles.text}>{likes}</Text>
                     <Text style={MStyles.text}>Likes</Text>
                 </View>
             </View>
             <View style={styles.layer}>
-                {authorizedUser && 
-                <TouchableHighlight style={[MStyles.buttonSolidBackground, {marginTop: 0, width: SCREEN_WIDTH * 0.5}]} onPress={() => navigation.push("Edit Profile")}>
-                    <Text style={[MStyles.buttonSolidBackgroundText]}>Edit Profile</Text>
-                </TouchableHighlight>}
+                {authorizedUser &&
+                    <TouchableHighlight style={[MStyles.buttonSolidBackground, { marginTop: 0, width: SCREEN_WIDTH * 0.5 }]} onPress={() => navigation.push("Edit Profile")}>
+                        <Text style={[MStyles.buttonSolidBackgroundText]}>Edit Profile</Text>
+                    </TouchableHighlight>}
                 {!authorizedUser && !follow &&
-                <TouchableHighlight onPress={() => handleFollow()} style={[MStyles.buttonSolidBackground, {marginTop: 0, width: SCREEN_WIDTH * 0.5}]}>
-                    <Text style={[MStyles.buttonSolidBackgroundText]}>Follow</Text>
-                </TouchableHighlight>}
+                    <TouchableHighlight onPress={() => handleFollow()} style={[MStyles.buttonSolidBackground, { marginTop: 0, width: SCREEN_WIDTH * 0.5 }]}>
+                        <Text style={[MStyles.buttonSolidBackgroundText]}>Follow</Text>
+                    </TouchableHighlight>}
                 {!authorizedUser && follow &&
-                <TouchableHighlight onPress={() => handleUnfollow()} style={[MStyles.buttonTranslucentBackground, {marginTop: 0, width: SCREEN_WIDTH * 0.5}]}>
-                    <Text style={[MStyles.buttonTranslucentBackgroundText]}>Unfollow</Text>
-                </TouchableHighlight>}
+                    <TouchableHighlight onPress={() => handleUnfollow()} style={[MStyles.buttonTranslucentBackground, { marginTop: 0, width: SCREEN_WIDTH * 0.5 }]}>
+                        <Text style={[MStyles.buttonTranslucentBackgroundText]}>Unfollow</Text>
+                    </TouchableHighlight>}
             </View>
             <View style={styles.layer}>
-                <Text style={[MStyles.text, {alignSelf: 'center'}]}>{description}</Text>
+                <Text style={[MStyles.text, { alignSelf: 'center' }]}>{description}</Text>
             </View>
             <View style={MStyles.headerContainer}>
-                <Text style={[MStyles.header, {width: SCREEN_WIDTH, marginLeft: 15}]}>Your Polls</Text>
+                <Text style={[MStyles.header, { width: SCREEN_WIDTH, marginLeft: 15 }]}>Your Polls</Text>
             </View>
-            <View style={{ width: SCREEN_WIDTH, height: 0.5 * SCREEN_HEIGHT}} >
-                <FlatList 
-                numColumns={3}
-                data={pollsArray} 
-                renderItem={(item) => (
-                    <View style={MStyles.pollsContainer}>
-                        {authorizedUser && <TouchableHighlight onPress={() => deletePoll(item)} style={{alignSelf: "flex-end"}}>
-                            <MaterialCommunityIcons name="close-circle" color={COLORS.Paragraph} size={15}/>
-                        </TouchableHighlight>}
-                        <View style={{justifyContent:'center'}}>
-                            <Text style={[MStyles.text, {alignSelf:'center'}]}>{(item.item).replace(currentUid, "")}</Text>
+            <View style={{ width: SCREEN_WIDTH, height: 0.5 * SCREEN_HEIGHT }} >
+                <FlatList
+                    numColumns={3}
+                    data={pollsArray}
+                    renderItem={(item) => (
+                        <View style={MStyles.pollsContainer}>
+                            {authorizedUser && <TouchableHighlight onPress={() => deletePoll(item)} style={{ alignSelf: "flex-end" }}>
+                                <MaterialCommunityIcons name="close-circle" color={COLORS.Paragraph} size={15} />
+                            </TouchableHighlight>}
+                            <View style={{ justifyContent: 'center' }}>
+                                <Text style={[MStyles.text, { alignSelf: 'center' }]}>{(item.item).replace(currentUid, "")}</Text>
+                            </View>
                         </View>
-                    </View>
-                )} 
-                keyExtractor={(item) => item.index} 
-                /> 
+                    )}
+                    keyExtractor={(item) => item.index}
+                />
             </View>
         </SafeAreaView>
     );
@@ -249,11 +207,11 @@ export default function ProfileScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
     image: {
-               resizeMode: 'cover',
-               width: SCREEN_HEIGHT * 0.1,
-               height: SCREEN_HEIGHT * 0.1,
-               borderRadius: (SCREEN_HEIGHT * 0.1)/2,
-    }, 
+        resizeMode: 'cover',
+        width: SCREEN_HEIGHT * 0.1,
+        height: SCREEN_HEIGHT * 0.1,
+        borderRadius: (SCREEN_HEIGHT * 0.1) / 2,
+    },
     layer: {
         marginBottom: 15
     }

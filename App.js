@@ -19,6 +19,7 @@ import FollowScreen from './screens/FollowScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore'
 
 const firebaseConfig = {
   apiKey: "AIzaSyAN3OCr7y5e7I_ba_ASonj2HoAgrnSQbYU",
@@ -34,6 +35,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth = getAuth()
+const db = getFirestore(app);
 
 
 const Tab = createMaterialBottomTabNavigator();
@@ -90,7 +92,7 @@ function Home() {
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
-        initialParams={{id: auth.currentUser.uid.toString()}}
+        initialParams={{ id: auth.currentUser.uid.toString() }}
         options={{
           tabBarLabel: 'Profile',
           tabBarIcon: ({ color }) => (
@@ -111,7 +113,7 @@ export default function App() {
         <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
         <Stack.Screen name="Edit Profile" component={EditProfileScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Follow" component={FollowScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name="Follow" component={FollowScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

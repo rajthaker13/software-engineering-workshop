@@ -10,34 +10,39 @@ import PollStats from '../components/home/PollStats';
 import ViewPager from 'react-native-pager-view';
 import { useIsFocused } from '@react-navigation/native';
 import PollBanner from '../components/home/PollBanner';
+import { collection, addDoc, setDoc, doc, getDoc, updateDoc, getDocs } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-const HomeScreen = () => {
+const HomeScreen = (props) => {
     const [pollsArray, setPollsArray] = useState([])
 
 
-    const db = getDatabase()
     const auth = getAuth()
-
-    const refPolls = ref(db, '/polls/')
+    const db = getFirestore();
 
     const isFocused = useIsFocused();
 
 
     useEffect(() => {
-        let arr = []
-        get(refPolls).then(snapshot => {
-            snapshot.forEach((snap) => {
-                var item = snap.val()
-                item.key = snap.key
+        async function getPollsData() {
+            let arr = []
+            const pollsSnapshot = await getDocs(collection(db, "polls"));
+            pollsSnapshot.forEach((doc) => {
+                var item = doc.data()
+                item.key = doc.id
                 arr.push(item)
-                
+
             })
             setPollsArray(arr)
-        })
+
+        }
+        getPollsData()
+
     }, [isFocused])
 
 

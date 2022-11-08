@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActionSheetIOS, Alert, Image, KeyboardAvoidingView, SafeAreaView, StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, applyActionCode, sendEmailVerification, ActionCodeOperation, reload, sendPasswordResetEmail } from "firebase/auth";
 import { useIsFocused, useNavigation } from '@react-navigation/native';
@@ -16,7 +16,7 @@ export default function LoginScreen() {
     const navigation = useNavigation()
 
     const auth = getAuth()
-    
+
     const handleSignup = () => (
         navigation.replace("Registration")
     );
@@ -42,53 +42,53 @@ export default function LoginScreen() {
                 alert(e.message)
             })
     })
-    
+
 
     return (
-        <SafeAreaView style={{flex: 1, backgroundColor: COLORS.Background}}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.Background }}>
             <View style={styles.image}>
-                 <Image source={require("../assets/favicon.png")} />
+                <Image source={require("../assets/favicon.png")} />
             </View>
             <KeyboardAvoidingView style={styles.container} behavior="padding">
                 <View style={styles.inputContainer}>
                     <Text style={styles.text}>Username:</Text>
-                    <TextInput 
-                    placeholder="firstname.lastname@domain.com" 
-                    placeholderTextColor={"white"}
-                    keyboardType='email-address' 
-                    value={email} 
-                    onChangeText={text => setEmail(text)} 
-                    autoCapitalize={'none'}
-                    style={styles.input}/>
+                    <TextInput
+                        placeholder="firstname.lastname@domain.com"
+                        placeholderTextColor={"white"}
+                        keyboardType='email-address'
+                        value={email}
+                        onChangeText={text => setEmail(text)}
+                        autoCapitalize={'none'}
+                        style={styles.input} />
                 </View>
                 <View style={styles.inputContainer}>
                     <Text style={styles.text}>Password:</Text>
-                    <TextInput 
-                    placeholder="Password" 
-                    placeholderTextColor={"white"}
-                    secureTextEntry="true"
-                    value={password} 
-                    onChangeText={text => setPassword(text)}
-                    autoCapitalize={'none'}  
-                    style={styles.input}/>
+                    <TextInput
+                        placeholder="Password"
+                        placeholderTextColor={"white"}
+                        secureTextEntry="true"
+                        value={password}
+                        onChangeText={text => setPassword(text)}
+                        autoCapitalize={'none'}
+                        style={styles.input} />
                 </View>
                 <View style={styles.buttonContainer}>
                     <TouchableHighlight
-                    onPress={handleLogin}
-                    style={styles.button}>
+                        onPress={handleLogin}
+                        style={styles.button}>
                         <Text style={styles.buttonText}>Login</Text>
                     </TouchableHighlight>
                     <TouchableHighlight
-                    onPress={handleSignup}
-                    style={[styles.button, styles.buttonOutline]}>
+                        onPress={handleSignup}
+                        style={[styles.button, styles.buttonOutline]}>
                         <Text style={styles.buttonOutlineText}>Sign Up</Text>
                     </TouchableHighlight>
                     <TouchableHighlight
-                    onPress={handlePasswordReset}
-                    style={styles.button}>
+                        onPress={handlePasswordReset}
+                        style={styles.button}>
                         <Text style={styles.buttonText}>Reset Password</Text>
                     </TouchableHighlight>
-                </View> 
+                </View>
             </KeyboardAvoidingView>
         </SafeAreaView>
     );
@@ -96,7 +96,7 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
     text: {
-        fontWeight:'400',
+        fontWeight: '400',
         textAlign: 'left',
         fontSize: 16,
         letterSpacing: 0.5,
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
         width: '100%',
         padding: 15,
         borderRadius: 10,
-        alignItems: 'center',     
+        alignItems: 'center',
     },
     buttonText: {
         color: COLORS.Background,

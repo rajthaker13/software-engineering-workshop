@@ -1,4 +1,4 @@
-import React,{useState,useEffect}from 'react'
+import React, { useState, useEffect } from 'react'
 import { StyleSheet, View, Text, TextInput, ScrollView, SafeAreaView, Dimensions } from 'react-native'
 import SearchBar from '../components/search/SearchBar'
 import GroupWrapper from '../components/search/wrappers/GroupWrapper';
@@ -7,6 +7,9 @@ import TrendingPollWrapper from '../components/search/wrappers/TrendingPollWrapp
 import Header from '../components/common/Header';
 import { Database, get, getDatabase, onValue, ref, set, } from "firebase/database";
 import { useIsFocused } from '@react-navigation/native';
+import { collection, addDoc, setDoc, doc, getDoc, updateDoc, getDocs } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -21,30 +24,33 @@ function SearchScreen() {
     const [pollsArray, setPollsArray] = useState([])
     const isFocused = useIsFocused();
 
-    let db = getDatabase()
-    let refPolls = ref(db,'/polls/')
+    let db = getFirestore()
 
-    
+
+
     useEffect(() => {
-        let arr=[]
-        get(refPolls).then(snapshot => {
-            snapshot.forEach((snap) => {
-                var item = snap.val()
-                item.key = snap.key
+        async function getPolls() {
+            let arr = []
+            const pollsSnapshot = await getDocs(collection(db, "polls"));
+            pollsSnapshot.forEach((poll) => {
+                var item = poll.data()
+                item.key = poll.id
                 arr.push(item)
             })
             setPollsArray(arr)
-        })
+
+        }
+        getPolls()
     }, [isFocused])
 
-    
-   
+
+
     return (
         <ScrollView>
 
             <Header />
             <SearchBar />
-    
+
             <View style={{
                 backgroundColor: '#3B3C3B',
                 width: windowWidth,
@@ -52,7 +58,7 @@ function SearchScreen() {
                 flex: 1
             }}>
 
-                
+
 
                 <NearYouPollWrapper polls={pollsArray} title="Trending Polls" />
                 <TrendingPollWrapper polls={pollsArray} title="Polls Near You" />
