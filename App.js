@@ -15,6 +15,7 @@ import LoginScreen from './screens/LoginScreen';
 import RegistrationScreen from './screens/RegistrationScreen';
 import EditProfileScreen from './screens/EditProfileScreen'
 import SettingsScreen from './screens/SettingsScreen'
+import FollowScreen from './screens/FollowScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getAuth } from 'firebase/auth';
@@ -108,10 +109,11 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Registration" component={RegistrationScreen} options={{ headerShown: false }} initialParams={{ db: db }} />
-        <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} initialParams={{ db: db }} />
-        <Stack.Screen name="Edit Profile" component={EditProfileScreen} options={{ headerShown: false }} initialParams={{ db: db }} />
-        <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} initialParams={{ db: db }} />
+        <Stack.Screen name="Registration" component={RegistrationScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+        <Stack.Screen name="Edit Profile" component={EditProfileScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Follow" component={FollowScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

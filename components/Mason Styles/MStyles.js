@@ -91,4 +91,28 @@ export const MStyles = StyleSheet.create({
             marginHorizontal: 5,
             marginBottom: 5,
         },
+        smallProfileRender: {
+            height: SCREEN_HEIGHT * 0.075,
+            width: SCREEN_WIDTH * 0.9,
+            borderRadius: 10,
+            alignSelf: 'center',
+            alignItems: 'center',
+            marginTop: 10,
+            borderWidth: 2,
+            borderColor: COLORS.Button,
+            flexDirection: 'row'
+        },
+        smallProfileRenderText: {
+            color: COLORS.Paragraph, 
+            fontWeight: '700', 
+            fontSize: 16,
+            marginLeft: SCREEN_WIDTH * 0.28
+        },
+        smallProfileRenderImage: {
+            resizeMode: 'cover',
+            width: SCREEN_HEIGHT * 0.05,
+            height: SCREEN_HEIGHT * 0.05,
+            borderRadius: (SCREEN_HEIGHT * 0.05)/2,
+            marginLeft: SCREEN_WIDTH * 0.05
+        }
 });

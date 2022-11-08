@@ -1,11 +1,11 @@
 import { useNavigation } from "@react-navigation/native";
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
-import { getDatabase, ref, set } from "firebase/database";
+import { get, getDatabase, ref, set, update } from "firebase/database";
 import { useState } from "react";
-import { Button, SafeAreaView, Text, TextInput, TouchableHighlight, View } from "react-native";
+import { SafeAreaView, Text, TextInput, TouchableHighlight, View } from "react-native";
 import { COLORS } from '../components/Colors/ColorScheme'
 import { MStyles } from "../components/Mason Styles/MStyles";
-import { collection, addDoc, setDoc, doc } from "firebase/firestore";
+import { collection, addDoc, setDoc, doc, updateDoc, getDocs, getDoc } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
@@ -21,6 +21,20 @@ export default function RegistrationScreen(props) {
     const auth = getAuth()
     const db = getFirestore();
 
+    const handleUniqueness = async () => {
+        const userExists = doc(db, 'usernames', username)
+        const usernameSnapshot = await getDoc(userExists)
+        if (!usernameSnapshot.exists()) {
+            handleSignup()
+
+        }
+        else {
+            alert("Username Already Taken")
+
+        }
+
+    }
+
     const handleSignup = async () => (
         createUserWithEmailAndPassword(auth, email, password)
             .then(userCredentials => {
@@ -29,32 +43,36 @@ export default function RegistrationScreen(props) {
             })
             .then(() => {
                 alert('Verification email sent')
-            })
-            .catch(error => alert(error.message))
-            .then(async () => {
-                // const reference = ref(db, 'users/' + auth.currentUser.uid)
-
-                const docRef = await setDoc(doc(db, "users", auth.currentUser.uid), {
-                    username: username,
-                    profile_picture_url: 'http://tny.im/tGI',
-                    followers: false,
-                    following: false,
-                    firstName: firstname,
-                    lastName: lastname,
-                    likes: 0,
-                    dislikes: 0,
-                    numPolls: 0,
-                    description: '',
-                    polls: false,
-                    groups: false,
-                    activity: '',
-
-                })
-
-                navigator.replace("Login")
+                ifNoError()
             })
             .catch(error => alert(error.message))
     );
+
+    const ifNoError = async () => {
+        const reference = doc(db, 'users', auth.currentUser.uid)
+        const usernamesRef = doc(db, 'usernames', username)
+
+        await setDoc(reference, {
+            username: username,
+            profile_picture_url: 'http://tny.im/tGI',
+            followers: { false: false },
+            following: { false: false },
+            firstName: firstname,
+            lastName: lastname,
+            likes: 0,
+            dislikes: 0,
+            numPolls: 0,
+            description: '',
+            polls: false,
+            groups: false,
+            activity: '',
+        })
+        await setDoc(usernamesRef, {
+            isActive: true
+        })
+
+        navigator.replace("Login")
+    }
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.Background }}>
@@ -96,7 +114,7 @@ export default function RegistrationScreen(props) {
                 autoCapitalize={'none'}
                 onChangeText={text => setLastname(text)}
                 style={MStyles.input} />
-            <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={handleSignup}>
+            <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={handleUniqueness}>
                 <Text style={MStyles.buttonSolidBackgroundText}>Sign Up</Text>
             </TouchableHighlight>
             <TouchableHighlight style={MStyles.buttonTranslucentBackground} onPress={() => navigator.replace("Login")}>

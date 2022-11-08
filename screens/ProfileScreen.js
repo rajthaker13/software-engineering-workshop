@@ -1,18 +1,18 @@
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { Button, Dimensions } from 'react-native';
+import { Button, Dimensions, TouchableOpacity } from 'react-native';
 import { getAuth } from 'firebase/auth';
-import { StyleSheet, Text, View, SafeAreaView, Image, TouchableHighlight, Pressable, FlatList } from 'react-native';
-import { get, getDatabase, onValue, ref, remove, update } from "firebase/database";
+import { StyleSheet, Text, View, SafeAreaView, Image, TouchableHighlight, FlatList } from 'react-native';
+import { get, getDatabase, onValue, ref, remove, set, update } from "firebase/database";
 import React, { useEffect, useState } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { propsFlattener } from 'native-base/lib/typescript/hooks/useThemeProps/propsFlattener';
 import { COLORS } from '../components/Colors/ColorScheme';
 import { MStyles } from '../components/Mason Styles/MStyles';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
-export default function ProfileScreen({ route }) {
+export default function ProfileScreen({ route, navigation }) {
+    const [follow, setFollow] = useState(false)
     const [username, setUsername] = useState('');
     const [dislikes, setDislikes] = useState('');
     const [firstname, setFirstname] = useState('');
@@ -27,11 +27,11 @@ export default function ProfileScreen({ route }) {
     const [description, setDescription] = useState('');
     const [pollsArray, setPollsArray] = useState([])
 
-    const navigator = useNavigation()
     const auth = getAuth()
     const db = getDatabase()
 
     const currentUid = route.params.id
+    const prevId = route.params.prevId
     let authorizedUser = false
 
     if (auth.currentUser.uid == currentUid) {
@@ -94,100 +94,112 @@ export default function ProfileScreen({ route }) {
         })
     }
 
-    const forceRefresh = (async () => {
-        const userRef = doc(db, "users", currentUid);
-        const docSnap = await getDoc(userRef);
-        if (docSnap.exists()) {
-            setUsername(docSnap.data()['username'])
-            setLikes(docSnap.data()['likes'])
-            setDislikes(docSnap.data()['dislikes'])
-            setFirstname(docSnap.data()['firstName'])
-            setLastname(docSnap.data()['lastName'])
-            setFollowers(docSnap.data()['followers'])
-            if (docSnap.data()['followers'] == false) {
-                setFollowersNum(0)
-            }
-            else {
-                setFollowersNum(followers.length())
-            }
-            setFollowing(docSnap.data()['following'])
-            if (docSnap.data()['following'] == false) {
-                setFollowingNum(0)
-            }
-            else {
-                setFollowingNum(following.length())
-            }
-            setPfp(docSnap.data()['profile_picture_url'])
-            setNumpolls(docSnap.data()['numPolls'])
-            setDescription(docSnap.data()['description'])
-            setPollsArray(docSnap.data()['polls'])
+    const handleFollow = () => {
+        const followersListRef = ref(db, 'users/' + currentUid + '/followers')
+        const followingListRef = ref(db, 'users/' + auth.currentUser.uid + '/following')
+        let followersList = []
+        let followingList = []
+        get(followersListRef).then(snapshot => {
+            followersList = snapshot.val()
+        })
+        get(followingListRef).then(snapshot => {
+            followingList = snapshot.val()
+        })
+        update(followersListRef, {
+            [auth.currentUser.uid]: auth.currentUser.uid
+        })
+        update(followingListRef, {
+            [currentUid]: currentUid
+        })
+        setFollow(true)
+    }
+
+    const handleUnfollow = () => {
+        const followerRef = ref(db, 'users/' + currentUid + '/followers/' + auth.currentUser.uid)
+        const followingRef = ref(db, 'users/' + auth.currentUser.uid + '/following/' + currentUid)
+        const follower = ref(db, 'users/' + currentUid)
+        const following = ref(db, 'users/' + auth.currentUser.uid)
+        remove(followerRef)
+        remove(followingRef)
+        if (followersNum == 0) {
+            update(follower, {
+                followers: false
+            })
         }
-        navigator.navigate("Profile", { id: auth.currentUser.uid })
-    })
+        if (followingNum == 0) {
+            update(following, {
+                following: false
+            })
+        }
+        setFollow(false)
+    }
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.Background }}>
-            <View style={{ flexDirection: 'row', flex: 0.05 }}>
-                <Text style={{ flex: 0.5, fontSize: 16, color: "white", alignSelf: 'center' }}>{username}</Text>
-                {authorizedUser && <TouchableHighlight onPress={() => navigator.replace("Settings")} style={{ flex: 0.5, alignSelf: 'center', alignItems: 'flex-end' }}>
-                    <MaterialCommunityIcons name="cog" color="white" size={25} />
-                </TouchableHighlight>}
+            <View style={[styles.layer, { width: SCREEN_WIDTH, flexDirection: 'row', alignItems: 'center' }]}>
+                {!authorizedUser &&
+                    <MaterialCommunityIcons onPress={() => navigation.navigate("Follow", { id: prevId })} name="chevron-left" color={COLORS.Paragraph} size={25} />}
+                <Text style={[MStyles.header, authorizedUser ? { marginLeft: SCREEN_WIDTH * 0.38 } : { marginLeft: SCREEN_WIDTH * 0.355 }]} >{firstname} {lastname}</Text>
+                {authorizedUser &&
+                    <TouchableHighlight onPress={() => navigation.push("Settings")} style={{ marginLeft: 'auto', marginRight: 15 }}>
+                        <MaterialCommunityIcons name="cog" color={COLORS.Paragraph} size={25} />
+                    </TouchableHighlight>}
             </View>
-            <View style={{ flex: 1 }}>
-                <View style={{ flex: 1, flexDirection: "row" }}>
-                    <View style={{ flex: 0.4, flexDirection: "column" }}>
-                        <View style={{ flex: 1, justifyContent: "center", alignContent: "center", alignItems: "center" }}><Image style={styles.image} source={{ uri: pfp }} /></View>
-                        <Text style={{ flex: 0.5, color: "white" }}>{firstname} {lastname}</Text>
-                        <Text style={{ flex: 0.5, color: "white" }}>{description}</Text>
-                    </View>
-                    <View style={{ flex: 0.6, flexDirection: "column" }}>
-                        <View style={{ flex: 1, flexDirection: "column" }}>
-                            <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-around" }}>
-                                <Text style={{ color: "white" }}>{numpolls}</Text>
-                                <Text style={{ color: "white" }}>{followersNum}</Text>
-                                <Text style={{ color: "white" }}>{followingNum}</Text>
-                            </View>
-                            <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-around", left: 10, bottom: 15 }}>
-                                <Text style={{ color: "white" }}>Polls</Text>
-                                <Text style={{ color: "white" }}>Followers</Text>
-                                <Text style={{ color: "white" }}>Following</Text>
+            <View style={[styles.layer, { alignItems: 'center' }]}>
+                <Image style={styles.image} source={{ uri: pfp }} />
+                <Text style={[MStyles.header, { width: SCREEN_WIDTH, marginLeft: SCREEN_WIDTH * 0.75 }]}>@{username}</Text>
+            </View>
+            <View style={[styles.layer, { flexDirection: "row" }]}>
+                <TouchableOpacity onPress={() => navigation.push("Follow", { id: currentUid, start: 'FollowersList' })} style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: SCREEN_WIDTH * 0.17 }}>
+                    <Text style={MStyles.text}>{followersNum}</Text>
+                    <Text style={MStyles.text}>Followers</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.push("Follow", { id: currentUid, start: 'FollowingList' })} style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: SCREEN_WIDTH * 0.1 }}>
+                    <Text style={MStyles.text}>{followingNum}</Text>
+                    <Text style={MStyles.text}>Following</Text>
+                </TouchableOpacity>
+                <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: SCREEN_WIDTH * 0.1 }}>
+                    <Text style={MStyles.text}>{likes}</Text>
+                    <Text style={MStyles.text}>Likes</Text>
+                </View>
+            </View>
+            <View style={styles.layer}>
+                {authorizedUser &&
+                    <TouchableHighlight style={[MStyles.buttonSolidBackground, { marginTop: 0, width: SCREEN_WIDTH * 0.5 }]} onPress={() => navigation.push("Edit Profile")}>
+                        <Text style={[MStyles.buttonSolidBackgroundText]}>Edit Profile</Text>
+                    </TouchableHighlight>}
+                {!authorizedUser && !follow &&
+                    <TouchableHighlight onPress={() => handleFollow()} style={[MStyles.buttonSolidBackground, { marginTop: 0, width: SCREEN_WIDTH * 0.5 }]}>
+                        <Text style={[MStyles.buttonSolidBackgroundText]}>Follow</Text>
+                    </TouchableHighlight>}
+                {!authorizedUser && follow &&
+                    <TouchableHighlight onPress={() => handleUnfollow()} style={[MStyles.buttonTranslucentBackground, { marginTop: 0, width: SCREEN_WIDTH * 0.5 }]}>
+                        <Text style={[MStyles.buttonTranslucentBackgroundText]}>Unfollow</Text>
+                    </TouchableHighlight>}
+            </View>
+            <View style={styles.layer}>
+                <Text style={[MStyles.text, { alignSelf: 'center' }]}>{description}</Text>
+            </View>
+            <View style={MStyles.headerContainer}>
+                <Text style={[MStyles.header, { width: SCREEN_WIDTH, marginLeft: 15 }]}>Your Polls</Text>
+            </View>
+            <View style={{ width: SCREEN_WIDTH, height: 0.5 * SCREEN_HEIGHT }} >
+                <FlatList
+                    numColumns={3}
+                    data={pollsArray}
+                    renderItem={(item) => (
+                        <View style={MStyles.pollsContainer}>
+                            {authorizedUser && <TouchableHighlight onPress={() => deletePoll(item)} style={{ alignSelf: "flex-end" }}>
+                                <MaterialCommunityIcons name="close-circle" color={COLORS.Paragraph} size={15} />
+                            </TouchableHighlight>}
+                            <View style={{ justifyContent: 'center' }}>
+                                <Text style={[MStyles.text, { alignSelf: 'center' }]}>{(item.item).replace(currentUid, "")}</Text>
                             </View>
                         </View>
-                        <View style={{ flex: 1 }} />
-                    </View>
-                </View>
-                <View style={{ justifyContent: "center", flexDirection: "row" }}>
-                    {authorizedUser &&
-                        <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={() => navigator.replace("Edit Profile")}>
-                            <Text style={MStyles.buttonSolidBackgroundText}>Edit Profile</Text>
-                        </TouchableHighlight>}
-                </View>
-                <View style={{ flex: 0.5, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-                    <TouchableHighlight style={{ flex: 0.3, right: 10 }}><Pressable style={styles.button}><Text style={styles.text}>{likes}</Text><Text style={styles.text}> Up</Text></Pressable></TouchableHighlight>
-                    <TouchableHighlight style={{ flex: 0.3, left: 10 }}><Pressable style={styles.button}><Text style={styles.text}>{dislikes}</Text><Text style={styles.text}> Down</Text></Pressable></TouchableHighlight>
-                </View>
-                <View style={MStyles.headerContainer}>
-                    <Text style={[MStyles.header, { width: SCREEN_WIDTH }]}>Your Polls</Text>
-                </View>
-                <View style={{ width: SCREEN_WIDTH, height: 0.5 * SCREEN_HEIGHT }} >
-                    <FlatList
-                        numColumns={3}
-                        data={pollsArray}
-                        renderItem={(item) => (
-                            <View style={MStyles.pollsContainer}>
-                                {authorizedUser && <TouchableHighlight onPress={() => deletePoll(item)} style={{ alignSelf: "flex-end" }}>
-                                    <MaterialCommunityIcons name="close-circle" color={COLORS.Paragraph} size={15} />
-                                </TouchableHighlight>}
-                                <View style={{ flexGrow: 0.3, justifyContent: 'center' }}>
-                                    <Text style={[MStyles.text, { alignSelf: 'center' }]}>{(item.item).replace(currentUid, "")}</Text>
-                                </View>
-                            </View>
-                        )}
-                        keyExtractor={(item) => item.index}
-                    />
-                </View>
+                    )}
+                    keyExtractor={(item) => item.index}
+                />
             </View>
-            {!authorizedUser && <Button title="Go Back" onPress={() => forceRefresh()} />}
         </SafeAreaView>
     );
 }
@@ -196,30 +208,11 @@ export default function ProfileScreen({ route }) {
 const styles = StyleSheet.create({
     image: {
         resizeMode: 'cover',
-        width: SCREEN_HEIGHT * 0.08,
-        height: SCREEN_HEIGHT * 0.08,
-        borderRadius: (SCREEN_HEIGHT * 0.08) / 2,
+        width: SCREEN_HEIGHT * 0.1,
+        height: SCREEN_HEIGHT * 0.1,
+        borderRadius: (SCREEN_HEIGHT * 0.1) / 2,
     },
-    button: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 12,
-        paddingHorizontal: 32,
-        borderRadius: 4,
-        elevation: 3,
-        backgroundColor: 'gray',
-        flexDirection: "row"
-    },
-    text: {
-        fontSize: 8,
-        fontWeight: 'bold',
-        letterSpacing: 0.25,
-        color: 'white',
-    },
-    textHeading: {
-        fontSize: 16,
-        letterSpacing: 0.25,
-        color: 'white',
-    },
-
+    layer: {
+        marginBottom: 15
+    }
 })
