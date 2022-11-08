@@ -10,6 +10,9 @@ import PollStats from '../components/home/PollStats';
 import ViewPager from 'react-native-pager-view';
 import { useIsFocused } from '@react-navigation/native';
 import PollBanner from '../components/home/PollBanner';
+import { collection, addDoc, setDoc, doc, getDoc, updateDoc, getDocs } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -18,26 +21,35 @@ const windowHeight = Dimensions.get('window').height;
 const HomeScreen = () => {
     const [pollsArray, setPollsArray] = useState([])
 
+    const firebaseConfig = {
+        apiKey: "AIzaSyAN3OCr7y5e7I_ba_ASonj2HoAgrnSQbYU",
+        authDomain: "pollme-24549.firebaseapp.com",
+        databaseURL: "https://pollme-24549-default-rtdb.firebaseio.com",
+        projectId: "pollme-24549",
+        storageBucket: "pollme-24549.appspot.com",
+        messagingSenderId: "517411271651",
+        appId: "1:517411271651:web:2ce5925cd5faf436eba6d6",
+        measurementId: "G-TMWX0CVP82"
+    };
 
-    const db = getDatabase()
+    const app = initializeApp(firebaseConfig);
     const auth = getAuth()
-
-    const refPolls = ref(db, '/polls/')
+    const db = getFirestore(app);
 
     const isFocused = useIsFocused();
 
 
-    useEffect(() => {
+    useEffect(async () => {
         let arr = []
-        get(refPolls).then(snapshot => {
-            snapshot.forEach((snap) => {
-                var item = snap.val()
-                item.key = snap.key
-                arr.push(item)
-                
-            })
-            setPollsArray(arr)
+        const pollsSnapshot = await getDocs(collection(db, "polls"));
+        pollsSnapshot.forEach((doc) => {
+            var item = doc.data()
+            item.key = doc.id
+            arr.push(item)
+
         })
+        setPollsArray(arr)
+
     }, [isFocused])
 
 

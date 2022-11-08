@@ -7,6 +7,9 @@ import React, { useEffect, useReducer, useState } from 'react';
 import { Database, get, getDatabase, onValue, ref, set, update } from "firebase/database";
 import { getAuth } from 'firebase/auth';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { collection, addDoc, setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -17,19 +20,20 @@ export default function PollBanner(props) {
     const auth = props.auth
     const uid = props.uid
 
-    const userRef = ref(db, 'users/' + uid)
-
+    const userRef = doc(db, "users", uid);
 
     const [name, setName] = useState('')
 
 
-    useEffect(() => {
-        get(userRef).then(snapshot => {
-            const firstName = snapshot.val().firstName
-            const lastName = snapshot.val().lastName
+    useEffect(async () => {
+        const docSnap = await getDoc(userRef);
+        if (docSnap.exists()) {
+            const firstName = docSnap.data()['firstName']
+            const lastName = docSnap.data()['lastName']
             const fullName = firstName + " " + lastName
             setName(fullName)
-        })
+
+        }
 
 
     }, [])
