@@ -21,7 +21,7 @@ export default function Likes(props) {
   const [pollsArray, setPollsArray] = useState([])
 
 
-  const auth = getAuth()
+  // const auth = getAuth()
   // const refPolls = ref(db, '/polls/' + props.pollID)
   // const [pollInfo, setPollInfo] = useState([])
   const isFocused = useIsFocused();
@@ -83,9 +83,9 @@ title
     
     async function getPollsData() {
       
-      const userRef = doc(db, "users", currentUid);
-      const docSnap = await getDoc(userRef);
-      if (docSnap.exists()) {
+      const pollRef = doc(db, "polls", props.pollID);
+      const docSnap = await getDoc(pollRef);
+      // if (docSnap.exists()) {
         
         
         
@@ -98,7 +98,7 @@ title
         setLikes(docSnap.data()['likes'])
         // setOptions(docSnap.data()['options'])
         setTitle(docSnap.data()['title'])
-      }
+      // }
       
       // let arr = []
       // const pollsSnapshot = await getDocs(collection(db, "polls", props.pollID));
@@ -184,7 +184,7 @@ title
                               marginLeft: windowWidth * .05,
                               padding: windowHeight * .005,
                           }}>
-                              <Text style={{ fontSize: 40, marginTop: '5%', fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{props.title}</Text>
+                              <Text style={{ fontSize: 40, marginTop: '5%', fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{title}</Text>
                           </View>
                           <View style={styles.containerBigStats}>
                             <View style={{ flexDirection: 'column' }}>
@@ -201,7 +201,7 @@ title
                                     <Feather name="arrow-up" size={26} color="green" />
                                 </View>
                                 <View style={styles.statsContainer}>
-                                    <Text style={styles.statsText}>{props.dislikes}</Text>
+                                    <Text style={styles.statsText}>{dislikes}</Text>
                                     <Feather name="arrow-down" size={26} color="red" />
                                 </View>
                             </View>
@@ -210,7 +210,7 @@ title
                                     <Fontisto name="comment" size={26} color="white" />
                                 {/* </TouchableOpacity> */}
                                 <View style={styles.statsContainer}>
-                                    <Text style={styles.statsText}>{props.comments}</Text>
+                                    <Text style={styles.statsText}>{comments}</Text>
                                 </View>
                             </View>
                             <View style={{ flexDirection: 'column' }}>
@@ -218,7 +218,7 @@ title
                                     <Fontisto name="share-a" size={26} color="white" />
                                 {/* </TouchableOpacity> */}
                                 <View style={styles.statsContainer}>
-                                    <Text style={styles.statsText}>{props.shares}</Text>
+                                    <Text style={styles.statsText}>{shares}</Text>
                                 </View>
 
                             </View>
