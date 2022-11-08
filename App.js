@@ -18,6 +18,7 @@ import SettingsScreen from './screens/SettingsScreen'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore'
 
 const firebaseConfig = {
   apiKey: "AIzaSyAN3OCr7y5e7I_ba_ASonj2HoAgrnSQbYU",
@@ -33,6 +34,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth = getAuth()
+const db = getFirestore(app);
 
 
 const Tab = createMaterialBottomTabNavigator();
@@ -89,7 +91,7 @@ function Home() {
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
-        initialParams={{id: auth.currentUser.uid.toString()}}
+        initialParams={{ id: auth.currentUser.uid.toString() }}
         options={{
           tabBarLabel: 'Profile',
           tabBarIcon: ({ color }) => (
@@ -106,10 +108,10 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Registration" component={RegistrationScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
-        <Stack.Screen name="Edit Profile" component={EditProfileScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Registration" component={RegistrationScreen} options={{ headerShown: false }} initialParams={{ db: db }} />
+        <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} initialParams={{ db: db }} />
+        <Stack.Screen name="Edit Profile" component={EditProfileScreen} options={{ headerShown: false }} initialParams={{ db: db }} />
+        <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} initialParams={{ db: db }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
