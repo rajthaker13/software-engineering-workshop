@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '../components/Colors/ColorScheme';
 import { MStyles } from '../components/Mason Styles/MStyles';
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, setDoc, updateDoc } from 'firebase/firestore';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -28,7 +29,7 @@ export default function ProfileScreen({ route, navigation }) {
     const [pollsArray, setPollsArray] = useState([])
 
     const auth = getAuth()
-    const db = getDatabase()
+    const db = getFirestore()
 
     const currentUid = route.params.id
     const prevId = route.params.prevId
@@ -41,9 +42,9 @@ export default function ProfileScreen({ route, navigation }) {
 
 
 
-    useEffect(() => {
+    useEffect(() => {    
         async function getProfileData() {
-            const userRef = doc(db, "users", currentUid);
+            const userRef = doc(collection(db, 'users'), currentUid);
             const docSnap = await getDoc(userRef);
             if (docSnap.exists()) {
                 setUsername(docSnap.data()['username'])
@@ -52,35 +53,52 @@ export default function ProfileScreen({ route, navigation }) {
                 setFirstname(docSnap.data()['firstName'])
                 setLastname(docSnap.data()['lastName'])
                 setFollowers(docSnap.data()['followers'])
-                if (docSnap.data()['followers'] == false) {
-                    setFollowersNum(0)
-                }
-                else {
-                    setFollowersNum(followers.length())
-                }
-                setFollowing(docSnap.data()['following'])
-                if (docSnap.data()['following'] == false) {
-                    setFollowingNum(0)
-                }
-                else {
-                    setFollowingNum(following.length())
-                }
+                let followerVal = Object.values(docSnap.data()['followers'])
+                let temp = []
+                followerVal.forEach(val => {
+                    if (val != false) {
+                        temp.push(val)
+                    }
+                })
+                setFollowers(temp)
+                setFollowersNum(temp.length)
+                
+                let followingVal = Object.values(docSnap.data()['following'])
+                let temp2 = []
+                followingVal.forEach(val => {
+                    if (val != false) {
+                        temp2.push(val)
+                    }
+                })
+                setFollowing(temp2)
+                setFollowingNum(temp2.length) 
+
                 setPfp(docSnap.data()['profile_picture_url'])
                 setNumpolls(docSnap.data()['numPolls'])
                 setDescription(docSnap.data()['description'])
                 setPollsArray(docSnap.data()['polls'])
             }
+            
+            const followerRef = doc(db, 'users', currentUid)
+            let val = await getDoc(followerRef)
+            console.log(val.data()['followers'][auth.currentUser.uid])
+            if (!authorizedUser && val.exists()) {
+                if (val.data() == undefined) {
+                    setFollow(true)
+                }
+                else {
+                    setFollow(false)
+                }
+            }
         }
         getProfileData()
-
-
     }, [useIsFocused()])
 
     const deletePoll = (item) => {
-        const refUser = ref(db, 'users/' + currentUid)
-        const refUserPoll = ref(db, 'polls/' + item.item)
+        const refUser = doc(collection(db, 'users'), currentUid)
+        const refUserPoll = doc(collection(db, 'polls'), item.item)
 
-        remove(refUserPoll)
+        deleteDoc(refUserPoll)
 
         var newNumpolls = numpolls - 1
         setNumpolls(newNumpolls)
@@ -88,50 +106,45 @@ export default function ProfileScreen({ route, navigation }) {
         var newArray = pollsArray.filter((value) => value != item.item)
         setPollsArray(newArray)
 
-        update(refUser, {
+        updateDoc(refUser, {
             numPolls: newNumpolls,
             polls: newArray
         })
     }
 
     const handleFollow = () => {
-        const followersListRef = ref(db, 'users/' + currentUid + '/followers')
-        const followingListRef = ref(db, 'users/' + auth.currentUser.uid + '/following')
-        let followersList = []
-        let followingList = []
-        get(followersListRef).then(snapshot => {
-            followersList = snapshot.val()
-        })
-        get(followingListRef).then(snapshot => {
-            followingList = snapshot.val()
-        })
-        update(followersListRef, {
-            [auth.currentUser.uid]: auth.currentUser.uid
-        })
-        update(followingListRef, {
-            [currentUid]: currentUid
-        })
-        setFollow(true)
+        
+
+        async function updateFollow() {
+            const followersListRef = doc(collection(db, 'users/' + currentUid + '/followers'), auth.currentUser.uid)
+            const followingListRef = doc(collection(db, 'users/' +  auth.currentUser.uid + '/following'), currentUid)
+
+            await setDoc(followingListRef, {
+                [currentUid]: currentUid
+            })
+            await setDoc(followersListRef, {
+                [auth.currentUser.uid]: auth.currentUser.uid
+            })
+        }
+        updateFollow()
+        //setFollow(true)
     }
 
-    const handleUnfollow = () => {
-        const followerRef = ref(db, 'users/' + currentUid + '/followers/' + auth.currentUser.uid)
-        const followingRef = ref(db, 'users/' + auth.currentUser.uid + '/following/' + currentUid)
-        const follower = ref(db, 'users/' + currentUid)
-        const following = ref(db, 'users/' + auth.currentUser.uid)
-        remove(followerRef)
-        remove(followingRef)
-        if (followersNum == 0) {
-            update(follower, {
-                followers: false
-            })
+    const handleUnfollow = async () => {
+        const followerRef = doc(collection(db, 'users/' + currentUid + '/followers'), auth.currentUser.uid)
+        const followingRef = doc(collection(db, 'users/' + auth.currentUser.uid + '/following'), currentUid)
+        let docSnapFollower = await getDoc(followerRef)
+        let docSnapFollowing = await getDoc(followingRef)
+        if (docSnapFollower.exists()) {
+            console.log(docSnapFollower.data())
         }
-        if (followingNum == 0) {
-            update(following, {
-                following: false
-            })
+        if (docSnapFollowing.exists()) {
+            console.log(docSnapFollowing.data())
         }
-        setFollow(false)
+        deleteDoc(followerRef)
+        deleteDoc(followingRef)
+        
+        //setFollow(false)
     }
 
     return (
