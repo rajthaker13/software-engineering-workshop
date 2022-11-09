@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '../components/Colors/ColorScheme';
 import { MStyles } from '../components/Mason Styles/MStyles';
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, setDoc, updateDoc } from 'firebase/firestore';
+import { addDoc, arrayRemove, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, setDoc, updateDoc } from 'firebase/firestore';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -81,9 +81,8 @@ export default function ProfileScreen({ route, navigation }) {
             
             const followerRef = doc(db, 'users', currentUid)
             let val = await getDoc(followerRef)
-            console.log(val.data()['followers'][auth.currentUser.uid])
             if (!authorizedUser && val.exists()) {
-                if (val.data() == undefined) {
+                if (val.data()['followers'][auth.currentUser.uid] == undefined) {
                     setFollow(true)
                 }
                 else {
@@ -116,18 +115,17 @@ export default function ProfileScreen({ route, navigation }) {
         
 
         async function updateFollow() {
-            const followersListRef = doc(collection(db, 'users/' + currentUid + '/followers'), auth.currentUser.uid)
-            const followingListRef = doc(collection(db, 'users/' +  auth.currentUser.uid + '/following'), currentUid)
-
-            await setDoc(followingListRef, {
-                [currentUid]: currentUid
+            const followersListRef = doc(db, 'users', currentUid)
+            const followingListRef = doc(db, 'users', auth.currentUser.uid)
+            updateDoc(followingListRef, {
+                following: {[auth.currentUser.uid]: auth.currentUser.uid}
             })
-            await setDoc(followersListRef, {
-                [auth.currentUser.uid]: auth.currentUser.uid
+            updateDoc(followersListRef, {
+                followers: {[currentUid] : currentUid}
             })
         }
         updateFollow()
-        //setFollow(true)
+        setFollow(true)
     }
 
     const handleUnfollow = async () => {
@@ -144,7 +142,7 @@ export default function ProfileScreen({ route, navigation }) {
         deleteDoc(followerRef)
         deleteDoc(followingRef)
         
-        //setFollow(false)
+        setFollow(false)
     }
 
     return (
