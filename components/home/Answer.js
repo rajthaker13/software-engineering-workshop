@@ -3,6 +3,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from 'firebase/auth';
 import { collection, addDoc, setDoc, doc, getDoc, updateDoc, getDocs } from "firebase/firestore";
+import { ProgressButton } from 'react-native-progress-button';
+import React, { useEffect, useState } from 'react';
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -17,6 +19,7 @@ export default function Answer(props) {
     const db = getFirestore();
     const pollID = props.id
     const pollRef = doc(db, "polls", pollID);
+    const [hasVoted, setHasVoted] = useState(false)
 
 
     async function vote(option) {
@@ -54,6 +57,7 @@ export default function Answer(props) {
                         votes: curVotesOption,
                         numVotes: curVotes
                     })
+                    setHasVoted(true)
 
 
 
@@ -67,11 +71,11 @@ export default function Answer(props) {
 
     }
     return (
+
         <View style={styles.container}>
-            <View>
-                <Button title={props.title} onPress={() => { vote(props.title) }}></Button>
-            </View>
+            <Button title={props.title} onPress={() => { vote(props.title) }}></Button>
         </View>
+
     )
 }
 

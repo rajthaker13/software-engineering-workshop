@@ -20,12 +20,14 @@ const windowHeight = Dimensions.get('window').height;
 
 const HomeScreen = (props) => {
     const [pollsArray, setPollsArray] = useState([])
+    const [hasVoted, setHasVoted] = useState(false)
 
 
     const auth = getAuth()
     const db = getFirestore();
 
     const isFocused = useIsFocused();
+
 
 
     useEffect(() => {
@@ -53,6 +55,9 @@ const HomeScreen = (props) => {
             initialPage={0}
         >
             {pollsArray.map((poll) => {
+                const pollID = poll.key
+
+                const pollRef = doc(db, "polls", pollID);
                 return (
                     <View style={styles.container}>
                         <Header />
@@ -74,7 +79,9 @@ const HomeScreen = (props) => {
                         <PollStats id={poll.key} likes={poll.likes} dislikes={poll.dislikes} comments={poll.comments} shares={poll.shares} db={db} auth={auth} />
                         {poll.options.map((option) => {
                             return (
-                                <Answer title={option} key={option} id={poll.key} />
+                                <View>
+                                    {!hasVoted && <Answer title={option} key={option} id={poll.key} onVote={() => { setHasVoted(true) }} />}
+                                </View>
                             )
                         })}
                     </View>
