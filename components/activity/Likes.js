@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, View, Modal, Pressable, TouchableOpacity, Text, TextInput, ScrollView, SafeAreaView, Dimensions } from 'react-native'
+import { StyleSheet, View, Modal, Pressable, TouchableHighlight, TouchableOpacity, Text, TextInput, ScrollView, SafeAreaView, Dimensions } from 'react-native'
 import { useEffect, useReducer, useState } from 'react';
 import { get, getDatabase, onValue, ref, remove, update } from "firebase/database";
 // import { getAuth } from 'firebase/auth';
@@ -80,7 +80,6 @@ title
     //   setTitle(snapshot.val())
     // })
 
-    
     async function getPollsData() {
       
       const pollRef = doc(db, "polls", props.pollID);
@@ -170,8 +169,11 @@ title
                         style={[styles.button, styles.buttonClose]}
                         onPress={() => setModalVisible(!modalVisible)}
                     >
+                      {/* <TouchableHighlight 
+                        onPress={() => setModalVisible(!modalVisible)} style={{ position: 'absolute',right: 50 }}> */}
                       {/* <Text style={{ color: '#fffffe' }}>x</Text> */}
                         <MaterialCommunityIcons name="close-circle" color='#94a1b2' size={15}/>
+                                {/* </TouchableHighlight> */}
                     </Pressable>
                         <Text style={{ fontSize: 100 }}>
                           
@@ -230,12 +232,13 @@ title
                           {/* {props.options} */}
                         </Text>
                 
-                </View></View>
+                </View>
+                </View>
             </Modal>
             <Pressable
                 onPress={() => setModalVisible(true)}
             >
-                <Text style={{ fontSize: 10 }}>{title}</Text>
+                <Text style={{ fontSize: 30 }}>{title}</Text>
                 {/* <Text style={{ fontSize: 10 }}>{props.time}</Text>
                 <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1 }}>{props.title}</Text> */}
             </Pressable>
