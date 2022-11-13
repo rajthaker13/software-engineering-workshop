@@ -23,6 +23,7 @@ function SearchScreen() {
 
     const [pollsArray, setPollsArray] = useState([])
     const isFocused = useIsFocused();
+    const [actArray, setActArray] = useState([])
 
     let db = getFirestore()
 
@@ -40,6 +41,17 @@ function SearchScreen() {
             setPollsArray(arr)
 
         }
+        // async function getPollsAct() {
+        //     let arr = []
+        //     const actsSnapshot = await getDocs(collection(db, "polls"));
+        //     pollsSnapshot.forEach((poll) => {
+        //         var item = poll.data()
+        //         item.key = poll.id
+        //         arr.push(item)
+        //     })
+        //     setPollsArray(arr)
+
+        // }
         getPolls()
     }, [isFocused])
 

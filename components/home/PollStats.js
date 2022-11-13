@@ -51,6 +51,32 @@ export default function PollStats(props) {
             let creatorID = ""
             const docSnap = await getDoc(pollRef);
             if (docSnap.exists()) {
+                pollAct = docSnap.data().activities
+                if (pollAct ==""){
+                    let activityArray = []
+                    const newActivity = {
+                        timestamp: Date.now(),
+                        type: "like",
+                        from: auth.currentUser.uid
+                    }
+                    activityArray.push(newActivity)
+                    await updateDoc(pollRef, {
+                        activities: activityArray
+                    })
+                }
+                else{
+                    const newActivity = {
+                        timestamp: Date.now(),
+                        type: "like",
+                        from: auth.currentUser.uid
+                    }
+                    pollAct.push(newActivity)
+                    await updateDoc(pollRef, {
+                        activities: pollAct
+                    })
+                }
+
+
                 numLikes = docSnap.data()["likes"] + 1
                 creatorID = docSnap.data()["uid"]
                 await updateDoc(pollRef, {
@@ -100,6 +126,37 @@ export default function PollStats(props) {
             let creatorID = ""
             const docSnap = await getDoc(pollRef);
             if (docSnap.exists()) {
+
+
+                pollAct = docSnap.data().activities
+                if (pollAct ==""){
+                    let activityArray = []
+                    const newActivity = {
+                        timestamp: Date.now(),
+                        type: "dislike",
+                        from: auth.currentUser.uid
+                    }
+                    activityArray.push(newActivity)
+                    await updateDoc(pollRef, {
+                        activities: activityArray
+                    })
+                }
+                else{
+                    const newActivity = {
+                        timestamp: Date.now(),
+                        type: "dislike",
+                        from: auth.currentUser.uid
+                    }
+                    pollAct.push(newActivity)
+                    await updateDoc(pollRef, {
+                        activities: pollAct
+                    })
+                }
+
+
+
+
+
                 numDislikes = docSnap.data()["dislikes"] + 1
                 creatorID = docSnap.data()["uid"]
                 await updateDoc(pollRef, {
