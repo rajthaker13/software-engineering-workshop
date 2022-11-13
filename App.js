@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
@@ -20,6 +20,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore'
+import { COLORS } from './components/Colors/ColorScheme';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+
+const SCREEN_HEIGHT = Dimensions.get('window').height;
+const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const firebaseConfig = {
   apiKey: "AIzaSyAN3OCr7y5e7I_ba_ASonj2HoAgrnSQbYU",
@@ -38,19 +43,27 @@ const auth = getAuth()
 const db = getFirestore(app);
 
 
-const Tab = createMaterialBottomTabNavigator();
+const Tab = createMaterialTopTabNavigator();
 const Stack = createNativeStackNavigator();
 
 function Home() {
   return (
     <Tab.Navigator
       initialRouteName="HomeScreen"
-      activeColor="#e91e63"
-      barStyle={{ backgroundColor: 'black' }}
+      screenOptions={{
+        tabBarStyle: {backgroundColor: COLORS.Background, 
+            height: SCREEN_HEIGHT * 0.08},
+        tabBarActiveTintColor: COLORS.Button,
+        tabBarInactiveTintColor: COLORS.Paragraph,
+        tabBarIndicatorStyle: {height: 0},
+        tabBarShowLabel: false
+      }}
+      tabBarPosition="bottom"
     >
       <Tab.Screen
         name="HomeScreen"
         component={HomeScreen}
+        initialParams={{ pid: "" }}
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({ color }) => (

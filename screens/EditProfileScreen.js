@@ -1,7 +1,7 @@
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { getAuth } from "firebase/auth";
-import { get, getDatabase, ref, set, update } from "firebase/database";
-import { collection, doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
+import { get, getDatabase, ref, update } from "firebase/database";
+import { addDoc, collection, deleteDoc, doc, getDoc, getFirestore, setDoc, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { View, Text, SafeAreaView, TextInput, Button, TouchableHighlight } from "react-native";
 import { COLORS } from '../components/Colors/ColorScheme'
@@ -10,6 +10,7 @@ import { MStyles } from "../components/Mason Styles/MStyles";
 
 export default function EditProfileScreen() {
     const [username, setUsername] = useState('')
+    const [permUsername, setPermUsername] = useState('')
     const [description, setDescription] = useState('')
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
@@ -24,6 +25,19 @@ export default function EditProfileScreen() {
     const lastnameRef = doc(db, 'users', auth.currentUser.uid + 'lastName')
     const pfpRef = doc(db, 'users', auth.currentUser.uid + 'profile_picture_url')
 
+    const handleUniqueness = async () => {
+      const userExists = doc(db, 'usernames', username)
+      const usernameSnapshot = await getDoc(userExists)
+      if (!usernameSnapshot.exists() || username == permUsername) {
+        deleteDoc(doc(db, 'usernames', permUsername))
+        setDoc(doc(db, 'usernames', username), {
+          isActive: true})
+        handleSubmit()
+      }
+      else {
+          alert("Username Already Taken")
+      }
+  }
     
     useEffect(() => {
       async function getEditData() {
@@ -31,6 +45,7 @@ export default function EditProfileScreen() {
         const docSnap = await getDoc(userRef);
         if (docSnap.exists()) {
           setUsername(docSnap.data()['username'])
+          setPermUsername(docSnap.data()['username'])
           setDescription(docSnap.data()['description'])
           setFirstName(docSnap.data()['firstName'])
           setLastName(docSnap.data()['lastName'])
@@ -78,7 +93,7 @@ export default function EditProfileScreen() {
           <Text style={MStyles.header}>Change Profile Pic URL:</Text>
         </View>
         <TextInput style={MStyles.input} autoCapitalize="none" value={pfp} onChangeText={text => setPFP(text)}/>
-        <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={() => handleSubmit()}>
+        <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={() => handleUniqueness()}>
           <Text style={MStyles.buttonSolidBackgroundText}>Submit</Text>
         </TouchableHighlight>
         <TouchableHighlight style={MStyles.buttonTranslucentBackground} onPress={() => navigator.navigate("Home", {screen: "Profile"})}>
