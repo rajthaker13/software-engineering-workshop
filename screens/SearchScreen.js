@@ -22,8 +22,9 @@ const windowHeight = Dimensions.get('window').height;
 function SearchScreen() {
 
     const [pollsArray, setPollsArray] = useState([])
-    const isFocused = useIsFocused();
     const [actArray, setActArray] = useState([])
+    const isFocused = useIsFocused();
+    
 
     let db = getFirestore()
 
@@ -41,19 +42,45 @@ function SearchScreen() {
             setPollsArray(arr)
 
         }
-        // async function getPollsAct() {
-        //     let arr = []
-        //     const actsSnapshot = await getDocs(collection(db, "polls"));
-        //     pollsSnapshot.forEach((poll) => {
-        //         var item = poll.data()
-        //         item.key = poll.id
-        //         arr.push(item)
-        //     })
-        //     setPollsArray(arr)
-
-        // }
         getPolls()
+
     }, [isFocused])
+
+
+
+    let arrr =[]
+    pollsArray.forEach((poll) => {
+        if ("activities" in poll){
+            if(poll.activities["0"]!=""){
+
+                var likeInMin = 0
+
+                poll.activities.forEach((act) =>{
+                    if((act.type == "like")&&(Date.now() - act.timestamp < 60000))
+                    likeInMin ++
+                })
+
+                arrr.push([poll.title,likeInMin])
+
+            }
+            
+        }
+    })
+
+    var sorted = arrr.sort(function(a, b) {
+        return b[1] - a[1];
+    });
+    
+    var finalArr = []
+
+    sorted.forEach((poll)=>{
+        finalArr.push({title:poll[0],likes:poll[1]})
+    })
+
+
+
+
+
 
 
 
@@ -71,9 +98,9 @@ function SearchScreen() {
             }}>
 
 
-
-                <NearYouPollWrapper polls={pollsArray} title="Trending Polls" />
-                <TrendingPollWrapper polls={pollsArray} title="Polls Near You" />
+                <TrendingPollWrapper polls={finalArr} title="Trending Polls" />
+                <NearYouPollWrapper polls={pollsArray} title="Polls Near You" />
+                
                 <GroupWrapper title="Groups for You" />
 
             </View>
