@@ -1,6 +1,6 @@
 import { View, Text, Dimensions, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import { StyleSheet } from 'react-native';
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useReducer, useRef, useState } from 'react';
 import { Database, get, getDatabase, onValue, ref, set } from "firebase/database";
 import { getAuth } from 'firebase/auth';
 import Header from '../components/common/Header';
@@ -13,17 +13,24 @@ import PollBanner from '../components/home/PollBanner';
 import { collection, addDoc, setDoc, doc, getDoc, updateDoc, getDocs } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import PagerView from 'react-native-pager-view';
 
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-const HomeScreen = (props) => {
+const HomeScreen = ({route, navigation}) => {
+    const pid = route.params.pid
+    
+    
+        
     const [pollsArray, setPollsArray] = useState([])
 
 
     const auth = getAuth()
     const db = getFirestore();
+
+    const ref = React.useRef(PagerView);
 
     const isFocused = useIsFocused();
 
@@ -35,8 +42,12 @@ const HomeScreen = (props) => {
             pollsSnapshot.forEach((doc) => {
                 var item = doc.data()
                 item.key = doc.id
-                arr.push(item)
-
+                if (item.key == pid) {
+                    arr.unshift(item)
+                }
+                else {
+                    arr.push(item)
+                }
             })
             setPollsArray(arr)
 
@@ -45,9 +56,14 @@ const HomeScreen = (props) => {
 
     }, [isFocused])
 
+    if (pid != "") {
+        ref.current.setPage(0)
+        navigation.setParams({pid: ''})
+    }
 
     return (
         <ViewPager
+            ref={ref}
             orientation="vertical"
             style={{ flex: 1 }}
             initialPage={0}
@@ -84,6 +100,7 @@ const HomeScreen = (props) => {
         </ViewPager>
 
     );
+    
 }
 
 const styles = StyleSheet.create({

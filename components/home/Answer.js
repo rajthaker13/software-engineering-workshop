@@ -26,7 +26,6 @@ export default function Answer(props) {
                 return choice['choice'] != option
             })
             let curVotesOptionsAll = docSnap.data()['votes']
-            console.log(curVotesOption)
             const curVotes = docSnap.data()['numVotes'] + 1
             curVotesOptionsAll.forEach((choice) => {
                 if (option == choice['choice']) {
@@ -39,7 +38,6 @@ export default function Answer(props) {
 
                     }
                     votesArray.push(newVote)
-                    console.log(votesArray)
 
                     var newVote = {
                         choice: option,

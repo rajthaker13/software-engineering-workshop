@@ -26,13 +26,10 @@ export default function RegistrationScreen(props) {
         const usernameSnapshot = await getDoc(userExists)
         if (!usernameSnapshot.exists()) {
             handleSignup()
-
         }
         else {
             alert("Username Already Taken")
-
         }
-
     }
 
     const handleSignup = async () => (
@@ -71,7 +68,7 @@ export default function RegistrationScreen(props) {
             isActive: true
         })
 
-        navigator.replace("Login")
+        navigator.navigate("Login")
     }
 
     return (
@@ -86,19 +83,19 @@ export default function RegistrationScreen(props) {
                 onChangeText={text => setEmail(text)}
                 style={MStyles.input} />
             <View style={MStyles.headerContainer}>
+                <Text style={MStyles.header}>Username</Text>
+            </View>
+            <TextInput value={username}
+                autoCapitalize={'none'}
+                onChangeText={text => setUsername(text)}
+                style={MStyles.input} />
+            <View style={MStyles.headerContainer}>
                 <Text style={MStyles.header}>Password</Text>
             </View>
             <TextInput secureTextEntry="true"
                 autoCapitalize={'none'}
                 value={password}
                 onChangeText={text => setPassword(text)}
-                style={MStyles.input} />
-            <View style={MStyles.headerContainer}>
-                <Text style={MStyles.header}>Username</Text>
-            </View>
-            <TextInput value={username}
-                autoCapitalize={'none'}
-                onChangeText={text => setUsername(text)}
                 style={MStyles.input} />
             <View style={MStyles.headerContainer}>
                 <Text style={MStyles.header}>First Name</Text>

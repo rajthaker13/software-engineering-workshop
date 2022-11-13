@@ -18,7 +18,7 @@ export default function LoginScreen() {
     const auth = getAuth()
 
     const handleSignup = () => (
-        navigation.replace("Registration")
+        navigation.push("Registration")
     );
 
     const handleLogin = (() => {
@@ -51,7 +51,7 @@ export default function LoginScreen() {
             </View>
             <KeyboardAvoidingView style={styles.container} behavior="padding">
                 <View style={styles.inputContainer}>
-                    <Text style={styles.text}>Username:</Text>
+                    <Text style={styles.text}>Email:</Text>
                     <TextInput
                         placeholder="firstname.lastname@domain.com"
                         placeholderTextColor={"white"}
