@@ -65,7 +65,7 @@ export default function Answer(props) {
 
     }
     return (
-        <View style={styles.container}>
+        <View style={[{ width: windowWidth * props.optionBtnWidth }, styles.container]}>
             <View>
                 <Button title={props.title} onPress={() => { vote(props.title) }}></Button>
             </View>
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#D9D9D9',
         borderColor: '#010101',
         borderRadius: windowHeight * .05,
-        width: windowWidth * .9,
+        // width: windowWidth * props.width,
         height: windowHeight * .045,
         marginTop: windowHeight * .005,
         marginLeft: windowWidth * .05,
