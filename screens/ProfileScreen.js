@@ -9,6 +9,7 @@ import { COLORS } from '../components/Colors/ColorScheme';
 import { MStyles } from '../components/Mason Styles/MStyles';
 import { addDoc, arrayRemove, collection, deleteDoc, deleteField, doc, FieldValue, Firestore, getDoc, getDocs, getFirestore, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
 import { NativeScreenNavigationContainer } from 'react-native-screens';
+import PollModal from '../components/common/PollModal';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -212,13 +213,15 @@ export default function ProfileScreen({ route, navigation }) {
                     numColumns={3}
                     data={pollsArray}
                     renderItem={(item) => (
-                        <TouchableOpacity style={MStyles.pollsContainer} onPress={() => navigation.navigate("HomeScreen", {pid: item.item})}>
+                        <TouchableOpacity style={MStyles.pollsContainer}>
                             {authorizedUser && <TouchableHighlight onPress={() => deletePoll(item)} style={{ alignSelf: "flex-end" }}>
                                 <MaterialCommunityIcons name="close-circle" color={COLORS.Paragraph} size={15} />
                             </TouchableHighlight>}
-                            <View style={{ justifyContent: 'center' }}>
-                                <Text style={[MStyles.text, { alignSelf: 'center' }]}>{(item.item).replace(currentUid, "")}</Text>
-                            </View>
+                            {/* <View style={{ justifyContent: 'center' }}> */}
+                                <PollModal pollID={item.item}  setVisibility={true}/>
+                                {/* <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{(item.item).replace(currentUid, "")}</Text> */}
+                                {/* {console.log(item.item)} */}
+                            {/* </View> */}
                         </TouchableOpacity>
                     )}
                     keyExtractor={(item) => item.index}
