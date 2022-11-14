@@ -63,8 +63,6 @@ export default function Likes(props) {
       const pollRef = doc(db, "polls", props.pollID);
       const docSnap = await getDoc(pollRef);
       if (docSnap.exists()) {
-        console.log("Hey")
-
 
 
 
