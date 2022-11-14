@@ -172,6 +172,7 @@ export default function CreatePollScreen() {
                     location: location,
                     numVotes: 0,
                     votes: optionsArray,
+                    activities:['']
 
                 })
                 const userRef = doc(db, "users", auth.currentUser.uid);

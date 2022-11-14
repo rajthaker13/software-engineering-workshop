@@ -22,7 +22,9 @@ const windowHeight = Dimensions.get('window').height;
 function SearchScreen() {
 
     const [pollsArray, setPollsArray] = useState([])
+    const [actArray, setActArray] = useState([])
     const isFocused = useIsFocused();
+    
 
     let db = getFirestore()
 
@@ -41,15 +43,52 @@ function SearchScreen() {
 
         }
         getPolls()
+
     }, [isFocused])
 
 
 
-    return (
-        <ScrollView>
+    let arrr =[]
+    pollsArray.forEach((poll) => {
+        if ("activities" in poll){
+            if(poll.activities["0"]!=""){
 
-            <Header />
-            <SearchBar />
+                var likeInMin = 0
+
+                poll.activities.forEach((act) =>{
+                    if((act.type == "like")&&(Date.now() - act.timestamp < 60000))
+                    likeInMin ++
+                })
+
+                arrr.push([poll.title,likeInMin])
+
+            }
+            
+        }
+    })
+
+    var sorted = arrr.sort(function(a, b) {
+        return b[1] - a[1];
+    });
+    
+    var finalArr = []
+
+    sorted.forEach((poll)=>{
+        finalArr.push({title:poll[0],likes:poll[1]})
+    })
+
+
+
+
+
+
+
+
+    return (
+
+    <SafeAreaView>
+        <SearchBar />
+        <ScrollView>            
 
             <View style={{
                 backgroundColor: '#3B3C3B',
@@ -59,14 +98,15 @@ function SearchScreen() {
             }}>
 
 
-
-                <NearYouPollWrapper polls={pollsArray} title="Trending Polls" />
-                <TrendingPollWrapper polls={pollsArray} title="Polls Near You" />
-                <GroupWrapper title="Groups for You" />
+                <TrendingPollWrapper polls={finalArr} title="Trending Polls" />
+                <NearYouPollWrapper polls={pollsArray} title="Polls Near You" />
+                
+                {/* <GroupWrapper title="Groups for You" /> */}
 
             </View>
 
         </ScrollView >
+    </SafeAreaView>
     )
 }
 
