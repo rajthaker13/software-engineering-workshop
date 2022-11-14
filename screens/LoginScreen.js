@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { ActionSheetIOS, Alert, Image, KeyboardAvoidingView, SafeAreaView, StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, applyActionCode, sendEmailVerification, ActionCodeOperation, reload } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, applyActionCode, sendEmailVerification, ActionCodeOperation, reload, sendPasswordResetEmail } from "firebase/auth";
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { getDatabase, ref, set } from "firebase/database";
 import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { FirebaseError } from 'firebase/app';
 import { COLORS } from '../components/Colors/ColorScheme'
+import { doc, getDoc, getFirestore } from 'firebase/firestore';
 
 
 
@@ -16,10 +17,22 @@ export default function LoginScreen() {
     const navigation = useNavigation()
 
     const auth = getAuth()
+    const db = getFirestore()
 
     const handleSignup = () => (
-        navigation.replace("Registration")
+        navigation.push("Registration")
     );
+
+    const navigateWhere = async () => {
+        const ref = doc(db, 'users', auth.currentUser.uid)
+        const data = await getDoc(ref)
+        if (data.data()['newUser']) {
+            navigation.replace("New User")
+        }
+        else {
+            navigation.replace("Home")
+        }
+    }
 
     const handleLogin = (() => {
         signInWithEmailAndPassword(auth, email, password)
@@ -27,11 +40,22 @@ export default function LoginScreen() {
                 const user = userCredentials.user;
                 user.reload()
                 if (user.emailVerified) {
-                    navigation.replace("Home")
+                    navigateWhere()
                 }
             })
             .catch(error => alert(error.message))
     })
+
+    const handlePasswordReset = (() => {
+        sendPasswordResetEmail(auth, email)
+            .then(() => {
+                alert("Password Reset Email Sent")
+            })
+            .catch((e) => {
+                alert(e.message)
+            })
+    })
+
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.Background }}>
@@ -40,7 +64,7 @@ export default function LoginScreen() {
             </View>
             <KeyboardAvoidingView style={styles.container} behavior="padding">
                 <View style={styles.inputContainer}>
-                    <Text style={styles.text}>Username:</Text>
+                    <Text style={styles.text}>Email:</Text>
                     <TextInput
                         placeholder="firstname.lastname@domain.com"
                         placeholderTextColor={"white"}
@@ -71,6 +95,11 @@ export default function LoginScreen() {
                         onPress={handleSignup}
                         style={[styles.button, styles.buttonOutline]}>
                         <Text style={styles.buttonOutlineText}>Sign Up</Text>
+                    </TouchableHighlight>
+                    <TouchableHighlight
+                        onPress={handlePasswordReset}
+                        style={styles.button}>
+                        <Text style={styles.buttonText}>Reset Password</Text>
                     </TouchableHighlight>
                 </View>
             </KeyboardAvoidingView>
@@ -133,7 +162,8 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.Background,
         marginTop: 5,
         borderColor: COLORS.Button,
-        borderWidth: 2
+        borderWidth: 2,
+        marginBottom: 5
     },
     buttonOutlineText: {
         color: COLORS.Button,

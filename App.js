@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
@@ -15,10 +15,18 @@ import LoginScreen from './screens/LoginScreen';
 import RegistrationScreen from './screens/RegistrationScreen';
 import EditProfileScreen from './screens/EditProfileScreen'
 import SettingsScreen from './screens/SettingsScreen'
+import FollowScreen from './screens/FollowScreen';
+import EditPFPScreen from './screens/EditPFP';
+import NewUserScreen from './screens/NewUserScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore'
+import { COLORS } from './components/Colors/ColorScheme';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+
+const SCREEN_HEIGHT = Dimensions.get('window').height;
+const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const firebaseConfig = {
   apiKey: "AIzaSyAN3OCr7y5e7I_ba_ASonj2HoAgrnSQbYU",
@@ -31,25 +39,34 @@ const firebaseConfig = {
   measurementId: "G-TMWX0CVP82"
 };
 
+
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth = getAuth()
 const db = getFirestore(app);
 
 
-const Tab = createMaterialBottomTabNavigator();
+const Tab = createMaterialTopTabNavigator();
 const Stack = createNativeStackNavigator();
 
 function Home() {
   return (
     <Tab.Navigator
       initialRouteName="HomeScreen"
-      activeColor="#e91e63"
-      barStyle={{ backgroundColor: 'black' }}
+      screenOptions={{
+        tabBarStyle: {backgroundColor: COLORS.Background, 
+            height: SCREEN_HEIGHT * 0.08},
+        tabBarActiveTintColor: COLORS.Button,
+        tabBarInactiveTintColor: COLORS.Paragraph,
+        tabBarIndicatorStyle: {height: 0},
+        tabBarShowLabel: false
+      }}
+      tabBarPosition="bottom"
     >
       <Tab.Screen
         name="HomeScreen"
         component={HomeScreen}
+        initialParams={{ pid: "" }}
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({ color }) => (
@@ -108,10 +125,13 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Registration" component={RegistrationScreen} options={{ headerShown: false }} initialParams={{ db: db }} />
-        <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} initialParams={{ db: db }} />
-        <Stack.Screen name="Edit Profile" component={EditProfileScreen} options={{ headerShown: false }} initialParams={{ db: db }} />
-        <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} initialParams={{ db: db }} />
+        <Stack.Screen name="Registration" component={RegistrationScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+        <Stack.Screen name="Edit Profile" component={EditProfileScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Follow" component={FollowScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Edit PFP" component={EditPFPScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name="New User" component={NewUserScreen} options={{ headerShown: false }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

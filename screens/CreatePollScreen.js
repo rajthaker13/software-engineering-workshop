@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableHighlight, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableHighlight, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getDatabase, ref, set, get, update } from "firebase/database";
 import { getAuth } from 'firebase/auth';
@@ -10,6 +10,8 @@ import { MStyles } from '../components/Mason Styles/MStyles'
 import { collection, addDoc, setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import * as Location from 'expo-location';
+import { LocationAccuracy } from 'expo-location';
 
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -27,15 +29,43 @@ export default function CreatePollScreen() {
     const [indices, setIndices] = useState(0)
     const [userPolls, setUserPolls] = useState([])
     const [numPolls, setNumPolls] = useState(0)
+    const [numOptions, setNumOptions] = useState(0)
 
     const navigator = useNavigation()
 
     const auth = getAuth()
     const db = getFirestore();
 
+    const handleUniqueness = async () => {
+        const pollExists = doc(collection(db, 'users'), auth.currentUser.uid)
+        let exists = false
+        const userPollsSnapshot = (await getDoc(pollExists)).data()
+        const polls = userPollsSnapshot['polls']
+        if (polls != false) {
+            polls.forEach(val => {
+                if (val == '' + pollName + auth.currentUser.uid) {
+                    exists = true
+                }
+            })  
+        }
+        if (!exists) {
+            finishPoll()
+        }
+        else {
+            alert("You already created a poll with that name!")
+        }
+        
+    }
+
     const addInput = () => {
-        setInputs([...inputs, indices])
-        setIndices(indices + 1)
+        if (numOptions >= 5) {
+            alert("Maximum of 5 Options Allowed")
+        }
+        else {
+            setInputs([...inputs, indices])
+            setIndices(indices + 1)
+            setNumOptions(numOptions + 1)
+        }
     }
 
     const updateText = (text, index) => {
@@ -52,6 +82,7 @@ export default function CreatePollScreen() {
         let pollAnswersCopy = pollAnswers
         pollAnswersCopy[deleteIndex] = null
         setPollAnswers(pollAnswersCopy)
+        setNumOptions(numOptions - 1)
     }
 
     useEffect(() => {
@@ -103,37 +134,58 @@ export default function CreatePollScreen() {
         if (pollName == '') {
             alert('Poll Title is required')
         }
-        else if (inputs.length > 5) {
-            alert('A maximum of 5 inputs is allowed')
-        }
         else if (inputs.length < 2) {
             alert('A minimum of 2 inputs is required')
         }
         else {
-            let userPollsArr = userPolls
-            userPollsArr.push(pollName + auth.currentUser.uid)
-            const pollsRef = await setDoc(doc(db, "polls", pollName + auth.currentUser.uid), {
-                creator: username,
-                uid: auth.currentUser.uid,
-                title: pollName,
-                options: pollAnswers,
-                likes: 0,
-                dislikes: 0,
-                comments: 0,
-                shares: 0
-            })
-            const userRef = doc(db, "users", auth.currentUser.uid);
-            await updateDoc(userRef, {
-                polls: userPollsArr,
-                numPolls: numPolls + 1
+            let pollAnswersCopy = pollAnswers.filter(val => val)
+            if (pollAnswersCopy.length != numOptions) {
+                alert("All Poll Options Must Have Text")
+            }
+            else {
+                let optionsArray = []
+                pollAnswersCopy.forEach((answer) => {
+                    var obj = {
+                        choice: answer,
+                        numVotes: 0,
+                        votes: []
+                    }
+                    optionsArray.push(obj)
+                })
+                let userPollsArr = userPolls
+                userPollsArr.push(pollName + auth.currentUser.uid)
+                let { status } = await Location.requestForegroundPermissionsAsync();
+                if (status !== 'granted') {
+                    setErrorMsg('Permission to access location was denied');
+                    return;
+                }
+                let location = await Location.getCurrentPositionAsync({accuracy: LocationAccuracy.Lowest});
+                const pollsRef = await setDoc(doc(db, "polls", pollName + auth.currentUser.uid), {
+                    creator: username,
+                    uid: auth.currentUser.uid,
+                    title: pollName,
+                    options: pollAnswersCopy,
+                    likes: 0,
+                    dislikes: 0,
+                    comments: 0,
+                    shares: 0,
+                    location: location,
+                    numVotes: 0,
+                    votes: optionsArray,
 
-            }).then(() => {
+                })
+                const userRef = doc(db, "users", auth.currentUser.uid);
+                await updateDoc(userRef, {
+                    polls: userPollsArr,
+                    numPolls: numPolls + 1
+
+                })
                 setInputs([])
                 setPollAnswers([])
                 setIndices(0)
                 setPollName('')
-
-            })
+                setNumOptions(0)
+                } 
         }
     }
 
@@ -146,7 +198,7 @@ export default function CreatePollScreen() {
                 <View style={MStyles.headerContainer}>
                     <Text style={MStyles.header}>Title:</Text>
                 </View>
-                <TextInput style={MStyles.input} onChangeText={(text) => setPollName(text)} value={pollName} />
+                <TextInput style={MStyles.input} maxLength={45} onChangeText={(text) => setPollName(text)} value={pollName} />
             </View>
             <View>
                 <View style={MStyles.headerContainer}>
@@ -156,9 +208,9 @@ export default function CreatePollScreen() {
                     {inputs.map((index) => {
                         return (
                             <View style={MStyles.option}>
-                                <TextInput style={{ color: COLORS.Headline, flex: 0.9, paddingLeft: 5 }} defaultValue='Type Here' value={pollAnswers[index]} onChangeText={(text) => updateText(text, index)} />
+                                <TextInput style={{ color: COLORS.Paragraph, flex: 0.9, paddingLeft: 5 }} maxLength={25} placeholder="Type Here" placeholderTextColor={COLORS.Paragraph} value={pollAnswers[index]} onChangeText={(text) => updateText(text, index)} />
                                 <TouchableOpacity style={{ flex: 0.1 }} onPress={() => deleteInput(index)}>
-                                    <MaterialCommunityIcons name="close-circle" color={COLORS.Paragraph} size={15} />
+                                    <MaterialCommunityIcons name="window-close" color={COLORS.Paragraph} size={20} />
                                 </TouchableOpacity>
                             </View>
                         )
@@ -168,9 +220,9 @@ export default function CreatePollScreen() {
             <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={() => addInput()}>
                 <Text style={MStyles.buttonSolidBackgroundText}>Add Option</Text>
             </TouchableHighlight>
-            <TouchableHighlight style={MStyles.buttonTranslucentBackground} onPress={() => finishPoll()}>
+            <TouchableHighlight style={MStyles.buttonTranslucentBackground} onPress={() => handleUniqueness()}>
                 <Text style={MStyles.buttonTranslucentBackgroundText}>Submit</Text>
             </TouchableHighlight>
-        </SafeAreaView>
+        </SafeAreaView >
     )
 }
