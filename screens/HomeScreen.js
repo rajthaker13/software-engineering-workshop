@@ -1,6 +1,6 @@
 import { View, Text, Dimensions, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import { StyleSheet } from 'react-native';
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useReducer, useRef, useState } from 'react';
 import { Database, get, getDatabase, onValue, ref, set } from "firebase/database";
 import { getAuth } from 'firebase/auth';
 import Header from '../components/common/Header';
@@ -13,17 +13,27 @@ import PollBanner from '../components/home/PollBanner';
 import { collection, addDoc, setDoc, doc, getDoc, updateDoc, getDocs } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import PagerView from 'react-native-pager-view';
+import Poll from '../components/home/Poll';
+
 
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-const HomeScreen = (props) => {
+const HomeScreen = ({ route, navigation }) => {
+    const pid = route.params.pid
+
+
+
     const [pollsArray, setPollsArray] = useState([])
+    const [hasVoted, setHasVoted] = useState(false)
 
 
     const auth = getAuth()
     const db = getFirestore();
+
+    const ref = React.useRef(PagerView);
 
     const isFocused = useIsFocused();
 
@@ -35,8 +45,12 @@ const HomeScreen = (props) => {
             pollsSnapshot.forEach((doc) => {
                 var item = doc.data()
                 item.key = doc.id
-                arr.push(item)
-
+                if (item.key == pid) {
+                    arr.unshift(item)
+                }
+                else {
+                    arr.push(item)
+                }
             })
             setPollsArray(arr)
 
@@ -45,45 +59,30 @@ const HomeScreen = (props) => {
 
     }, [isFocused])
 
+    if (pid != "") {
+        ref.current.setPage(0)
+        navigation.setParams({ pid: '' })
+    }
 
     return (
         <ViewPager
+            ref={ref}
             orientation="vertical"
             style={{ flex: 1 }}
             initialPage={0}
         >
             {pollsArray.map((poll) => {
+                const pollID = poll.key
+
                 return (
-                    <View style={styles.container}>
-                        <Header />
-                        <View style={styles.tabsContainer}>
-                            <TouchableOpacity>
-                                <Text>Following</Text>
-                            </TouchableOpacity>
-                            <Text style={{
-                                color: '#fff',
-                                fontSize: 15,
-                                opacity: 0.2,
-                            }}>|</Text>
-                            <TouchableOpacity>
-                                <Text>For You</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <PollBanner uid={poll.uid} db={db} auth={auth} />
-                        <Question title={poll.title} />
-                        <PollStats id={poll.key} likes={poll.likes} dislikes={poll.dislikes} comments={poll.comments} shares={poll.shares} db={db} auth={auth} />
-                        {poll.options.map((option) => {
-                            return (
-                                <Answer title={option} key={option} id={poll.key} />
-                            )
-                        })}
-                    </View>
+                    <Poll poll={poll} pollID={pollID} db={db} auth={auth} />
 
                 )
             })}
         </ViewPager>
 
     );
+
 }
 
 const styles = StyleSheet.create({

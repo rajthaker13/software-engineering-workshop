@@ -1,15 +1,19 @@
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { getAuth } from "firebase/auth";
-import { get, getDatabase, ref, set, update } from "firebase/database";
-import { collection, doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
+import { get, getDatabase, set, update } from "firebase/database";
+import { collection, deleteDoc, doc, getDoc, getFirestore, setDoc, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { View, Text, SafeAreaView, TextInput, Button, TouchableHighlight } from "react-native";
+import { Image, View, Text, SafeAreaView, TextInput, Button, TouchableHighlight } from "react-native";
 import { COLORS } from '../components/Colors/ColorScheme'
 import { MStyles } from "../components/Mason Styles/MStyles";
+import {getDownloadURL, getStorage, uploadBytes, ref} from 'firebase/storage'
+import * as ImagePicker from 'expo-image-picker';
+
 
 
 export default function EditProfileScreen() {
     const [username, setUsername] = useState('')
+    const [permUsername, setPermUsername] = useState('')
     const [description, setDescription] = useState('')
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
@@ -24,6 +28,19 @@ export default function EditProfileScreen() {
     const lastnameRef = doc(db, 'users', auth.currentUser.uid + 'lastName')
     const pfpRef = doc(db, 'users', auth.currentUser.uid + 'profile_picture_url')
 
+    const handleUniqueness = async () => {
+      const userExists = doc(db, 'usernames', username)
+      const usernameSnapshot = await getDoc(userExists)
+      if (!usernameSnapshot.exists() || username == permUsername) {
+        deleteDoc(doc(db, 'usernames', permUsername))
+        setDoc(doc(db, 'usernames', username), {
+          isActive: true})
+        handleSubmit()
+      }
+      else {
+          alert("Username Already Taken")
+      }
+  }
     
     useEffect(() => {
       async function getEditData() {
@@ -31,6 +48,7 @@ export default function EditProfileScreen() {
         const docSnap = await getDoc(userRef);
         if (docSnap.exists()) {
           setUsername(docSnap.data()['username'])
+          setPermUsername(docSnap.data()['username'])
           setDescription(docSnap.data()['description'])
           setFirstName(docSnap.data()['firstName'])
           setLastName(docSnap.data()['lastName'])
@@ -47,7 +65,6 @@ export default function EditProfileScreen() {
         firstName: firstName,
         lastName: lastName,
         description: description,
-        profile_picture_url: pfp,
         username: username,
       })
       .then(() => {
@@ -55,13 +72,15 @@ export default function EditProfileScreen() {
       })
     })
 
+    
+
     return (
       <SafeAreaView style={{flex:1, backgroundColor:COLORS.Background}}>
         <Text style={MStyles.pageTitle}>Edit Profile</Text>
         <View style={MStyles.headerContainer}>
           <Text style={MStyles.header}>Change Username:</Text>
         </View>
-        <TextInput style={MStyles.input} autoCapitalize="none" value={username} onChangeText={text => setUsername(text)}/>
+        <TextInput style={MStyles.input} autoCapitalize="none" value={username} onChangeText={text => setUsername(text)} maxLength={40}/>
         <View style={MStyles.headerContainer}>
           <Text style={MStyles.header}>Change Profile Description:</Text>
         </View>
@@ -69,22 +88,17 @@ export default function EditProfileScreen() {
         <View style={MStyles.headerContainer}>
           <Text style={MStyles.header}>Change First Name:</Text>
         </View>
-        <TextInput style={MStyles.input} autoCapitalize="none" value={firstName} onChangeText={text => setFirstName(text)}/>
+        <TextInput style={MStyles.input} autoCapitalize="none" value={firstName} onChangeText={text => setFirstName(text)} maxLength={20}/>
         <View style={MStyles.headerContainer}>
           <Text style={MStyles.header}>Change Last Name:</Text>
         </View>
-        <TextInput style={MStyles.input} autoCapitalize="none" value={lastName} onChangeText={text => setLastName(text)}/>
-        <View style={MStyles.headerContainer}>
-          <Text style={MStyles.header}>Change Profile Pic URL:</Text>
-        </View>
-        <TextInput style={MStyles.input} autoCapitalize="none" value={pfp} onChangeText={text => setPFP(text)}/>
-        <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={() => handleSubmit()}>
+        <TextInput style={MStyles.input} autoCapitalize="none" value={lastName} onChangeText={text => setLastName(text)} maxLength={20}/>
+        <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={() => handleUniqueness()}>
           <Text style={MStyles.buttonSolidBackgroundText}>Submit</Text>
         </TouchableHighlight>
         <TouchableHighlight style={MStyles.buttonTranslucentBackground} onPress={() => navigator.navigate("Home", {screen: "Profile"})}>
             <Text style={MStyles.buttonTranslucentBackgroundText} >Cancel</Text>
         </TouchableHighlight>
       </SafeAreaView>
-
     );
   }

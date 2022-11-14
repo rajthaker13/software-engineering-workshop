@@ -26,13 +26,10 @@ export default function RegistrationScreen(props) {
         const usernameSnapshot = await getDoc(userExists)
         if (!usernameSnapshot.exists()) {
             handleSignup()
-
         }
         else {
             alert("Username Already Taken")
-
         }
-
     }
 
     const handleSignup = async () => (
@@ -66,12 +63,13 @@ export default function RegistrationScreen(props) {
             polls: false,
             groups: false,
             activity: '',
+            newUser: true
         })
         await setDoc(usernamesRef, {
             isActive: true
         })
 
-        navigator.replace("Login")
+        navigator.navigate("Login")
     }
 
     return (
@@ -86,6 +84,14 @@ export default function RegistrationScreen(props) {
                 onChangeText={text => setEmail(text)}
                 style={MStyles.input} />
             <View style={MStyles.headerContainer}>
+                <Text style={MStyles.header}>Username</Text>
+            </View>
+            <TextInput value={username}
+                autoCapitalize={'none'}
+                onChangeText={text => setUsername(text)}
+                style={MStyles.input} 
+                maxLength={40}/>
+            <View style={MStyles.headerContainer}>
                 <Text style={MStyles.header}>Password</Text>
             </View>
             <TextInput secureTextEntry="true"
@@ -94,26 +100,21 @@ export default function RegistrationScreen(props) {
                 onChangeText={text => setPassword(text)}
                 style={MStyles.input} />
             <View style={MStyles.headerContainer}>
-                <Text style={MStyles.header}>Username</Text>
-            </View>
-            <TextInput value={username}
-                autoCapitalize={'none'}
-                onChangeText={text => setUsername(text)}
-                style={MStyles.input} />
-            <View style={MStyles.headerContainer}>
                 <Text style={MStyles.header}>First Name</Text>
             </View>
             <TextInput value={firstname}
                 autoCapitalize={'none'}
                 onChangeText={text => setFirstname(text)}
-                style={MStyles.input} />
+                style={MStyles.input} 
+                maxLength={20}/>
             <View style={MStyles.headerContainer}>
                 <Text style={MStyles.header}>Last Name</Text>
             </View>
             <TextInput value={lastname}
                 autoCapitalize={'none'}
                 onChangeText={text => setLastname(text)}
-                style={MStyles.input} />
+                style={MStyles.input} 
+                maxLength={20}/>
             <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={handleUniqueness}>
                 <Text style={MStyles.buttonSolidBackgroundText}>Sign Up</Text>
             </TouchableHighlight>
