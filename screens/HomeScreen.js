@@ -14,17 +14,20 @@ import { collection, addDoc, setDoc, doc, getDoc, updateDoc, getDocs } from "fir
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import PagerView from 'react-native-pager-view';
+import Poll from '../components/home/Poll';
+
 
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-const HomeScreen = ({route, navigation}) => {
+const HomeScreen = ({ route, navigation }) => {
     const pid = route.params.pid
-    
-    
-        
+
+
+
     const [pollsArray, setPollsArray] = useState([])
+    const [hasVoted, setHasVoted] = useState(false)
 
 
     const auth = getAuth()
@@ -58,7 +61,7 @@ const HomeScreen = ({route, navigation}) => {
 
     if (pid != "") {
         ref.current.setPage(0)
-        navigation.setParams({pid: ''})
+        navigation.setParams({ pid: '' })
     }
 
     return (
@@ -69,38 +72,17 @@ const HomeScreen = ({route, navigation}) => {
             initialPage={0}
         >
             {pollsArray.map((poll) => {
+                const pollID = poll.key
+
                 return (
-                    <View style={styles.container}>
-                        <Header />
-                        <View style={styles.tabsContainer}>
-                            <TouchableOpacity>
-                                <Text>Following</Text>
-                            </TouchableOpacity>
-                            <Text style={{
-                                color: '#fff',
-                                fontSize: 15,
-                                opacity: 0.2,
-                            }}>|</Text>
-                            <TouchableOpacity>
-                                <Text>For You</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <PollBanner uid={poll.uid} db={db} auth={auth} />
-                        <Question title={poll.title} />
-                        <PollStats id={poll.key} likes={poll.likes} dislikes={poll.dislikes} comments={poll.comments} shares={poll.shares} db={db} auth={auth} />
-                        {poll.options.map((option) => {
-                            return (
-                                <Answer title={option} key={option} id={poll.key} />
-                            )
-                        })}
-                    </View>
+                    <Poll poll={poll} pollID={pollID} db={db} auth={auth} />
 
                 )
             })}
         </ViewPager>
 
     );
-    
+
 }
 
 const styles = StyleSheet.create({
