@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, FlatList } from 'react-native';
+import { StyleSheet, Text, View, FlatList,Dimensions } from 'react-native';
 import PropTypes from 'prop-types';
 import { connectInfiniteHits } from 'react-instantsearch-native';
 import Highlight from './Highlight';
@@ -18,21 +18,24 @@ const styles = StyleSheet.create({
   },
 });
 
+const windowHeight = Dimensions.get('window').height;
+
 const InfiniteHits = ({ hits, hasMore, refineNext }) => (
-  <FlatList
+  <FlatList 
+    
     data={hits}
     keyExtractor={item => item.objectID}
     ItemSeparatorComponent={() => <View style={styles.separator} />}
     onEndReached={() => hasMore && refineNext()}
     renderItem={({ item }) => (
       <View style={styles.item}>
-        <Text style={styles.titleText}>
+        {/* <Text style={styles.titleText}>
           <Highlight attribute="{{attributesToDisplay.[0]}}" hit={item} />
         </Text>
         <Text>
           <Highlight attribute="{{this}}" hit={item} />
-        </Text>
-        <Text>{JSON.stringify(item).slice(0, 100)}</Text>
+        </Text> */}
+        <Text>{JSON.stringify(item.title).slice(0, 100)}</Text>
       </View>
     )}
   />

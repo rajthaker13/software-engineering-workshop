@@ -86,7 +86,7 @@ function SearchScreen() {
 
     return (
 
-    <View>
+    <SafeAreaView>
         <SearchBar />
         <ScrollView>            
 
@@ -101,12 +101,12 @@ function SearchScreen() {
                 <TrendingPollWrapper polls={finalArr} title="Trending Polls" />
                 <NearYouPollWrapper polls={pollsArray} title="Polls Near You" />
                 
-                <GroupWrapper title="Groups for You" />
+                {/* <GroupWrapper title="Groups for You" /> */}
 
             </View>
 
         </ScrollView >
-    </View>
+    </SafeAreaView>
     )
 }
 

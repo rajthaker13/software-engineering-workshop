@@ -17,7 +17,7 @@ export default function NearYouPollWrapper(props) {
 
     return (
         <>
-            <View style={{ height: windowHeight * .22 }}>
+            <View style={{ height: windowHeight * .44 }}>
                 <Text style={{ marginLeft: 20, color: 'white', fontSize: 20 }}> {props.title}</Text>
                 <SafeAreaView>
                     <ScrollView horizontal={true}>
