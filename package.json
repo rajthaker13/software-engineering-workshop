@@ -15,13 +15,18 @@
     "@react-navigation/material-top-tabs": "^6.3.0",
     "@react-navigation/native": "^6.0.13",
     "@react-navigation/native-stack": "^6.9.1",
+    "algoliasearch": "^4.14.2",
     "expo": "~46.0.16",
     "expo-font": "~10.2.1",
+    "expo-location": "~14.3.0",
     "expo-status-bar": "~1.4.0",
     "firebase": "^9.13.0",
     "moment": "^2.29.4",
     "native-base": "^3.4.19",
     "react": "18.0.0",
+    "react-instantsearch-dom": "^6.38.0",
+    "react-instantsearch-hooks": "^6.38.0",
+    "react-instantsearch-native": "^6.38.1",
     "react-native": "0.69.6",
     "react-native-gesture-handler": "~2.5.0",
     "react-native-pager-view": "5.4.24",
@@ -32,8 +37,7 @@
     "react-native-svg": "12.3.0",
     "react-native-tab-view": "^3.3.0",
     "react-native-ui-lib": "^6.22.2",
-    "react-native-vector-icons": "^9.2.0",
-    "expo-location": "~14.3.0"
+    "react-native-vector-icons": "^9.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.19.6",

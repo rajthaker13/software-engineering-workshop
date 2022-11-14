@@ -85,10 +85,10 @@ function SearchScreen() {
 
 
     return (
-        <ScrollView>
 
-            <Header />
-            <SearchBar />
+    <View>
+        <SearchBar />
+        <ScrollView>            
 
             <View style={{
                 backgroundColor: '#3B3C3B',
@@ -106,6 +106,7 @@ function SearchScreen() {
             </View>
 
         </ScrollView >
+    </View>
     )
 }
 
