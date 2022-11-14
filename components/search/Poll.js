@@ -26,12 +26,6 @@ export default function Poll(props) {
             <Text style={{ fontSize: 10 }}>{props.time}</Text>
             <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1 }}>{props.title}</Text>
             <Text style={{ fontSize: 10, textAlign: 'center', bottom: 0 }}>{props.answerNum} likes in the past minute</Text>
-            <Button 
-                title = "Detail"
-                onPress={()=>{
-                    navigation.navigate("HomeScreen")
-                }}
-            ></Button>
         </View>
         
       
