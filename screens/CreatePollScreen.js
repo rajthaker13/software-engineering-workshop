@@ -11,6 +11,7 @@ import { collection, addDoc, setDoc, doc, getDoc, updateDoc } from "firebase/fir
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import * as Location from 'expo-location';
+import { LocationAccuracy } from 'expo-location';
 
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -158,7 +159,7 @@ export default function CreatePollScreen() {
                     setErrorMsg('Permission to access location was denied');
                     return;
                 }
-                let location = await Location.getCurrentPositionAsync({});
+                let location = await Location.getCurrentPositionAsync({accuracy: LocationAccuracy.Lowest});
                 const pollsRef = await setDoc(doc(db, "polls", pollName + auth.currentUser.uid), {
                     creator: username,
                     uid: auth.currentUser.uid,

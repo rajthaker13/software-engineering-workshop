@@ -6,6 +6,7 @@ import { getDatabase, ref, set } from "firebase/database";
 import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { FirebaseError } from 'firebase/app';
 import { COLORS } from '../components/Colors/ColorScheme'
+import { doc, getDoc, getFirestore } from 'firebase/firestore';
 
 
 
@@ -16,10 +17,22 @@ export default function LoginScreen() {
     const navigation = useNavigation()
 
     const auth = getAuth()
+    const db = getFirestore()
 
     const handleSignup = () => (
         navigation.push("Registration")
     );
+
+    const navigateWhere = async () => {
+        const ref = doc(db, 'users', auth.currentUser.uid)
+        const data = await getDoc(ref)
+        if (data.data()['newUser']) {
+            navigation.replace("New User")
+        }
+        else {
+            navigation.replace("Home")
+        }
+    }
 
     const handleLogin = (() => {
         signInWithEmailAndPassword(auth, email, password)
@@ -27,7 +40,7 @@ export default function LoginScreen() {
                 const user = userCredentials.user;
                 user.reload()
                 if (user.emailVerified) {
-                    navigation.replace("Home")
+                    navigateWhere()
                 }
             })
             .catch(error => alert(error.message))
