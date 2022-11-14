@@ -16,6 +16,8 @@ import RegistrationScreen from './screens/RegistrationScreen';
 import EditProfileScreen from './screens/EditProfileScreen'
 import SettingsScreen from './screens/SettingsScreen'
 import FollowScreen from './screens/FollowScreen';
+import EditPFPScreen from './screens/EditPFP';
+import NewUserScreen from './screens/NewUserScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getAuth } from 'firebase/auth';
@@ -36,6 +38,7 @@ const firebaseConfig = {
   appId: "1:517411271651:web:2ce5925cd5faf436eba6d6",
   measurementId: "G-TMWX0CVP82"
 };
+
 
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
@@ -127,6 +130,8 @@ export default function App() {
         <Stack.Screen name="Edit Profile" component={EditProfileScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Follow" component={FollowScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Edit PFP" component={EditPFPScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name="New User" component={NewUserScreen} options={{ headerShown: false }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

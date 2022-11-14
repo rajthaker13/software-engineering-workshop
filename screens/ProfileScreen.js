@@ -7,7 +7,8 @@ import React, { useEffect, useState } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '../components/Colors/ColorScheme';
 import { MStyles } from '../components/Mason Styles/MStyles';
-import { addDoc, arrayRemove, collection, deleteDoc, deleteField, doc, FieldValue, Firestore, getDoc, getDocs, getFirestore, setDoc, updateDoc } from 'firebase/firestore';
+import { addDoc, arrayRemove, collection, deleteDoc, deleteField, doc, FieldValue, Firestore, getDoc, getDocs, getFirestore, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
+import { NativeScreenNavigationContainer } from 'react-native-screens';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -40,14 +41,14 @@ export default function ProfileScreen({ route, navigation }) {
         authorizedUser = true
     }
 
-
+    const isFocused = useIsFocused();
 
 
     useEffect(() => {    
         async function getProfileData() {
             const userRef = doc(collection(db, 'users'), currentUid);
             const docSnap = await getDoc(userRef);
-            if (docSnap.exists()) {
+            onSnapshot(userRef, (docSnap) => {
                 setUsername(docSnap.data()['username'])
                 setLikes(docSnap.data()['likes'])
                 setDislikes(docSnap.data()['dislikes'])
@@ -78,7 +79,7 @@ export default function ProfileScreen({ route, navigation }) {
                 setNumpolls(docSnap.data()['numPolls'])
                 setDescription(docSnap.data()['description'])
                 setPollsArray(docSnap.data()['polls'])
-            }
+            })
             
             const followerRef = doc(db, 'users', currentUid)
             let val = await getDoc(followerRef)
@@ -92,7 +93,7 @@ export default function ProfileScreen({ route, navigation }) {
             }
         }
         getProfileData()
-    }, [useIsFocused()])
+    }, [isFocused])
 
     const deletePoll = (item) => {
         const refUser = doc(collection(db, 'users'), currentUid)
@@ -163,7 +164,13 @@ export default function ProfileScreen({ route, navigation }) {
                 </View>
             </View>
             <View style={[styles.layer, { alignItems: 'center' }]}>
-                <Image style={styles.image} source={{ uri: pfp }} />
+                <View style={{flexDirection: 'row'}}>
+                    <Image style={[styles.image, {alignSelf: 'center'}]} source={{ uri: pfp }} />
+                    {authorizedUser &&
+                        <TouchableHighlight style ={{width: SCREEN_HEIGHT * 0.025, height: SCREEN_HEIGHT * 0.025, alignSelf: 'flex-end', position: 'absolute', left: SCREEN_WIDTH * 0.15}} onPress={() => navigation.push("Edit PFP")}>
+                            <MaterialCommunityIcons name='pencil-circle' color={COLORS.Paragraph} size={25}/>
+                        </TouchableHighlight>}
+                </View>
                 <Text style={[MStyles.header, { width: SCREEN_WIDTH, textAlign: 'center'}]}>@{username}</Text>
             </View>
             <View style={[styles.layer, { flexDirection: "row" }]}>

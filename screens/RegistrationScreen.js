@@ -63,6 +63,7 @@ export default function RegistrationScreen(props) {
             polls: false,
             groups: false,
             activity: '',
+            newUser: true
         })
         await setDoc(usernamesRef, {
             isActive: true
@@ -88,7 +89,8 @@ export default function RegistrationScreen(props) {
             <TextInput value={username}
                 autoCapitalize={'none'}
                 onChangeText={text => setUsername(text)}
-                style={MStyles.input} />
+                style={MStyles.input} 
+                maxLength={40}/>
             <View style={MStyles.headerContainer}>
                 <Text style={MStyles.header}>Password</Text>
             </View>
@@ -103,14 +105,16 @@ export default function RegistrationScreen(props) {
             <TextInput value={firstname}
                 autoCapitalize={'none'}
                 onChangeText={text => setFirstname(text)}
-                style={MStyles.input} />
+                style={MStyles.input} 
+                maxLength={20}/>
             <View style={MStyles.headerContainer}>
                 <Text style={MStyles.header}>Last Name</Text>
             </View>
             <TextInput value={lastname}
                 autoCapitalize={'none'}
                 onChangeText={text => setLastname(text)}
-                style={MStyles.input} />
+                style={MStyles.input} 
+                maxLength={20}/>
             <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={handleUniqueness}>
                 <Text style={MStyles.buttonSolidBackgroundText}>Sign Up</Text>
             </TouchableHighlight>
