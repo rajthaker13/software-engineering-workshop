@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { connectInfiniteHits } from 'react-instantsearch-native';
 import Highlight from './Highlight';
 import { COLORS } from '../Colors/ColorScheme';
+import PollModal from '../common/PollModal';
 
 const styles = StyleSheet.create({
   separator: {
@@ -35,8 +36,12 @@ const InfiniteHits = ({ hits, hasMore, refineNext }) => (
         <Text>
           <Highlight attribute="{{this}}" hit={item} />
         </Text> */}
-        <Pressable onPress={()=>console.log(item.objectID)}>
+        <Pressable onPress={()=>
+          // {console.log("xxx", item.objectID)}
+         <PollModal pollID={item.objectID}  setVisibility={true}/>
+        }>
           <Text style={{color: COLORS.Paragraph}}>{JSON.stringify(item.title).slice(0, 100)}</Text>
+          {/* {console.log("xxx", item.objectID)} */}
         </Pressable>
       </View>
     )}
