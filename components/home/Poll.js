@@ -141,7 +141,7 @@ export default function Poll(props) {
 
             const userSnap = await getDoc(userRef)
             if (userSnap.exists()) {
-                let userVotes = docSnap.data()['votes']
+                let userVotes = userSnap.data()['votes']
                 var userVote = {
                     pid: pollID,
                     timestamp: Date.now(),
