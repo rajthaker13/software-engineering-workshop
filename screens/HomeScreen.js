@@ -68,7 +68,7 @@ const HomeScreen = ({ route, navigation }) => {
         <ViewPager
             ref={ref}
             orientation="vertical"
-            style={{ flex: 1 }}
+            style={{ flex: 1, }}
             initialPage={0}
         >
             {pollsArray.map((poll) => {

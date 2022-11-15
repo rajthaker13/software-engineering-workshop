@@ -84,20 +84,21 @@ const styles = StyleSheet.create({
         borderColor: '#010101',
         borderRadius: windowHeight * .05,
         width: windowWidth * .9,
-        height: windowHeight * .044,
+        height: windowHeight * .04,
         marginTop: windowHeight * .005,
         marginLeft: windowWidth * .05,
         marginBottom: windowHeight * .005,
         justifyContent: 'center',
     },
     progressBar: {
-        backgroundColor: '#010101',
+        backgroundColor: 'white',
         borderColor: '#010101',
         borderRadius: windowHeight * .05,
         width: windowWidth * .9,
         height: windowHeight * .01,
         marginLeft: windowWidth * .05,
         justifyContent: 'center',
+        marginTop: windowHeight * .005
     },
     pollmeText: {
         color: 'white',

@@ -212,7 +212,7 @@ export default function Poll(props) {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#3B3C3B',
+        backgroundColor: '#16161a',
         width: windowWidth,
         height: windowHeight,
         paddingTop: 10,
@@ -232,11 +232,105 @@ const styles = StyleSheet.create({
     pollmeText: {
         color: 'white',
         marginTop: '10%',
-        // fontFamily: "Federo",
         fontSize: 20,
         marginLeft: '5%',
         flex: 1,
 
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        marginTop: 22
+
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: "#16161a",
+        borderRadius: 20,
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 4
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
+    button: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2,
+        alignSelf: 'flex-end',
+        position: 'absolute',
+    },
+    buttonOpen: {
+        backgroundColor: "#F194FF",
+    },
+    buttonClose: {
+    },
+    textStyle: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center"
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: "center"
+    },
+    tabsContainer: {
+        height: '10%',
+        flexDirection: 'row',
+        position: 'absolute',
+        alignSelf: 'center',
+        zIndex: 10,
+        alignItems: 'center',
+        marginTop: '20%',
+        flex: 1,
+        justifyContent: 'space-between'
+
+    },
+    pollmeText: {
+        color: 'white',
+        marginTop: '10%',
+        fontSize: 20,
+        marginLeft: '5%',
+        flex: 1,
+    },
+    containerBigStats: {
+        width: windowWidth * .7,
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        marginTop: windowHeight * .01,
+        marginLeft: windowWidth * .045,
+        padding: windowHeight * .005,
+        paddingTop: "6%"
+    },
+    optionSet: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        width: windowWidth * .7,
+    },
+    optionWindow: {
+        width: windowWidth * .7,
+        alignSelf: 'center',
+        alignItems: 'center',
+    },
+    dislike: {
+        marginLeft: windowHeight * .005,
+    },
+    statsContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+
+    },
+    statsText: {
+        color: 'white',
+        fontSize: 15
     }
 
 })
