@@ -85,6 +85,12 @@ export default function PollStats(props) {
     async function onPress(type) {
 
         if (!hasliked && !hasDisliked) {
+            const curUserRef = doc(db, "users", auth.currentUser.uid)
+            const curSnap = await getDoc(curUserRef);
+            let likesArr = curSnap.data()['pollsLiked']
+            let dislikesArr = curSnap.data()['pollsDisliked']
+            let pollAct = []
+
             if (type == 'like') {
                 var newLike = {
                     timestamp: Date.now(),
@@ -178,9 +184,9 @@ export default function PollStats(props) {
                     timestamp: Date.now(),
                     pid: pollID
                 }
-                likesArr.push(newLike)
+                dislikesArr.push(newLike)
                 updateDoc(curUserRef, {
-                    pollsLiked: likesArr
+                    pollsLiked: dislikesArr
                 })
                 let numDislikes = 0
                 let creatorID = ""
