@@ -46,16 +46,16 @@ export default function Answer(props) {
 
     return (
         <View>
-            {!hasVoted && <View style={styles.container}>
+            {!hasVoted && <View style={[{width: windowWidth * props.optionBtnWidth}, styles.container]}>
                 <Button title={props.title} onPress={() => { props.onVote(props.title) }}></Button>
             </View>
             }
             {hasVoted &&
                 <View>
-                    <View style={styles.containerDisabled}>
+                    <View style={[{width: windowWidth * props.optionProgWidth}, styles.containerDisabled]}>
                         <Button title={props.title + ' ' + progressString} disabled={true} ></Button>
                     </View>
-                    <ProgressBar style={styles.progressBar} progress={progress}>
+                    <ProgressBar style={[{width: windowWidth * props.optionProgWidth},styles.progressBar]} progress={progress}>
                     </ProgressBar>
 
                 </View>
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#3B3C3B',
         borderColor: '#010101',
         borderRadius: windowHeight * .05,
-        width: windowWidth * .9,
+        // width: windowWidth * .9,
         height: windowHeight * .04,
         marginTop: windowHeight * .005,
         marginLeft: windowWidth * .05,
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderColor: '#010101',
         borderRadius: windowHeight * .05,
-        width: windowWidth * .9,
+        // width: windowWidth * .9,
         height: windowHeight * .01,
         marginLeft: windowWidth * .05,
         justifyContent: 'center',

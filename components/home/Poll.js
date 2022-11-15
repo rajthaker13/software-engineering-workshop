@@ -194,7 +194,7 @@ export default function Poll(props) {
                 }
                 return (
                     <View>
-                        <Answer title={option} key={option} id={poll.key} onVote={onVote} hasVoted={hasVoted} totalVotes={totalVotes} numVotes={numVotes} progress={progress} />
+                        <Answer title={option} key={option} id={poll.key} onVote={onVote} hasVoted={hasVoted} totalVotes={totalVotes} numVotes={numVotes} progress={progress} optionBtnWidth={.9} optionProgWidth={.9}/>
                     </View>
                 )
             })}

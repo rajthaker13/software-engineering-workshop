@@ -24,6 +24,11 @@ const windowHeight = Dimensions.get('window').height;
 
 export default function PollModal(props) {
   const db = getFirestore();
+  const auth = getAuth()
+
+  const userRef = doc(db, "users", auth.currentUser.uid)
+  const pollRef = doc(db, "polls", props.pollID);
+  
   const [pollsArray, setPollsArray] = useState([])
   const isFocused = useIsFocused();
   const [modalVisible, setModalVisible] = useState(false);
@@ -34,12 +39,14 @@ export default function PollModal(props) {
   const [title, setTitle] = useState('');
   const [options, setOptions] = useState([]);
   const [time, setTime] = useState('');
+  const [hasVoted, setHasVoted] = useState(false)
+  const [totalVotes, setTotalVotes] = useState(0)
+  const [voteCounts, setVoteCounts] = useState([])
   
   useEffect(() => {
     async function getPollsData() {
-
       // setModalVisible(props.setVisibility)
-      const pollRef = doc(db, "polls", props.pollID);
+
       const docSnap = await getDoc(pollRef);
       if (docSnap.exists()) {
         setComments(docSnap.data()['comments'])
@@ -51,9 +58,126 @@ export default function PollModal(props) {
         setTime(docSnap.data()['location'].timestamp)
         // }
       }
+      const docSnapUser = await getDoc(userRef);
+      if (docSnapUser.exists()) {
+          let userVotes = docSnapUser.data()['votes']
+          if (userVotes == null) {
+              userVotes = []
+              updateDoc(userRef, {
+                  votes: userVotes,
+              })
+          }
+          else {
+              userVotes.forEach(async (vote) => {
+                  if (vote['pid'] == props.pollID) {
+                      const pollSnap = await getDoc(pollRef);
+                      if (pollSnap.exists()) {
+                          let curVotesOptionsAll = pollSnap.data()['votes']
+                          const curVotes = pollSnap.data()['numVotes']
+                          let voteCountsUpdate = []
+
+                          curVotesOptionsAll.forEach((choice) => {
+                              const numVotes = choice['numVotes']
+                              var optionVoteCount = {
+                                  choice: choice['choice'],
+                                  numVotes: numVotes
+                              }
+                              voteCountsUpdate.push(optionVoteCount)
+
+
+                          })
+                          setHasVoted(true)
+                          setTotalVotes(curVotes)
+                          setVoteCounts(voteCountsUpdate)
+
+
+                      }
+
+                  }
+
+              })
+          }
+
+      }
+
+
+  }
+  getPollsData()
+  }, [props, isFocused])
+
+  async function onVote(option) {
+    const docSnap = await getDoc(pollRef);
+    if (docSnap.exists()) {
+        let curVotesOption = docSnap.data()['votes'].filter(choice => {
+            return choice['choice'] != option
+        })
+        let curVotesOptionsAll = docSnap.data()['votes']
+        const curVotes = docSnap.data()['numVotes'] + 1
+        let voteCountsUpdate = []
+        curVotesOptionsAll.forEach((choice) => {
+            let numVotes = 0
+            if (option == choice['choice']) {
+                numVotes = choice['numVotes'] + 1
+                let votesArray = choice['votes']
+
+                var newVote = {
+                    timestamp: Date.now(),
+                    uid: auth.currentUser.uid
+
+                }
+                votesArray.push(newVote)
+
+                var newVote = {
+                    choice: option,
+                    numVotes: numVotes,
+                    votes: votesArray
+
+                }
+
+                curVotesOption.push(newVote)
+
+
+                updateDoc(pollRef, {
+                    votes: curVotesOption,
+                    numVotes: curVotes
+                })
+
+            }
+            else {
+                numVotes = choice['numVotes']
+
+            }
+            var optionVoteCount = {
+                choice: choice['choice'],
+                numVotes: numVotes
+            }
+            voteCountsUpdate.push(optionVoteCount)
+        })
+
+        const userSnap = await getDoc(userRef)
+        if (userSnap.exists()) {
+            let userVotes = userSnap.data()['votes']
+            var userVote = {
+                pid: props.pollID,
+                timestamp: Date.now(),
+                choice: option
+            }
+            userVotes.push(userVote)
+            updateDoc(userRef, {
+                votes: userVotes,
+            })
+
+
+        }
+        setHasVoted(true)
+        setTotalVotes(curVotes)
+        setVoteCounts(voteCountsUpdate)
+
     }
-    getPollsData()
-  }, [isFocused])
+
+
+
+}
 
   return (
     <View style={{
@@ -134,10 +258,28 @@ export default function PollModal(props) {
               </View >
               <View style={styles.optionSet}>
                 <View style={styles.optionWindow}>
-                  {options.map((option) => {
-                    return (
-                        <Answer title={option} key={option} id={props.pollID} optionBtnWidth={.7}/>
-                    )
+                {options.map((option) => {
+                    const choiceObject = voteCounts.find((choice) => {
+                      return choice.choice == option
+                  })
+                  let numVotes = 0
+                  let progress = 0
+                  if (choiceObject != undefined) {
+                      numVotes = choiceObject.numVotes
+  
+                      progress = (numVotes / totalVotes)
+                  }
+                  return (
+                      <View>
+                        {/* {console.log(onVote)} */}
+                          <Answer title={option} key={option} id={props.pollID} onVote={onVote} optionBtnWidth={.7}  progress={progress} optionProgWidth={.7} hasVoted={hasVoted} totalVotes={totalVotes} numVotes={numVotes} />
+                      </View>
+                  )
+                    // return (
+                    //     <Answer title={option} key={option} id={props.pollID} optionBtnWidth={.7}/>
+                    //     // <Answer title={option} key={option} id={poll.key} onVote={onVote} hasVoted={hasVoted} totalVotes={totalVotes} numVotes={numVotes} progress={progress} />
+                    //     // <Answer title={option} key={option} id={poll.key} onVote={onVote} hasVoted={hasVoted} totalVotes={totalVotes} numVotes={numVotes} progress={progress} />
+                    // )
                   })}
                 </View>
               </View>
