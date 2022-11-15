@@ -1,5 +1,6 @@
+import 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, View, AppRegistry } from 'react-native';
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
@@ -25,6 +26,13 @@ import { getFirestore } from 'firebase/firestore'
 import { COLORS } from './components/Colors/ColorScheme';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Search from './screens/Search';
+import Messages from './screens/Messages';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { StreamChat } from 'stream-chat';
+
+
+
+AppRegistry.registerComponent('PollMe', () => App);
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -45,6 +53,7 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth = getAuth()
 const db = getFirestore(app);
+const AppContext = React.createContext();
 
 
 const Tab = createMaterialTopTabNavigator();
@@ -55,11 +64,13 @@ function Home() {
     <Tab.Navigator
       initialRouteName="HomeScreen"
       screenOptions={{
-        tabBarStyle: {backgroundColor: COLORS.Background, 
-            height: SCREEN_HEIGHT * 0.08},
+        tabBarStyle: {
+          backgroundColor: COLORS.Background,
+          height: SCREEN_HEIGHT * 0.08
+        },
         tabBarActiveTintColor: COLORS.Button,
         tabBarInactiveTintColor: COLORS.Paragraph,
-        tabBarIndicatorStyle: {height: 0},
+        tabBarIndicatorStyle: { height: 0 },
         tabBarShowLabel: false
       }}
       tabBarPosition="bottom"
@@ -118,6 +129,7 @@ function Home() {
         }}
       />
     </Tab.Navigator>
+
   );
 }
 
@@ -131,9 +143,10 @@ export default function App() {
         <Stack.Screen name="Edit Profile" component={EditProfileScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Follow" component={FollowScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Edit PFP" component={EditPFPScreen} options={{ headerShown: false }}/>
-        <Stack.Screen name="New User" component={NewUserScreen} options={{ headerShown: false }}/>
-        <Stack.Screen name="SearchPage" component={Search} options={{ headerShown: false }}/>
+        <Stack.Screen name="Edit PFP" component={EditPFPScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="New User" component={NewUserScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="SearchPage" component={Search} options={{ headerShown: false }} />
+        <Stack.Screen name="Messages" component={Messages} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

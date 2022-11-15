@@ -16,6 +16,9 @@ import { COLORS } from '../Colors/ColorScheme';
 
 
 
+
+
+
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
@@ -169,7 +172,7 @@ export default function Poll(props) {
 
     return (
         <View style={styles.container}>
-            <Header />
+            <Header navigation={navigation} route={route} />
             <View style={styles.tabsContainer}>
                 <TouchableOpacity onPress={() => { props.changeTab(false) }}>
                     <Text style={{ color: props.onForYouTab ? 'white' : 'grey', fontWeight: 'bold', fontSize: 15, marginTop: windowHeight * .02 }}>Following</Text>
