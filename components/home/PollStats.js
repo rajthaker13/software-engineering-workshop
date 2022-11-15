@@ -46,158 +46,217 @@ export default function PollStats(props) {
     }, [props, isFocused])
 
     async function onPress(type) {
-        if (type == "like") {
-            let numLikes = 0
-            let creatorID = ""
-            const docSnap = await getDoc(pollRef);
-            if (docSnap.exists()) {
-                pollAct = docSnap.data().activities
-                if (pollAct ==""){
-                    let activityArray = []
-                    const newActivity = {
-                        timestamp: Date.now(),
-                        type: "like",
-                        from: auth.currentUser.uid
-                    }
-                    activityArray.push(newActivity)
-                    await updateDoc(pollRef, {
-                        activities: activityArray
-                    })
-                }
-                else{
-                    const newActivity = {
-                        timestamp: Date.now(),
-                        type: "like",
-                        from: auth.currentUser.uid
-                    }
-                    pollAct.push(newActivity)
-                    await updateDoc(pollRef, {
-                        activities: pollAct
-                    })
-                }
+        let hasVotedBefore = false
+        const curUserRef = doc(db, "users", auth.currentUser.uid)
 
+        const curSnap = await getDoc(curUserRef);
+        if (curSnap.exists()) {
+            let likesArr = curSnap.data()['pollsLiked']
+            let dislikesArr = curSnap.data()['pollsDisliked']
 
-                numLikes = docSnap.data()["likes"] + 1
-                creatorID = docSnap.data()["uid"]
-                await updateDoc(pollRef, {
-                    likes: numLikes
-                }).then(async () => {
-                    setLikes(numLikes)
-                    const userRef = doc(db, "users", creatorID);
-                    const userSnap = await getDoc(userRef);
-                    if (userSnap.exists()) {
-                        let creatorActivity = userSnap.data()['activity']
-                        if (creatorActivity == '') {
+            if (likesArr == null) {
+                updateDoc(curUserRef, {
+                    pollsLiked: []
+                })
+                likesArr = []
+            }
+            if (dislikesArr == null) {
+                updateDoc(curUserRef, {
+                    pollsDisliked: []
+                })
+                dislikesArr = []
+            }
+
+            likesArr.forEach((like) => {
+                if (like['pid'] == pollID) {
+                    hasVotedBefore = true
+                }
+            })
+            dislikesArr.forEach((dislike) => {
+                if (dislike['pid'] == pollID) {
+                    hasVotedBefore = true
+                }
+            })
+
+            if (!hasVotedBefore) {
+                if (type == 'like') {
+                    var newLike = {
+                        timestamp: Date.now(),
+                        pid: pollID
+                    }
+                    likesArr.push(newLike)
+                    updateDoc(curUserRef, {
+                        pollsLiked: likesArr
+                    })
+                    let numLikes = 0
+                    let creatorID = ""
+                    const docSnap = await getDoc(pollRef);
+                    if (docSnap.exists()) {
+                        pollAct = docSnap.data().activities
+                        if (pollAct == "") {
                             let activityArray = []
                             const newActivity = {
                                 timestamp: Date.now(),
                                 type: "like",
-                                pollID: pollID,
-                                uid: auth.currentUser.uid
+                                from: auth.currentUser.uid
                             }
                             activityArray.push(newActivity)
-                            await updateDoc(userRef, {
-                                activity: activityArray
+                            await updateDoc(pollRef, {
+                                activities: activityArray
                             })
-
                         }
                         else {
                             const newActivity = {
                                 timestamp: Date.now(),
                                 type: "like",
-                                pollID: pollID,
-                                uid: auth.currentUser.uid
+                                from: auth.currentUser.uid
                             }
-                            creatorActivity.push(newActivity)
-                            await updateDoc(userRef, {
-                                activity: creatorActivity
+                            pollAct.push(newActivity)
+                            await updateDoc(pollRef, {
+                                activities: pollAct
                             })
-
                         }
 
+
+                        numLikes = docSnap.data()["likes"] + 1
+                        creatorID = docSnap.data()["uid"]
+                        await updateDoc(pollRef, {
+                            likes: numLikes
+                        }).then(async () => {
+                            setLikes(numLikes)
+                            const userRef = doc(db, "users", creatorID);
+                            const userSnap = await getDoc(userRef);
+                            if (userSnap.exists()) {
+                                let creatorActivity = userSnap.data()['activity']
+                                let newLikesNum = userSnap.data()['likes'] + 1
+                                if (creatorActivity == '') {
+                                    let activityArray = []
+                                    const newActivity = {
+                                        timestamp: Date.now(),
+                                        type: "like",
+                                        pollID: pollID,
+                                        uid: auth.currentUser.uid
+                                    }
+                                    activityArray.push(newActivity)
+                                    await updateDoc(userRef, {
+                                        activity: activityArray,
+                                        likes: newLikesNum
+
+                                    })
+
+                                }
+                                else {
+                                    const newActivity = {
+                                        timestamp: Date.now(),
+                                        type: "like",
+                                        pollID: pollID,
+                                        uid: auth.currentUser.uid
+                                    }
+                                    let newLikesNum = userSnap.data()['likes'] + 1
+                                    creatorActivity.push(newActivity)
+                                    await updateDoc(userRef, {
+                                        activity: creatorActivity,
+                                        likes: newLikesNum
+                                    })
+
+                                }
+
+                            }
+
+                        })
                     }
-
-                })
-            }
-        }
-
-        if (type == "dislike") {
-            let numDislikes = 0
-            let creatorID = ""
-            const docSnap = await getDoc(pollRef);
-            if (docSnap.exists()) {
-
-
-                pollAct = docSnap.data().activities
-                if (pollAct ==""){
-                    let activityArray = []
-                    const newActivity = {
-                        timestamp: Date.now(),
-                        type: "dislike",
-                        from: auth.currentUser.uid
-                    }
-                    activityArray.push(newActivity)
-                    await updateDoc(pollRef, {
-                        activities: activityArray
-                    })
                 }
-                else{
-                    const newActivity = {
+                else if (type == 'dislike') {
+                    var newLike = {
                         timestamp: Date.now(),
-                        type: "dislike",
-                        from: auth.currentUser.uid
+                        pid: pollID
                     }
-                    pollAct.push(newActivity)
-                    await updateDoc(pollRef, {
-                        activities: pollAct
+                    likesArr.push(newLike)
+                    updateDoc(curUserRef, {
+                        pollsLiked: likesArr
                     })
-                }
+                    let numDislikes = 0
+                    let creatorID = ""
+                    const docSnap = await getDoc(pollRef);
+                    if (docSnap.exists()) {
 
 
-
-
-
-                numDislikes = docSnap.data()["dislikes"] + 1
-                creatorID = docSnap.data()["uid"]
-                await updateDoc(pollRef, {
-                    dislikes: numDislikes
-                }).then(async () => {
-                    setDislikes(numDislikes)
-                    const userRef = doc(db, "users", creatorID);
-                    const userSnap = await getDoc(userRef);
-                    if (userSnap.exists()) {
-                        let creatorActivity = userSnap.data()['activity']
-                        if (creatorActivity == '') {
+                        pollAct = docSnap.data().activities
+                        if (pollAct == "") {
                             let activityArray = []
                             const newActivity = {
                                 timestamp: Date.now(),
-                                type: "like",
-                                pollID: pollID,
-                                uid: auth.currentUser.uid
+                                type: "dislike",
+                                from: auth.currentUser.uid
                             }
                             activityArray.push(newActivity)
-                            await updateDoc(userRef, {
-                                activity: activityArray
+                            await updateDoc(pollRef, {
+                                activities: activityArray
                             })
-
                         }
                         else {
                             const newActivity = {
                                 timestamp: Date.now(),
                                 type: "dislike",
-                                pollID: pollID,
-                                uid: auth.currentUser.uid
+                                from: auth.currentUser.uid
                             }
-                            creatorActivity.push(newActivity)
-                            await updateDoc(userRef, {
-                                activity: creatorActivity
+                            pollAct.push(newActivity)
+                            await updateDoc(pollRef, {
+                                activities: pollAct
                             })
-
                         }
 
-                    }
 
-                })
+
+
+
+                        numDislikes = docSnap.data()["dislikes"] + 1
+                        creatorID = docSnap.data()["uid"]
+                        await updateDoc(pollRef, {
+                            dislikes: numDislikes
+                        }).then(async () => {
+                            setDislikes(numDislikes)
+                            const userRef = doc(db, "users", creatorID);
+                            const userSnap = await getDoc(userRef);
+                            if (userSnap.exists()) {
+                                let creatorActivity = userSnap.data()['activity']
+                                if (creatorActivity == '') {
+                                    let activityArray = []
+                                    const newActivity = {
+                                        timestamp: Date.now(),
+                                        type: "like",
+                                        pollID: pollID,
+                                        uid: auth.currentUser.uid
+                                    }
+                                    let newDislikesNum = userSnap.data()['dislikes'] + 1
+                                    activityArray.push(newActivity)
+                                    await updateDoc(userRef, {
+                                        activity: activityArray,
+                                        dislikes: newDislikesNum
+                                    })
+
+                                }
+                                else {
+                                    const newActivity = {
+                                        timestamp: Date.now(),
+                                        type: "dislike",
+                                        pollID: pollID,
+                                        uid: auth.currentUser.uid
+                                    }
+                                    creatorActivity.push(newActivity)
+                                    let newDislikesNum = userSnap.data()['dislikes'] + 1
+                                    await updateDoc(userRef, {
+                                        activity: creatorActivity,
+                                        dislikes: newDislikesNum
+                                    })
+
+                                }
+
+                            }
+
+                        })
+                    }
+                }
             }
         }
 
