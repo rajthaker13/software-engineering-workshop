@@ -2,11 +2,12 @@ import React from 'react';
 import { StyleSheet, View, TextInput } from 'react-native';
 import PropTypes from 'prop-types';
 import { connectSearchBox } from 'react-instantsearch-native';
+import { COLORS } from '../Colors/ColorScheme';
 
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor: '#252b33',
+    backgroundColor:COLORS.Background,
   },
   input: {
     height: 48,
