@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '../components/Colors/ColorScheme';
 import { MStyles } from '../components/Mason Styles/MStyles';
-import { addDoc, arrayRemove, collection, deleteDoc, deleteField, doc, FieldValue, Firestore, getDoc, getDocs, getFirestore, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
+import { addDoc, arrayRemove, collection, deleteDoc, deleteField, doc, FieldValue, Firestore, getDoc, getDocs, getFirestore, increment, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
 import { NativeScreenNavigationContainer } from 'react-native-screens';
 import PollModal from '../components/common/PollModal';
 
@@ -49,7 +49,7 @@ export default function ProfileScreen({ route, navigation }) {
         async function getProfileData() {
             const userRef = doc(collection(db, 'users'), currentUid);
             const docSnap = await getDoc(userRef);
-            onSnapshot(userRef, (docSnap) => {
+            if (docSnap.exists()) {
                 setUsername(docSnap.data()['username'])
                 setLikes(docSnap.data()['likes'])
                 setDislikes(docSnap.data()['dislikes'])
@@ -80,7 +80,7 @@ export default function ProfileScreen({ route, navigation }) {
                 setNumpolls(docSnap.data()['numPolls'])
                 setDescription(docSnap.data()['description'])
                 setPollsArray(docSnap.data()['polls'])
-            })
+            }
             
             const followerRef = doc(db, 'users', currentUid)
             let val = await getDoc(followerRef)
@@ -96,9 +96,27 @@ export default function ProfileScreen({ route, navigation }) {
         getProfileData()
     }, [isFocused])
 
-    const deletePoll = (item) => {
+    const deletePoll = async (item) => {
         const refUser = doc(collection(db, 'users'), currentUid)
         const refUserPoll = doc(collection(db, 'polls'), item.item)
+        const test = doc(db, 'users', currentUid)
+        const test2 = await getDoc(test)
+        let numLikes = 0
+        let numDislikes = 0
+        test2.data()['activity'].forEach( (activity) => {
+            if(activity['pollID'] == item.item) {
+                if (activity['type'] == "like") {
+                    numLikes = numLikes + 1
+                }
+                if (activity['type'] == "dislike") {
+                    numDislikes = numDislikes + 1
+                }
+                updateDoc(refUser, {
+                    activity: arrayRemove(activity)
+                })
+            }
+            
+        })
 
         deleteDoc(refUserPoll)
 
@@ -110,7 +128,9 @@ export default function ProfileScreen({ route, navigation }) {
 
         updateDoc(refUser, {
             numPolls: newNumpolls,
-            polls: newArray
+            polls: newArray,
+            likes: increment(-numLikes),
+            dislikes: increment(-numDislikes)
         })
     }
 
@@ -126,6 +146,7 @@ export default function ProfileScreen({ route, navigation }) {
             })
         }
         updateFollow()
+        setFollowersNum(followersNum + 1)
         setFollow(true)
     }
 
@@ -146,6 +167,7 @@ export default function ProfileScreen({ route, navigation }) {
                 [`following.${currentUid}`]: deleteField()
             })
         }
+        setFollowersNum(followersNum - 1)
         setFollow(false)
     }
 
