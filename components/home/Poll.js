@@ -11,6 +11,7 @@ import ViewPager from 'react-native-pager-view';
 import { useIsFocused } from '@react-navigation/native';
 import PollBanner from './PollBanner';
 import { collection, addDoc, setDoc, doc, getDoc, updateDoc, getDocs } from "firebase/firestore";
+import { COLORS } from '../Colors/ColorScheme';
 
 
 
@@ -26,11 +27,67 @@ export default function Poll(props) {
     const poll = props.poll
     const db = props.db
     const auth = props.auth
+    const navigation = props.navigation
+    const route = props.route
 
+
+    const userRef = doc(db, "users", auth.currentUser.uid)
     const pollRef = doc(db, "polls", pollID);
     const [hasVoted, setHasVoted] = useState(false)
     const [totalVotes, setTotalVotes] = useState(0)
     const [voteCounts, setVoteCounts] = useState([])
+
+
+
+    useEffect(() => {
+        async function getVotingData() {
+            const docSnap = await getDoc(userRef);
+            if (docSnap.exists()) {
+                let userVotes = docSnap.data()['votes']
+                if (userVotes == null) {
+                    userVotes = []
+                    updateDoc(userRef, {
+                        votes: userVotes,
+                    })
+                }
+                else {
+                    userVotes.forEach(async (vote) => {
+                        if (vote['pid'] == pollID) {
+                            const pollSnap = await getDoc(pollRef);
+                            if (pollSnap.exists()) {
+                                let curVotesOptionsAll = pollSnap.data()['votes']
+                                const curVotes = pollSnap.data()['numVotes']
+                                let voteCountsUpdate = []
+
+                                curVotesOptionsAll.forEach((choice) => {
+                                    const numVotes = choice['numVotes']
+                                    var optionVoteCount = {
+                                        choice: choice['choice'],
+                                        numVotes: numVotes
+                                    }
+                                    voteCountsUpdate.push(optionVoteCount)
+
+
+                                })
+                                setHasVoted(true)
+                                setTotalVotes(curVotes)
+                                setVoteCounts(voteCountsUpdate)
+
+
+                            }
+
+                        }
+
+                    })
+                }
+
+            }
+
+
+        }
+        getVotingData()
+
+    }, [props])
 
 
 
@@ -62,6 +119,7 @@ export default function Poll(props) {
                         votes: votesArray
 
                     }
+
                     curVotesOption.push(newVote)
 
 
@@ -73,7 +131,6 @@ export default function Poll(props) {
                 }
                 else {
                     numVotes = choice['numVotes']
-                    console.log(numVotes + "NDbdu")
 
                 }
                 var optionVoteCount = {
@@ -82,10 +139,25 @@ export default function Poll(props) {
                 }
                 voteCountsUpdate.push(optionVoteCount)
             })
+
+            const userSnap = await getDoc(userRef)
+            if (userSnap.exists()) {
+                let userVotes = userSnap.data()['votes']
+                var userVote = {
+                    pid: pollID,
+                    timestamp: Date.now(),
+                    choice: option
+                }
+                userVotes.push(userVote)
+                updateDoc(userRef, {
+                    votes: userVotes,
+                })
+
+
+            }
             setHasVoted(true)
             setTotalVotes(curVotes)
             setVoteCounts(voteCountsUpdate)
-            console.log("cur" + curVotes)
 
         }
 
@@ -99,19 +171,14 @@ export default function Poll(props) {
         <View style={styles.container}>
             <Header />
             <View style={styles.tabsContainer}>
-                <TouchableOpacity>
-                    <Text>Following</Text>
+                <TouchableOpacity onPress={() => { props.changeTab(false) }}>
+                    <Text style={{ color: props.onForYouTab ? 'white' : 'grey', fontWeight: 'bold', fontSize: 15, marginTop: windowHeight * .02 }}>Following</Text>
                 </TouchableOpacity>
-                <Text style={{
-                    color: '#fff',
-                    fontSize: 15,
-                    opacity: 0.2,
-                }}>|</Text>
-                <TouchableOpacity>
-                    <Text>For You</Text>
+                <TouchableOpacity onPress={() => { props.changeTab(true) }}>
+                    <Text style={{ color: props.onForYouTab ? 'grey' : 'white', fontWeight: 'bold', fontSize: 15, marginTop: windowHeight * .02, marginLeft: windowWidth * .05 }}>For You</Text>
                 </TouchableOpacity>
             </View>
-            <PollBanner uid={poll.uid} db={db} auth={auth} />
+            <PollBanner uid={poll.uid} db={db} auth={auth} navigation={navigation} route={route} />
             <Question title={poll.title} />
             <PollStats id={poll.key} likes={poll.likes} dislikes={poll.dislikes} comments={poll.comments} shares={poll.shares} db={db} auth={auth} />
             {poll.options.map((option) => {
@@ -122,8 +189,7 @@ export default function Poll(props) {
                 let progress = 0
                 if (choiceObject != undefined) {
                     numVotes = choiceObject.numVotes
-                    console.log("Total: " + totalVotes)
-                    console.log(option + ":" + numVotes)
+
                     progress = (numVotes / totalVotes)
                 }
                 return (
@@ -140,10 +206,72 @@ export default function Poll(props) {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#3B3C3B',
+        backgroundColor: '#16161a',
         width: windowWidth,
         height: windowHeight,
         paddingTop: 10,
+    },
+    tabsContainer: {
+        height: windowHeight * .05,
+        backgroundColor: COLORS.Background,
+        flexDirection: 'row',
+        alignSelf: 'center',
+        alignItems: 'center',
+        marginTop: windowHeight * .8,
+        flex: 1,
+
+    },
+    pollmeText: {
+        color: 'white',
+        marginTop: '10%',
+        fontSize: 20,
+        marginLeft: '5%',
+        flex: 1,
+
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        marginTop: 22
+
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: "#16161a",
+        borderRadius: 20,
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 4
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
+    button: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2,
+        alignSelf: 'flex-end',
+        position: 'absolute',
+    },
+    buttonOpen: {
+        backgroundColor: "#F194FF",
+    },
+    buttonClose: {
+    },
+    textStyle: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center"
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: "center"
     },
     tabsContainer: {
         height: '10%',
@@ -160,11 +288,41 @@ const styles = StyleSheet.create({
     pollmeText: {
         color: 'white',
         marginTop: '10%',
-        // fontFamily: "Federo",
         fontSize: 20,
         marginLeft: '5%',
         flex: 1,
+    },
+    containerBigStats: {
+        width: windowWidth * .7,
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        marginTop: windowHeight * .01,
+        marginLeft: windowWidth * .045,
+        padding: windowHeight * .005,
+        paddingTop: "6%"
+    },
+    optionSet: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        width: windowWidth * .7,
+    },
+    optionWindow: {
+        width: windowWidth * .7,
+        alignSelf: 'center',
+        alignItems: 'center',
+    },
+    dislike: {
+        marginLeft: windowHeight * .005,
+    },
+    statsContainer: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
 
+    },
+    statsText: {
+        color: 'white',
+        fontSize: 15
     }
 
 })
