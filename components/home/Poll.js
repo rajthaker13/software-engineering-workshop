@@ -11,6 +11,7 @@ import ViewPager from 'react-native-pager-view';
 import { useIsFocused } from '@react-navigation/native';
 import PollBanner from './PollBanner';
 import { collection, addDoc, setDoc, doc, getDoc, updateDoc, getDocs } from "firebase/firestore";
+import { COLORS } from '../Colors/ColorScheme';
 
 
 
@@ -37,6 +38,7 @@ export default function Poll(props) {
     const [voteCounts, setVoteCounts] = useState([])
 
 
+
     useEffect(() => {
         async function getVotingData() {
             const docSnap = await getDoc(userRef);
@@ -58,7 +60,6 @@ export default function Poll(props) {
                                 let voteCountsUpdate = []
 
                                 curVotesOptionsAll.forEach((choice) => {
-                                    console.log(choice['numVotes'] + "HEY")
                                     const numVotes = choice['numVotes']
                                     var optionVoteCount = {
                                         choice: choice['choice'],
@@ -157,7 +158,6 @@ export default function Poll(props) {
             setHasVoted(true)
             setTotalVotes(curVotes)
             setVoteCounts(voteCountsUpdate)
-            console.log("cur" + curVotes)
 
         }
 
@@ -171,16 +171,11 @@ export default function Poll(props) {
         <View style={styles.container}>
             <Header />
             <View style={styles.tabsContainer}>
-                <TouchableOpacity>
-                    <Text>Following</Text>
+                <TouchableOpacity onPress={() => { props.changeTab(false) }}>
+                    <Text style={{ color: props.onForYouTab ? 'white' : 'grey', fontWeight: 'bold', fontSize: 15, marginTop: windowHeight * .02 }}>Following</Text>
                 </TouchableOpacity>
-                <Text style={{
-                    color: '#fff',
-                    fontSize: 15,
-                    opacity: 0.2,
-                }}>|</Text>
-                <TouchableOpacity>
-                    <Text>For You</Text>
+                <TouchableOpacity onPress={() => { props.changeTab(true) }}>
+                    <Text style={{ color: props.onForYouTab ? 'grey' : 'white', fontWeight: 'bold', fontSize: 15, marginTop: windowHeight * .02, marginLeft: windowWidth * .05 }}>For You</Text>
                 </TouchableOpacity>
             </View>
             <PollBanner uid={poll.uid} db={db} auth={auth} navigation={navigation} route={route} />
@@ -194,8 +189,7 @@ export default function Poll(props) {
                 let progress = 0
                 if (choiceObject != undefined) {
                     numVotes = choiceObject.numVotes
-                    console.log("Total: " + totalVotes)
-                    console.log(option + ":" + numVotes)
+
                     progress = (numVotes / totalVotes)
                 }
                 return (
@@ -218,15 +212,13 @@ const styles = StyleSheet.create({
         paddingTop: 10,
     },
     tabsContainer: {
-        height: '10%',
+        height: windowHeight * .05,
+        backgroundColor: COLORS.Background,
         flexDirection: 'row',
-        position: 'absolute',
         alignSelf: 'center',
-        zIndex: 10,
         alignItems: 'center',
-        marginTop: '20%',
+        marginTop: windowHeight * .8,
         flex: 1,
-        justifyContent: 'space-between'
 
     },
     pollmeText: {

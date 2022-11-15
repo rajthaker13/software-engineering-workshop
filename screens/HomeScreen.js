@@ -18,16 +18,17 @@ import Poll from '../components/home/Poll';
 
 
 
+
+
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-const HomeScreen = ({ route, navigation }) => {
+export default function HomeScreen({ route, navigation }) {
     const pid = route.params.pid
 
 
 
     const [pollsArray, setPollsArray] = useState([])
-    const [hasVoted, setHasVoted] = useState(false)
 
 
     const auth = getAuth()
@@ -37,19 +38,50 @@ const HomeScreen = ({ route, navigation }) => {
 
     const isFocused = useIsFocused();
 
+    const [onForYouTab, setOnForYouTab] = useState(true)
+
 
     useEffect(() => {
         async function getPollsData() {
             let arr = []
+            const userRef = doc(db, "users", auth.currentUser.uid)
             const pollsSnapshot = await getDocs(collection(db, "polls"));
+            let followingList = []
+            if (!onForYouTab) {
+                const userSnap = await getDoc(userRef)
+                if (userSnap.exists()) {
+                    followingList = Object.keys(userSnap.data()['following'])
+                }
+            }
             pollsSnapshot.forEach((doc) => {
-                var item = doc.data()
-                item.key = doc.id
-                if (item.key == pid) {
-                    arr.unshift(item)
+                if (onForYouTab) {
+                    var item = doc.data()
+                    item.key = doc.id
+                    if (item.key == pid) {
+                        arr.unshift(item)
+                    }
+                    else {
+                        arr.push(item)
+                    }
                 }
                 else {
-                    arr.push(item)
+                    var item = doc.data()
+                    followingList.forEach((user) => {
+                        if (user == item.uid) {
+
+                            item.key = doc.id
+                            if (item.key == pid) {
+                                arr.unshift(item)
+                            }
+                            else {
+                                arr.push(item)
+                            }
+
+
+                        }
+                    })
+
+
                 }
             })
             setPollsArray(arr)
@@ -57,7 +89,7 @@ const HomeScreen = ({ route, navigation }) => {
         }
         getPollsData()
 
-    }, [isFocused])
+    }, [isFocused, onForYouTab])
 
     if (pid != "") {
         ref.current.setPage(0)
@@ -75,10 +107,11 @@ const HomeScreen = ({ route, navigation }) => {
                 const pollID = poll.key
 
                 return (
-                    <Poll poll={poll} pollID={pollID} db={db} auth={auth} navigation={navigation} route={route} />
+                    <Poll poll={poll} pollID={pollID} db={db} auth={auth} navigation={navigation} route={route} changeTab={setOnForYouTab} onForYouTab={onForYouTab} />
 
                 )
             })}
+
         </ViewPager>
 
     );
@@ -116,7 +149,7 @@ const styles = StyleSheet.create({
 
 })
 
-export default HomeScreen;
+
 
 
 
