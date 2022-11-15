@@ -29,10 +29,64 @@ export default function Poll(props) {
     const navigation = props.navigation
     const route = props.route
 
+
+    const userRef = doc(db, "users", auth.currentUser.uid)
     const pollRef = doc(db, "polls", pollID);
     const [hasVoted, setHasVoted] = useState(false)
     const [totalVotes, setTotalVotes] = useState(0)
     const [voteCounts, setVoteCounts] = useState([])
+
+
+    useEffect(() => {
+        async function getVotingData() {
+            const docSnap = await getDoc(userRef);
+            if (docSnap.exists()) {
+                let userVotes = docSnap.data()['votes']
+                if (userVotes == null) {
+                    userVotes = []
+                    updateDoc(userRef, {
+                        votes: userVotes,
+                    })
+                }
+                else {
+                    userVotes.forEach(async (vote) => {
+                        if (vote['pid'] == pollID) {
+                            const pollSnap = await getDoc(pollRef);
+                            if (pollSnap.exists()) {
+                                let curVotesOptionsAll = pollSnap.data()['votes']
+                                const curVotes = pollSnap.data()['numVotes']
+                                let voteCountsUpdate = []
+
+                                curVotesOptionsAll.forEach((choice) => {
+                                    console.log(choice['numVotes'] + "HEY")
+                                    const numVotes = choice['numVotes']
+                                    var optionVoteCount = {
+                                        choice: choice['choice'],
+                                        numVotes: numVotes
+                                    }
+                                    voteCountsUpdate.push(optionVoteCount)
+
+
+                                })
+                                setHasVoted(true)
+                                setTotalVotes(curVotes)
+                                setVoteCounts(voteCountsUpdate)
+
+
+                            }
+
+                        }
+
+                    })
+                }
+
+            }
+
+
+        }
+        getVotingData()
+
+    }, [props])
 
 
 
@@ -64,6 +118,7 @@ export default function Poll(props) {
                         votes: votesArray
 
                     }
+
                     curVotesOption.push(newVote)
 
 
@@ -75,7 +130,6 @@ export default function Poll(props) {
                 }
                 else {
                     numVotes = choice['numVotes']
-                    console.log(numVotes + "NDbdu")
 
                 }
                 var optionVoteCount = {
@@ -84,6 +138,22 @@ export default function Poll(props) {
                 }
                 voteCountsUpdate.push(optionVoteCount)
             })
+
+            const userSnap = await getDoc(userRef)
+            if (userSnap.exists()) {
+                let userVotes = docSnap.data()['votes']
+                var userVote = {
+                    pid: pollID,
+                    timestamp: Date.now(),
+                    choice: option
+                }
+                userVotes.push(userVote)
+                updateDoc(userRef, {
+                    votes: userVotes,
+                })
+
+
+            }
             setHasVoted(true)
             setTotalVotes(curVotes)
             setVoteCounts(voteCountsUpdate)
