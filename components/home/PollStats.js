@@ -322,7 +322,7 @@ export default function PollStats(props) {
                     <Text style={styles.statsText}>{props.comments}</Text>
                 </View>
             </View>
-            <View style={{ flexDirection: 'column' }}>
+            {/* <View style={{ flexDirection: 'column' }}>
                 <TouchableOpacity onPress={() => onPress("share")}>
                     <Fontisto name="share-a" size={26} color="white" />
                 </TouchableOpacity>
@@ -330,7 +330,7 @@ export default function PollStats(props) {
                     <Text style={styles.statsText}>{shares}</Text>
                 </View>
 
-            </View>
+            </View> */}
         </View >
     )
 }
