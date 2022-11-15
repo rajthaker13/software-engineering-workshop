@@ -239,7 +239,7 @@ export default function ProfileScreen({ route, navigation }) {
                                 <MaterialCommunityIcons name="close-circle" color={COLORS.Paragraph} size={15} />
                             </TouchableHighlight>}
                             {/* <View style={{ justifyContent: 'center' }}> */}
-                                <PollModal pollID={item.item}  setVisibility={true}/>
+                                <PollModal pollID={item.item}/>
                                 {/* <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{(item.item).replace(currentUid, "")}</Text> */}
                                 {/* {console.log(item.item)} */}
                             {/* </View> */}
