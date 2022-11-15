@@ -75,7 +75,7 @@ const HomeScreen = ({ route, navigation }) => {
                 const pollID = poll.key
 
                 return (
-                    <Poll poll={poll} pollID={pollID} db={db} auth={auth} />
+                    <Poll poll={poll} pollID={pollID} db={db} auth={auth} navigation={navigation} route={route} />
 
                 )
             })}

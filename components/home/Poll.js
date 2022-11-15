@@ -26,6 +26,8 @@ export default function Poll(props) {
     const poll = props.poll
     const db = props.db
     const auth = props.auth
+    const navigation = props.navigation
+    const route = props.route
 
     const pollRef = doc(db, "polls", pollID);
     const [hasVoted, setHasVoted] = useState(false)
@@ -111,7 +113,7 @@ export default function Poll(props) {
                     <Text>For You</Text>
                 </TouchableOpacity>
             </View>
-            <PollBanner uid={poll.uid} db={db} auth={auth} />
+            <PollBanner uid={poll.uid} db={db} auth={auth} navigation={navigation} route={route} />
             <Question title={poll.title} />
             <PollStats id={poll.key} likes={poll.likes} dislikes={poll.dislikes} comments={poll.comments} shares={poll.shares} db={db} auth={auth} />
             {poll.options.map((option) => {
