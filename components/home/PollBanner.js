@@ -19,10 +19,12 @@ export default function PollBanner(props) {
     const db = props.db
     const auth = props.auth
     const uid = props.uid
+    const navigation = props.navigation
 
     const userRef = doc(db, "users", uid);
 
     const [name, setName] = useState('')
+    const [pfp, setPfp] = useState('')
 
 
     useEffect(() => {
@@ -31,8 +33,10 @@ export default function PollBanner(props) {
             if (docSnap.exists()) {
                 const firstName = docSnap.data()['firstName']
                 const lastName = docSnap.data()['lastName']
+                const profilePic = docSnap.data()['profile_picture_url']
                 const fullName = firstName + " " + lastName
                 setName(fullName)
+                setPfp(profilePic)
 
             }
 
@@ -41,16 +45,16 @@ export default function PollBanner(props) {
 
 
 
-    }, [])
+    }, [props])
     return (
-        <View>
+        <TouchableOpacity onPress={() => navigation.push("Home", { screen: "Profile", params: { id: uid, prevId: auth.currentUser.uid } })}>
             <View style={styles.container}>
                 <View style={styles.profilePicContainer}>
-                    <Image source={require('../../assets/favicon.png')} resizeMode='cover' style={styles.profileImg} />
+                    <Image source={{ uri: pfp }} resizeMode='cover' style={styles.profileImg} />
                 </View>
                 <Text style={styles.bannerText}>{`Posted by ${name}`}</Text>
             </View>
-        </View>
+        </TouchableOpacity>
     )
 }
 

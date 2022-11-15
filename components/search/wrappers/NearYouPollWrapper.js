@@ -22,8 +22,9 @@ export default function NearYouPollWrapper(props) {
                 <SafeAreaView>
                     <ScrollView horizontal={true}>
                         {pollArray.map((poll) => {
+                            // {console.log(poll.key);}
                             return(
-                                <Poll title={poll.title} time="1h" answerNum={poll.likes}/>
+                                <Poll title={poll.title} time="1h" answerNum={poll.likes} pollID={poll.key}/>
                             )
                             
                         })}

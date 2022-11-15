@@ -11,6 +11,8 @@ import { getAuth } from 'firebase/auth';
 import { collection, addDoc, setDoc, doc, getDoc, updateDoc, getFirestore } from "firebase/firestore";
 import GestureRecognizer from 'react-native-swipe-gestures';
 import Answer from '../home/Answer';
+import Timestamp from './Timestamp';
+
 
 
 
@@ -29,23 +31,28 @@ export default function Likes(props) {
   const [shares, setShares] = useState('');
   const [title, setTitle] = useState('');
   const [options, setOptions] = useState([]);
+  const [time, setTime] = useState('');
+
 
   useEffect(() => {
     async function getPollsData() {
       const pollRef = doc(db, "polls", props.pollID);
       const docSnap = await getDoc(pollRef);
       if (docSnap.exists()) {
+        setLikes(docSnap.data()['likes'])
         setComments(docSnap.data()['comments'])
         setShares(docSnap.data()['shares'])
         setDislikes(docSnap.data()['dislikes'])
-        setLikes(docSnap.data()['likes'])
         setTitle(docSnap.data()['title'])
         setOptions(docSnap.data()['options'])
+        setTime(docSnap.data()['location'].timestamp)
       }
     }
     getPollsData()
   }, [isFocused])
 
+
+  if(likes>0){
   return (
     <View style={{
       backgroundColor: '#16161a', borderWidth: 3, borderColor: '#7f5af0', borderRadius: 20,
@@ -81,14 +88,18 @@ export default function Likes(props) {
             >
               <MaterialCommunityIcons name="close-circle" color='#94a1b2' size={15} />
             </Pressable>
+            <Text style={{ fontSize: 10, color: "#94a1b2", padding: 10, position: 'absolute', alignSelf: 'flex-start', marginLeft:"3%" }}>Created: <Timestamp time = {time} /></Text>
             <Text style={{ fontSize: 100 }}>
 
               {/* {title} */}
               <View style={{
-                backgroundColor: '#16161a', borderWidth: 3, borderColor: '#7f5af0', borderRadius: 20,
+                backgroundColor: '#16161a', 
+                borderWidth: 3, 
+                borderColor: '#7f5af0', 
+                marginTop: windowHeight * .03, 
+                borderRadius: 20,
                 width: windowWidth * .7,
                 height: windowHeight * .125,
-                marginTop: windowHeight * .03,
                 marginLeft: windowWidth * .05,
                 padding: windowHeight * .005,
               }}>
@@ -144,6 +155,7 @@ export default function Likes(props) {
       </Pressable>
     </View>
   )
+}
 }
 const styles = StyleSheet.create({
   centeredView: {

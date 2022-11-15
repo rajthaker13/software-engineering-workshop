@@ -4,6 +4,9 @@ import PropTypes from 'prop-types';
 import { connectInfiniteHits } from 'react-instantsearch-native';
 import Highlight from './Highlight';
 import { COLORS } from '../Colors/ColorScheme';
+import PollModal from '../common/PollModal';
+import { useEffect, useReducer, useState } from 'react';
+
 
 const styles = StyleSheet.create({
   separator: {
@@ -20,6 +23,7 @@ const styles = StyleSheet.create({
 });
 
 const windowHeight = Dimensions.get('window').height;
+// const [modalVisible, setModalVisible] = useState(false);
 
 const InfiniteHits = ({ hits, hasMore, refineNext }) => (
   <FlatList 
@@ -35,8 +39,13 @@ const InfiniteHits = ({ hits, hasMore, refineNext }) => (
         <Text>
           <Highlight attribute="{{this}}" hit={item} />
         </Text> */}
-        <Pressable onPress={()=>console.log(item.objectID)}>
+        <Pressable onPress={()=>
+          {console.log("xxx", item.objectID)}
+          // setModalVisible(true)
+        }>
+          {/* <PollModal pollID={item.objectID}  setVisibility={props.modalVisible}/> */}
           <Text style={{color: COLORS.Paragraph}}>{JSON.stringify(item.title).slice(0, 100)}</Text>
+          {/* {console.log("xxx", item.objectID)} */}
         </Pressable>
       </View>
     )}

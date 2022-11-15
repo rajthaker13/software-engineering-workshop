@@ -18,7 +18,7 @@ export default function TrendingPollWrapper(props) {
                     <ScrollView horizontal={true}>
                         {pollArray.map((poll) => {
                             return(
-                                <Poll title={poll.title} time="" answerNum={poll.likes}/>
+                                <Poll title={poll.title} time="" answerNum={poll.likes} pollID={poll.pollID}/>
                             )
                             
                         })}

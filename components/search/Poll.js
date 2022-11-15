@@ -2,6 +2,7 @@ import React from 'react'
 import { Button,Pressable, StyleSheet, View, Text, TextInput, ScrollView, SafeAreaView, Dimensions } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import { COLORS } from '../Colors/ColorScheme';
+import PollModal from '../common/PollModal';
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -25,10 +26,24 @@ export default function Poll(props) {
             padding: 5,
             flex: 1
         }}>
-            <Text style={{ fontSize: 10, color:COLORS.Paragraph }}>{props.time}</Text>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color:COLORS.Paragraph }}>{props.title}</Text>
-            <Text style={{ fontSize: 10, textAlign: 'center', bottom: 0 , color:COLORS.Paragraph}}>{props.answerNum} likes in the past 10 minutes</Text>
-            
+            {/* <Text style={{ fontSize: 10, color:COLORS.Paragraph }}>{props.time}</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color:COLORS.Paragraph }}>{props.title}</Text> */}
+            <View style={{
+                // marginTop:"20%",
+                textAlign: 'center',
+                paddingTop:"17.5%",
+            }}>
+                <View>
+                    <PollModal pollID={props.pollID}  setVisibility={true}/>
+                </View>
+                <View style={{
+                // marginTop:"20%",
+                // textAlign: 'center',
+                paddingTop:"10%",
+            }}>
+                    <Text style={{ fontSize: 10, textAlign: 'center', bottom: 0 , color:COLORS.Paragraph}}>{props.answerNum} likes in the past 10 minutes</Text>
+                </View>
+            </View>
         </View>
         
       
