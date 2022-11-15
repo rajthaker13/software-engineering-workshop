@@ -15,7 +15,7 @@ export default function Poll(props) {
     return (
         
         <View style={{
-            backgroundColor: COLORS.Background, borderWidth: 10, borderColor: COLORS.Button, borderRadius: 15,
+            backgroundColor: COLORS.Background, borderWidth: 5, borderColor: COLORS.Button, borderRadius: 15,
             width: 150,
             height: 140,
             marginTop: 15,
@@ -27,7 +27,8 @@ export default function Poll(props) {
         }}>
             <Text style={{ fontSize: 10, color:COLORS.Paragraph }}>{props.time}</Text>
             <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color:COLORS.Paragraph }}>{props.title}</Text>
-            <Text style={{ fontSize: 10, textAlign: 'center', bottom: 0 , color:COLORS.Paragraph}}>{props.answerNum} likes in the past minute</Text>
+            <Text style={{ fontSize: 10, textAlign: 'center', bottom: 0 , color:COLORS.Paragraph}}>{props.answerNum} likes in the past 10 minutes</Text>
+            
         </View>
         
       

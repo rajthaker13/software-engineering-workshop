@@ -24,6 +24,7 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore'
 import { COLORS } from './components/Colors/ColorScheme';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import Search from './screens/Search';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -132,6 +133,7 @@ export default function App() {
         <Stack.Screen name="Follow" component={FollowScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Edit PFP" component={EditPFPScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="New User" component={NewUserScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name="SearchPage" component={Search} options={{ headerShown: false }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
