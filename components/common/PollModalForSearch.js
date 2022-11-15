@@ -11,7 +11,9 @@ import { getAuth } from 'firebase/auth';
 import { collection, addDoc, setDoc, doc, getDoc, updateDoc, getFirestore } from "firebase/firestore";
 import GestureRecognizer from 'react-native-swipe-gestures';
 import Answer from '../home/Answer';
-import Timestamp from './Timestamp';
+// import Answer from '../components/home/Answer';
+import Timestamp from '../activity/Timestamp';
+import { MStyles } from '../Mason Styles/MStyles';
 
 
 
@@ -20,7 +22,7 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 
-export default function Likes(props) {
+export default function PollModal(props) {
   const db = getFirestore();
   const [pollsArray, setPollsArray] = useState([])
   const isFocused = useIsFocused();
@@ -32,38 +34,38 @@ export default function Likes(props) {
   const [title, setTitle] = useState('');
   const [options, setOptions] = useState([]);
   const [time, setTime] = useState('');
-
-
+  
   useEffect(() => {
     async function getPollsData() {
+
+      // setModalVisible(props.setVisibility)
       const pollRef = doc(db, "polls", props.pollID);
       const docSnap = await getDoc(pollRef);
       if (docSnap.exists()) {
-        setLikes(docSnap.data()['likes'])
         setComments(docSnap.data()['comments'])
         setShares(docSnap.data()['shares'])
         setDislikes(docSnap.data()['dislikes'])
+        setLikes(docSnap.data()['likes'])
         setTitle(docSnap.data()['title'])
         setOptions(docSnap.data()['options'])
         setTime(docSnap.data()['location'].timestamp)
+        // }
       }
     }
     getPollsData()
   }, [isFocused])
 
-
-  if(likes>0){
   return (
     <View style={{
-      backgroundColor: '#16161a', borderWidth: 3, borderColor: '#7f5af0', borderRadius: 20,
-      width: 150,
-      height: "100%",
-      marginTop: 15,
-      marginLeft: 15,
-      marginBottom: 15,
-      marginRight: 0,
-      padding: 5,
-      flex: 1
+      // backgroundColor: '#16161a', borderWidth: 3, borderColor: '#7f5af0', borderRadius: 20,
+      // width: 150,
+      // height: "100%",
+      // marginTop: 15,
+      // marginLeft: 15,
+      // marginBottom: 15,
+      // marginRight: 0,
+      // padding: 5,
+      // flex: 1
     }}>
       <GestureRecognizer
         style={{flex: 1}}
@@ -77,7 +79,7 @@ export default function Likes(props) {
         visible={modalVisible}
         onRequestClose={() => {
           Alert.alert("Modal has been closed.");
-          setModalVisible(!modalVisible);
+          setModalVisible(modalVisible);
         }}
       >
         <View style={styles.centeredView}>
@@ -93,13 +95,10 @@ export default function Likes(props) {
 
               {/* {title} */}
               <View style={{
-                backgroundColor: '#16161a', 
-                borderWidth: 3, 
-                borderColor: '#7f5af0', 
-                marginTop: windowHeight * .03, 
-                borderRadius: 20,
+                backgroundColor: '#16161a', borderWidth: 3, borderColor: '#7f5af0', borderRadius: 20,
                 width: windowWidth * .7,
                 height: windowHeight * .125,
+                marginTop: windowHeight * .03,
                 marginLeft: windowWidth * .05,
                 padding: windowHeight * .005,
               }}>
@@ -149,13 +148,17 @@ export default function Likes(props) {
       </GestureRecognizer>
       <Pressable
         onPress={() => setModalVisible(true)}
-        >
-        <Text style={{ fontSize: 10, color: "#94a1b2", paddingLeft:"5%", paddingTop:"1%"  }}>{props.time}</Text>
-        <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{title}</Text>
+      >
+          <View>
+          <Text style={[MStyles.text]}>{title}</Text>
+          {/* <Text  style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{title}</Text> */}
+
+          </View>
+        {/* <Text style={{ fontSize: 10, color: "#94a1b2", paddingLeft:"5%", paddingTop:"1%"  }}>{props.time}</Text>
+        // <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{title}</Text> */}
       </Pressable>
     </View>
   )
-}
 }
 const styles = StyleSheet.create({
   centeredView: {

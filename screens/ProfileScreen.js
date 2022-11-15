@@ -44,7 +44,6 @@ export default function ProfileScreen({ route, navigation }) {
 
     const isFocused = useIsFocused();
 
-
     useEffect(() => {    
         async function getProfileData() {
             const userRef = doc(collection(db, 'users'), currentUid);
@@ -176,7 +175,7 @@ export default function ProfileScreen({ route, navigation }) {
             <View style={[styles.layer, { width: SCREEN_WIDTH, flexDirection: 'row', alignItems: 'center' }]}>
                 <View style={{width: SCREEN_WIDTH * 0.1}}>
                     {!authorizedUser &&
-                        <MaterialCommunityIcons onPress={() => navigation.navigate("Follow", { id: prevId })} name="chevron-left" color={COLORS.Paragraph} size={25} />}
+                        <MaterialCommunityIcons onPress={() => navigation.pop()} name="chevron-left" color={COLORS.Paragraph} size={25} />}
                 </View>
                  <Text style={[MStyles.header, {width: SCREEN_WIDTH * 0.8, textAlign: 'center'}]} >{firstname} {lastname}</Text>
                 <View style={{width: SCREEN_WIDTH * 0.1, alignContent:'flex-end', marginRight: 15}}>
@@ -240,7 +239,7 @@ export default function ProfileScreen({ route, navigation }) {
                                 <MaterialCommunityIcons name="close-circle" color={COLORS.Paragraph} size={15} />
                             </TouchableHighlight>}
                             {/* <View style={{ justifyContent: 'center' }}> */}
-                                <PollModal pollID={item.item}  setVisibility={true}/>
+                                <PollModal pollID={item.item}/>
                                 {/* <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{(item.item).replace(currentUid, "")}</Text> */}
                                 {/* {console.log(item.item)} */}
                             {/* </View> */}

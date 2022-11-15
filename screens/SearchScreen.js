@@ -70,7 +70,7 @@ function SearchScreen() {
                     likeInMin ++
                 })
 
-                arrr.push([poll.title,likeInMin])
+                arrr.push([poll.key, poll.title,likeInMin])
 
             }
             
@@ -84,7 +84,8 @@ function SearchScreen() {
     var finalArr = []
 
     sorted.forEach((poll)=>{
-        finalArr.push({title:poll[0],likes:poll[1]})
+        finalArr.push({pollID: poll[0],title:poll[1],likes:poll[2]})
+        {console.log(poll[0])}
     })
 
 

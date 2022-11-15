@@ -12,6 +12,7 @@ import { collection, addDoc, setDoc, doc, getDoc, updateDoc, getFirestore } from
 import GestureRecognizer from 'react-native-swipe-gestures';
 import Answer from '../home/Answer';
 // import Answer from '../components/home/Answer';
+import Timestamp from '../activity/Timestamp';
 import { MStyles } from '../Mason Styles/MStyles';
 
 
@@ -32,6 +33,7 @@ export default function PollModal(props) {
   const [shares, setShares] = useState('');
   const [title, setTitle] = useState('');
   const [options, setOptions] = useState([]);
+  const [time, setTime] = useState('');
   
   useEffect(() => {
     async function getPollsData() {
@@ -46,6 +48,8 @@ export default function PollModal(props) {
         setLikes(docSnap.data()['likes'])
         setTitle(docSnap.data()['title'])
         setOptions(docSnap.data()['options'])
+        setTime(docSnap.data()['location'].timestamp)
+        // }
       }
     }
     getPollsData()
@@ -86,11 +90,12 @@ export default function PollModal(props) {
             >
               <MaterialCommunityIcons name="close-circle" color='#94a1b2' size={15} />
             </Pressable>
+            <Text style={{ fontSize: 10, color: "#94a1b2", padding: 10, position: 'absolute', alignSelf: 'flex-start', marginLeft:"3%" }}>Created: <Timestamp time = {time} /></Text>
             <Text style={{ fontSize: 100 }}>
 
               {/* {title} */}
               <View style={{
-                // backgroundColor: '#16161a', borderWidth: 3, borderColor: '#7f5af0', borderRadius: 20,
+                backgroundColor: '#16161a', borderWidth: 3, borderColor: '#7f5af0', borderRadius: 20,
                 width: windowWidth * .7,
                 height: windowHeight * .125,
                 marginTop: windowHeight * .03,
@@ -145,10 +150,11 @@ export default function PollModal(props) {
         onPress={() => setModalVisible(true)}
         >
           <View>
-          <Text style={[MStyles.text, { alignSelf: 'center', fontSize: 20, fontWeight: 'bold', textAlign: 'center', }]}>{title}</Text>
+          <Text style={{ fontSize: 10, color: "#94a1b2", paddingLeft:"7.5%", marginTop:"-7.5%"  }}><Timestamp time = {time} /></Text>
+          <Text style={[MStyles.text, { alignSelf: 'center', fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginTop:"10%"}]}>{title}</Text>
           {/* <Text  style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{title}</Text> */}
 
-          {console.log(title)}</View>
+          </View>
         {/* <Text style={{ fontSize: 10, color: "#94a1b2", paddingLeft:"5%", paddingTop:"1%"  }}>{props.time}</Text>
         // <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{title}</Text> */}
       </Pressable>

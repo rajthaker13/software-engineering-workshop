@@ -22,7 +22,7 @@ export default function SearchBar() {
         <View>
           <InstantSearch searchClient={searchClient} indexName="PollMe_polls">
             <SearchBoxNative onFocus={()=>setShowHits(true)} onBlur={()=>setShowHits(false)}/>
-            <InfiniteHits />
+            <InfiniteHits modalVisible={false}/>
           </InstantSearch>
         </View>
     </SafeAreaView>

@@ -11,6 +11,7 @@ import { getAuth } from 'firebase/auth';
 import { collection, addDoc, setDoc, doc, getDoc, updateDoc, getFirestore } from "firebase/firestore";
 import GestureRecognizer from 'react-native-swipe-gestures';
 import Answer from '../home/Answer';
+import Timestamp from './Timestamp';
 
 
 
@@ -29,6 +30,7 @@ export default function Dislikes(props) {
   const [shares, setShares] = useState('');
   const [title, setTitle] = useState('');
   const [options, setOptions] = useState([]);
+  const [time, setTime] = useState('');
 
   useEffect(() => {
     async function getPollsData() {
@@ -41,11 +43,12 @@ export default function Dislikes(props) {
         setLikes(docSnap.data()['likes'])
         setTitle(docSnap.data()['title'])
         setOptions(docSnap.data()['options'])
+        setTime(docSnap.data()['location'].timestamp)
       }
     }
     getPollsData()
   }, [isFocused])
-
+  if(dislikes>0){
   return (
     <View style={{
       backgroundColor: '#16161a', borderWidth: 3, borderColor: '#7f5af0', borderRadius: 20,
@@ -81,6 +84,7 @@ export default function Dislikes(props) {
             >
               <MaterialCommunityIcons name="close-circle" color='#94a1b2' size={15} />
             </Pressable>
+            <Text style={{ fontSize: 10, color: "#94a1b2", padding: 10, position: 'absolute', alignSelf: 'flex-start', marginLeft:"3%" }}>Created: <Timestamp time = {time} /></Text>
             <Text style={{ fontSize: 100 }}>
 
               {/* {title} */}
@@ -144,6 +148,7 @@ export default function Dislikes(props) {
       </Pressable>
     </View>
   )
+}
 }
 const styles = StyleSheet.create({
   centeredView: {
