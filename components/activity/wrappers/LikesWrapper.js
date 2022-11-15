@@ -22,7 +22,7 @@ export default function LikesWrapper(props) {
     }, [props, isFocused])
     return (
         <>
-            <View style={{ height: windowHeight * .4 }}>
+            <View style={{ height: windowHeight}}>
                 <Text style={{ marginLeft: 'auto', marginRight: 'auto', color: 'white', fontSize: 22.5, fontWeight: '700' }}> {props.title}</Text>
                 <SafeAreaView>
                     <ScrollView>
