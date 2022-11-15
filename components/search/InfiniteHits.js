@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, View, FlatList,Dimensions } from 'react-native';
+import { StyleSheet, Text, View, FlatList,Dimensions, Pressable } from 'react-native';
 import PropTypes from 'prop-types';
 import { connectInfiniteHits } from 'react-instantsearch-native';
 import Highlight from './Highlight';
+import { COLORS } from '../Colors/ColorScheme';
 
 const styles = StyleSheet.create({
   separator: {
@@ -11,7 +12,7 @@ const styles = StyleSheet.create({
   },
   item: {
     padding: 10,
-    flexDirection: 'column',
+    flexDirection: 'column'
   },
   titleText: {
     fontWeight: 'bold',
@@ -22,7 +23,6 @@ const windowHeight = Dimensions.get('window').height;
 
 const InfiniteHits = ({ hits, hasMore, refineNext }) => (
   <FlatList 
-    
     data={hits}
     keyExtractor={item => item.objectID}
     ItemSeparatorComponent={() => <View style={styles.separator} />}
@@ -35,7 +35,9 @@ const InfiniteHits = ({ hits, hasMore, refineNext }) => (
         <Text>
           <Highlight attribute="{{this}}" hit={item} />
         </Text> */}
-        <Text>{JSON.stringify(item.title).slice(0, 100)}</Text>
+        <Pressable onPress={()=>console.log(item.objectID)}>
+          <Text style={{color: COLORS.Paragraph}}>{JSON.stringify(item.title).slice(0, 100)}</Text>
+        </Pressable>
       </View>
     )}
   />
