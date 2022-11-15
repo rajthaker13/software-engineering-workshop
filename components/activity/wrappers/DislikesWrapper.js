@@ -22,7 +22,7 @@ export default function DislikesWrapper(props) {
     }, [props, isFocused])
     return (
         <>
-            <View style={{ height: windowHeight * .4, marginLeft:"12%" }}>
+            <View style={{ height: windowHeight, marginLeft:"12%" }}>
                 <Text style={{ marginLeft: 'auto', marginRight: 'auto', color: 'white', fontSize: 22.5, fontWeight: '700' }}> {props.title}</Text>
                 <SafeAreaView>
                     <ScrollView>
