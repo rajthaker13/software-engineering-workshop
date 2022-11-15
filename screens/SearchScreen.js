@@ -10,6 +10,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { collection, addDoc, setDoc, doc, getDoc, updateDoc, getDocs } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { COLORS } from '../components/Colors/ColorScheme';
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -88,10 +89,11 @@ function SearchScreen() {
 
     <SafeAreaView>
         <SearchBar />
+        
         <ScrollView>            
 
             <View style={{
-                backgroundColor: '#3B3C3B',
+                backgroundColor: COLORS.Background,
                 width: windowWidth,
                 paddingTop: 10,
                 flex: 1

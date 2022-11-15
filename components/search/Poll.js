@@ -1,6 +1,8 @@
 import React from 'react'
 import { Button,Pressable, StyleSheet, View, Text, TextInput, ScrollView, SafeAreaView, Dimensions } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
+import { COLORS } from '../Colors/ColorScheme';
+
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -13,7 +15,7 @@ export default function Poll(props) {
     return (
         
         <View style={{
-            backgroundColor: '#D9D9D9', borderWidth: 10, borderColor: '#010101', borderRadius: 20,
+            backgroundColor: COLORS.Background, borderWidth: 10, borderColor: COLORS.Button, borderRadius: 15,
             width: 150,
             height: 140,
             marginTop: 15,
@@ -23,9 +25,9 @@ export default function Poll(props) {
             padding: 5,
             flex: 1
         }}>
-            <Text style={{ fontSize: 10 }}>{props.time}</Text>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1 }}>{props.title}</Text>
-            <Text style={{ fontSize: 10, textAlign: 'center', bottom: 0 }}>{props.answerNum} likes in the past minute</Text>
+            <Text style={{ fontSize: 10, color:COLORS.Paragraph }}>{props.time}</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color:COLORS.Paragraph }}>{props.title}</Text>
+            <Text style={{ fontSize: 10, textAlign: 'center', bottom: 0 , color:COLORS.Paragraph}}>{props.answerNum} likes in the past minute</Text>
         </View>
         
       
