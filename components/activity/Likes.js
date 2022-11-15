@@ -54,11 +54,9 @@ export default function Likes(props) {
         setOptions(docSnap.data()['options'])
         setTime(docSnap.data()['location'].timestamp)
       }
-    }
-    async function getVotingData() {
-      const docSnap = await getDoc(userRef);
-      if (docSnap.exists()) {
-          let userVotes = docSnap.data()['votes']
+      const docSnapUser = await getDoc(userRef);
+      if (docSnapUser.exists()) {
+          let userVotes = docSnapUser.data()['votes']
           if (userVotes == null) {
               userVotes = []
               updateDoc(userRef, {
@@ -100,9 +98,8 @@ export default function Likes(props) {
 
 
   }
-  getVotingData()
     getPollsData()
-  }, [props])
+  }, [props, isFocused])
 
   async function onVote(option) {
     const docSnap = await getDoc(pollRef);
@@ -274,7 +271,7 @@ export default function Likes(props) {
                   }
                   return (
                       <View>
-                          <Answer title={option} key={option} id={props.pollID} onVote={onVote} hasVoted={hasVoted} totalVotes={totalVotes} numVotes={numVotes} progress={progress} />
+                          <Answer title={option} key={option} id={props.pollID} onVote={onVote} optionBtnWidth={.7}  progress={progress} optionProgWidth={.7} hasVoted={hasVoted} totalVotes={totalVotes} numVotes={numVotes} />
                       </View>
                   )
                     // return (

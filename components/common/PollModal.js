@@ -103,7 +103,7 @@ export default function PollModal(props) {
 
   }
   getPollsData()
-  }, [props])
+  }, [props, isFocused])
 
   async function onVote(option) {
     const docSnap = await getDoc(pollRef);
