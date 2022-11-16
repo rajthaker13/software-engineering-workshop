@@ -78,7 +78,7 @@ function SearchScreen() {
     })
 
     var sorted = arrr.sort(function(a, b) {
-        return b[1] - a[1];
+        return b[2] - a[2];
     });
     
     var finalArr = []
