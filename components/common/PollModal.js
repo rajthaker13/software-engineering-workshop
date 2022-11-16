@@ -293,7 +293,7 @@ export default function PollModal(props) {
         >
           <View>
           <Text style={{ fontSize: 10, color: "#94a1b2", paddingLeft:"7.5%", marginTop:"-7.5%"  }}><Timestamp time = {time} /></Text>
-          <Text style={[MStyles.text, { alignSelf: 'center', fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginTop:"10%"}]}>{title}</Text>
+          <Text style={[MStyles.text, { alignSelf: 'center', fontSize: 15, fontWeight: 'bold', textAlign: 'center', marginTop:"10%"}]}>{title}</Text>
           {/* <Text  style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{title}</Text> */}
 
           </View>

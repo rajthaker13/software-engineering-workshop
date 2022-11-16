@@ -236,7 +236,7 @@ export default function ProfileScreen({ route, navigation }) {
                     renderItem={(item) => (
                         <TouchableOpacity style={MStyles.pollsContainer}>
                             {authorizedUser && <TouchableHighlight onPress={() => deletePoll(item)} style={{ alignSelf: "flex-end" }}>
-                                <MaterialCommunityIcons name="close-circle" color={COLORS.Paragraph} size={15} />
+                                <MaterialCommunityIcons name="close-circle" color={COLORS.Paragraph} size={20} />
                             </TouchableHighlight>}
                             {/* <View style={{ justifyContent: 'center' }}> */}
                                 <PollModal pollID={item.item}/>
