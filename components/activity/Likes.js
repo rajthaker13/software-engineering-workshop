@@ -246,7 +246,7 @@ export default function Likes(props) {
                 <View style={{ flexDirection: 'column' }}>
                   <Fontisto name="comment" size={26} color="white" />
                   <View style={styles.statsContainer}>
-                    <Text style={styles.statsText}>{comments}</Text>
+                    <Text style={styles.statsText}>{comments.length}</Text>
                   </View>
                 </View>
                 <View style={{ flexDirection: 'column' }}>
