@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, Image, TouchableHighlight, Pressable, FlatList, Dimensions, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Image, TouchableHighlight, Pressable, FlatList, Dimensions, TouchableOpacity, Modal, TextInput, ScrollView } from 'react-native';
 import { Button } from 'react-native-paper';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import Fontisto from 'react-native-vector-icons/Fontisto';
@@ -6,10 +6,17 @@ import Feather from 'react-native-vector-icons/Feather';
 import React, { useEffect, useReducer, useState } from 'react';
 import { Database, get, getDatabase, onValue, ref, set, update } from "firebase/database";
 import { getAuth } from 'firebase/auth';
-import { useIsFocused } from '@react-navigation/native';
-import { collection, addDoc, setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { collection, addDoc, setDoc, doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import GestureRecognizer from 'react-native-swipe-gestures';
+import { MStyles } from '../Mason Styles/MStyles';
+import { COLORS } from '../Colors/ColorScheme'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { InputAccessoryView } from 'react-native-web';
+
+
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -19,15 +26,20 @@ export default function PollStats(props) {
     const db = props.db
     const auth = props.auth
     const pollID = props.id
+    const pfp = props.pfp
+    const navigation = useNavigation()
 
-
+    const [text, setText] = useState('')
     const [likes, setLikes] = useState(props.likes)
     const [dislikes, setDislikes] = useState(props.dislikes)
-    const [comments, setComments] = useState(props.comments)
+    const [comments, setComments] = useState([])
     const [shares, setShares] = useState(props.shares)
     const [hasliked, setHasLiked] = useState(false)
     const [hasDisliked, setHasDisliked] = useState(false)
+    const [modalVisible, setModalVisible] = useState(false)
+    const [commentsSize, setCommentsSize] = useState(0)
     const isFocused = useIsFocused();
+    const [username, setUsername] = useState("")
     const pollRef = doc(db, "polls", pollID);
 
 
@@ -38,12 +50,14 @@ export default function PollStats(props) {
                 setLikes(docSnap.data()['likes'])
                 setDislikes(docSnap.data()['dislikes'])
                 setComments(docSnap.data()['comments'])
+                setCommentsSize(docSnap.data()['comments'].length)
                 setShares(docSnap.data()['shares'])
             }
             let hasVotedBefore = false
             const curUserRef = doc(db, "users", auth.currentUser.uid)
             const curSnap = await getDoc(curUserRef);
             if (curSnap.exists()) {
+                setUsername(curSnap.data()['username'])
                 let likesArr = curSnap.data()['pollsLiked']
                 let dislikesArr = curSnap.data()['pollsDisliked']
                 if (likesArr == null) {
@@ -275,7 +289,7 @@ export default function PollStats(props) {
 
 
         if (type == "comment") {
-            //Add Logic For Comments
+            setModalVisible(true)
         }
 
         if (type == "share") {
@@ -292,6 +306,29 @@ export default function PollStats(props) {
 
     }
 
+    const addComment = async () => {
+        await updateDoc(pollRef, {
+            comments: arrayUnion({user: username, comment: text, uid: auth.currentUser.uid, replies: []})
+        })
+        setComments([...comments, {user: username, comment: text, uid: auth.currentUser.uid, replies: []}])
+        setCommentsSize(commentsSize + 1)
+        setText('')
+    }
+
+    // const addReply = async (passComment) => {
+    //     passComment = {"comment": "Asdfasdf. ", "uid": "jOqjhZNEGyUvMAZOCUzEDTgCQh73", "user": "masongaller"}
+    //     let temp = comments
+    //     temp = temp.filter( (comment) => {
+    //         return comment.comment != passComment.comment || comment.user != passComment.user
+    //     } )
+    //     console.log(temp)
+    // }
+    
+
+    const commentPress = (comment) => {
+        setModalVisible(!modalVisible)
+        navigation.push("Home", { screen: "Profile", params: { id: comment.uid } })
+    }
 
 
     return (
@@ -319,17 +356,64 @@ export default function PollStats(props) {
                     <Fontisto name="comment" size={26} color="white" />
                 </TouchableOpacity>
                 <View style={styles.statsContainer}>
-                    <Text style={styles.statsText}>{props.comments}</Text>
+                    <Text style={styles.statsText}>{commentsSize}</Text>
                 </View>
             </View>
             <View style={{ flexDirection: 'column' }}>
-                <TouchableOpacity onPress={() => onPress("share")}>
-                    <Fontisto name="share-a" size={26} color="white" />
-                </TouchableOpacity>
-                <View style={styles.statsContainer}>
-                    <Text style={styles.statsText}>{shares}</Text>
-                </View>
-
+            <TouchableOpacity onPress={() => onPress("share")}>
+                <Fontisto name="share-a" size={26} color="white" />
+            </TouchableOpacity>
+            <View style={styles.statsContainer}>
+                <Text style={styles.statsText}>{shares}</Text>
+            </View>
+            <GestureRecognizer
+            style={{flex: 1}}
+            onSwipeDown={ () => setModalVisible(!modalVisible) }
+            onSwipeLeft={ () => setModalVisible(!modalVisible) }
+            onSwipeRight={ () => setModalVisible(!modalVisible) }
+            >
+                <Modal animationType="fade"
+                transparent={true} 
+                visible={modalVisible}
+                >
+                    <SafeAreaView style={{flex: 1, justifyContent: 'flex-end'}}>
+                        <View style={{width: windowWidth, height: windowHeight * 0.4, backgroundColor: COLORS.Background, borderColor: COLORS.Button, borderRadius: 25, borderWidth: 2, paddingTop: 10 }}>
+                            <ScrollView>
+                                {comments.map((comment) => {
+                                    return (
+                                    <View style={{width: windowWidth, paddingLeft: 10, paddingBottom: 10}}>
+                                        <View style={{flex: 1, flexDirection: 'row'}}>
+                                            <Image style={MStyles.commentImage} source={{uri: pfp}}/>
+                                            <View style={{flexDirection: 'column'}}>
+                                                <TouchableHighlight onPress={() => commentPress(comment)}>
+                                                    <Text style={{color: COLORS.Headline}}>{comment.user}</Text>
+                                                </TouchableHighlight>
+                                                <Text style={{color: COLORS.Paragraph, width: windowWidth * 0.85}}>{comment.comment}</Text>
+                                            </View> 
+                                        </View>   
+                                    </View>
+                                    )
+                                })}
+                            </ScrollView>
+                            <View style={[MStyles.option]}>
+                                <TextInput style={{ color: COLORS.Paragraph, flex: 0.9, paddingLeft: 5 }} 
+                                maxLength={150} 
+                                multiline={true}
+                                placeholder="Type Here" 
+                                placeholderTextColor={COLORS.Paragraph} 
+                                value={text} 
+                                onChangeText={(t) => setText(t)} 
+                                onKeyPress={(key) => {if (key.nativeEvent.key == "Enter") {addComment()}}}
+                                />
+                                <TouchableOpacity style={{ flex: 0.1 }} onPress={() => addComment()}>
+                                    <MaterialCommunityIcons name="send" color={COLORS.Paragraph} size={20} />
+                                </TouchableOpacity>
+                            </View>
+                        </View> 
+                    </SafeAreaView>
+                </Modal>
+            </GestureRecognizer>
+            
             </View>
         </View >
     )

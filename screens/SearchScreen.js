@@ -85,7 +85,6 @@ function SearchScreen() {
 
     sorted.forEach((poll)=>{
         finalArr.push({pollID: poll[0],title:poll[1],likes:poll[2]})
-        {console.log(poll[0])}
     })
 
 

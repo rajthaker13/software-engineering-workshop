@@ -167,7 +167,7 @@ export default function CreatePollScreen() {
                     options: pollAnswersCopy,
                     likes: 0,
                     dislikes: 0,
-                    comments: 0,
+                    comments: [],
                     shares: 0,
                     location: location,
                     numVotes: 0,

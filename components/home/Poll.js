@@ -36,6 +36,7 @@ export default function Poll(props) {
     const [hasVoted, setHasVoted] = useState(false)
     const [totalVotes, setTotalVotes] = useState(0)
     const [voteCounts, setVoteCounts] = useState([])
+    const [pfp, setPFP] = useState('')
 
 
 
@@ -44,6 +45,8 @@ export default function Poll(props) {
             const docSnap = await getDoc(userRef);
             if (docSnap.exists()) {
                 let userVotes = docSnap.data()['votes']
+                let userPFP = docSnap.data()['profile_picture_url']
+                setPFP(userPFP)
                 if (userVotes == null) {
                     userVotes = []
                     updateDoc(userRef, {
@@ -180,7 +183,7 @@ export default function Poll(props) {
             </View>
             <PollBanner uid={poll.uid} db={db} auth={auth} navigation={navigation} route={route} />
             <Question title={poll.title} />
-            <PollStats id={poll.key} likes={poll.likes} dislikes={poll.dislikes} comments={poll.comments} shares={poll.shares} db={db} auth={auth} />
+            <PollStats id={poll.key} likes={poll.likes} dislikes={poll.dislikes} comments={poll.comments} shares={poll.shares} db={db} auth={auth} pfp={pfp} navigation={navigation}/>
             {poll.options.map((option) => {
                 const choiceObject = voteCounts.find((choice) => {
                     return choice.choice == option

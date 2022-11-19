@@ -114,5 +114,11 @@ export const MStyles = StyleSheet.create({
             height: SCREEN_HEIGHT * 0.05,
             borderRadius: (SCREEN_HEIGHT * 0.05)/2,
             marginLeft: SCREEN_WIDTH * 0.05
+        },
+        commentImage: {
+            resizeMode: 'cover',
+            width: SCREEN_HEIGHT * 0.04,
+            height: SCREEN_HEIGHT * 0.04,
+            borderRadius: (SCREEN_HEIGHT * 0.04)/2,
         }
 });
