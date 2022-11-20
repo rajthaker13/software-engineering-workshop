@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, Image, TouchableHighlight, Pressable, FlatList, Dimensions, TouchableOpacity, Modal, TextInput, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Image, TouchableHighlight, Pressable, FlatList, Dimensions, TouchableOpacity, Modal, TextInput, ScrollView, TouchableWithoutFeedback } from 'react-native';
 import { Button } from 'react-native-paper';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import Fontisto from 'react-native-vector-icons/Fontisto';
@@ -37,7 +37,9 @@ export default function PollStats(props) {
     const [hasliked, setHasLiked] = useState(false)
     const [hasDisliked, setHasDisliked] = useState(false)
     const [modalVisible, setModalVisible] = useState(false)
+    const [replyModalVisible, setReplyModalVisible] = useState(false)
     const [commentsSize, setCommentsSize] = useState(0)
+    const [replyComment, setReplyComment] = useState({user: '', comment: '', uid: '', replies: [], pfp: ''})
     const isFocused = useIsFocused();
     const [username, setUsername] = useState("")
     const pollRef = doc(db, "polls", pollID);
@@ -308,22 +310,40 @@ export default function PollStats(props) {
 
     const addComment = async () => {
         await updateDoc(pollRef, {
-            comments: arrayUnion({user: username, comment: text, uid: auth.currentUser.uid, replies: []})
+            comments: arrayUnion({user: username, comment: text, uid: auth.currentUser.uid, replies: [], pfp: pfp})
         })
-        setComments([...comments, {user: username, comment: text, uid: auth.currentUser.uid, replies: []}])
+        setComments([...comments, {user: username, comment: text, uid: auth.currentUser.uid, replies: [], pfp: pfp}])
         setCommentsSize(commentsSize + 1)
         setText('')
     }
 
-    // const addReply = async (passComment) => {
-    //     passComment = {"comment": "Asdfasdf. ", "uid": "jOqjhZNEGyUvMAZOCUzEDTgCQh73", "user": "masongaller"}
-    //     let temp = comments
-    //     temp = temp.filter( (comment) => {
-    //         return comment.comment != passComment.comment || comment.user != passComment.user
-    //     } )
-    //     console.log(temp)
-    // }
-    
+    const startReply = (passComment) => {
+        setReplyComment(passComment)
+        setModalVisible(!modalVisible)
+        setReplyModalVisible(!replyModalVisible)
+    }
+
+    const addReply = async (passComment, text) => {
+        let temp = comments
+        let tempIndex = temp.findIndex((comment) => 
+            comment.comment == passComment.comment && comment.user == passComment.user
+        )
+        
+        passComment.replies.push({user: username, comment: text, uid: auth.currentUser.uid, pfp: pfp})
+        if (tempIndex != -1) {
+            temp[tempIndex] = passComment
+        }
+
+        await updateDoc(pollRef, {
+            comments: temp
+        })
+
+        setReplyComment({user: '', comment: '', uid: '', replies: [], pfp: ''})
+        setComments(temp)
+        setReplyModalVisible(false)
+        setModalVisible(true)
+        setText('')
+    }
 
     const commentPress = (comment) => {
         setModalVisible(!modalVisible)
@@ -360,62 +380,112 @@ export default function PollStats(props) {
                 </View>
             </View>
             <View style={{ flexDirection: 'column' }}>
-            <TouchableOpacity onPress={() => onPress("share")}>
-                <Fontisto name="share-a" size={26} color="white" />
-            </TouchableOpacity>
-            <View style={styles.statsContainer}>
-                <Text style={styles.statsText}>{shares}</Text>
+                <TouchableOpacity onPress={() => onPress("share")}>
+                    <Fontisto name="share-a" size={26} color="white" />
+                </TouchableOpacity>
+                <View style={styles.statsContainer}>
+                    <Text style={styles.statsText}>{shares}</Text>
+                </View>
             </View>
-            <GestureRecognizer
-            style={{flex: 1}}
-            onSwipeDown={ () => setModalVisible(!modalVisible) }
-            onSwipeLeft={ () => setModalVisible(!modalVisible) }
-            onSwipeRight={ () => setModalVisible(!modalVisible) }
-            >
-                <Modal animationType="fade"
-                transparent={true} 
-                visible={modalVisible}
-                >
-                    <SafeAreaView style={{flex: 1, justifyContent: 'flex-end'}}>
-                        <View style={{width: windowWidth, height: windowHeight * 0.4, backgroundColor: COLORS.Background, borderColor: COLORS.Button, borderRadius: 25, borderWidth: 2, paddingTop: 10 }}>
-                            <ScrollView>
-                                {comments.map((comment) => {
-                                    return (
-                                    <View style={{width: windowWidth, paddingLeft: 10, paddingBottom: 10}}>
-                                        <View style={{flex: 1, flexDirection: 'row'}}>
-                                            <Image style={MStyles.commentImage} source={{uri: pfp}}/>
-                                            <View style={{flexDirection: 'column'}}>
-                                                <TouchableHighlight onPress={() => commentPress(comment)}>
-                                                    <Text style={{color: COLORS.Headline}}>{comment.user}</Text>
-                                                </TouchableHighlight>
-                                                <Text style={{color: COLORS.Paragraph, width: windowWidth * 0.85}}>{comment.comment}</Text>
-                                            </View> 
-                                        </View>   
-                                    </View>
-                                    )
-                                })}
-                            </ScrollView>
-                            <View style={[MStyles.option]}>
-                                <TextInput style={{ color: COLORS.Paragraph, flex: 0.9, paddingLeft: 5 }} 
-                                maxLength={150} 
-                                multiline={true}
-                                placeholder="Type Here" 
-                                placeholderTextColor={COLORS.Paragraph} 
-                                value={text} 
-                                onChangeText={(t) => setText(t)} 
-                                onKeyPress={(key) => {if (key.nativeEvent.key == "Enter") {addComment()}}}
-                                />
-                                <TouchableOpacity style={{ flex: 0.1 }} onPress={() => addComment()}>
-                                    <MaterialCommunityIcons name="send" color={COLORS.Paragraph} size={20} />
-                                </TouchableOpacity>
-                            </View>
-                        </View> 
-                    </SafeAreaView>
-                </Modal>
-            </GestureRecognizer>
             
-            </View>
-        </View >
+            <Modal animationType='slide'
+            transparent={true} 
+            visible={modalVisible}>
+                <TouchableOpacity activeOpacity={1} style={{flex: 1}} onPressOut={() => setModalVisible(false)}>
+                    <SafeAreaView style={{flex: 1, justifyContent: 'flex-end'}}>
+                        <TouchableWithoutFeedback>
+                            <View style={{width: windowWidth, height: windowHeight * 0.4, backgroundColor: COLORS.Background, borderColor: COLORS.Button, borderRadius: 25, borderWidth: 2, paddingTop: 10 }}>
+                                <ScrollView>
+                                    {comments.map((comment) => {
+                                        return (
+                                        <View onStartShouldSetResponder={() => true} style={{width: windowWidth, paddingLeft: windowWidth * 0.01, paddingBottom: windowHeight * 0.01}}>
+                                            <View style={{flex: 1, flexDirection: 'row'}}>
+                                                <Image style={MStyles.commentImage} source={{uri: comment.pfp}}/>
+                                                <View style={{flexDirection: 'column'}}>
+                                                    <TouchableHighlight onPress={() => commentPress(comment)}>
+                                                        <Text style={{color: COLORS.Headline}}>{comment.user}</Text>
+                                                    </TouchableHighlight>
+                                                    <Text style={{color: COLORS.Paragraph, width: windowWidth * 0.85}}>{comment.comment}</Text>
+                                                    <TouchableHighlight onPress= {() => startReply(comment)}>
+                                                        <Text style={{color: COLORS.Headline}}>Reply</Text>
+                                                    </TouchableHighlight>
+                                                    {comment.replies.map((reply) => {
+                                                        return (
+                                                            <View onStartShouldSetResponder={() => true} style={{width: windowWidth, paddingLeft: windowWidth * 0.01, paddingTop: windowHeight * 0.01}}>
+                                                                <View style={{flex: 1, flexDirection: 'row'}}>
+                                                                    <Image style={MStyles.commentImage} source={{uri: reply.pfp}}/>
+                                                                    <View style={{flexDirection: 'column'}}>
+                                                                        <TouchableHighlight onPress={() => commentPress(comment)}>
+                                                                            <Text style={{color: COLORS.Headline}}>{reply.user}</Text>
+                                                                        </TouchableHighlight>
+                                                                        <Text style={{color: COLORS.Paragraph, width: windowWidth * 0.80}}>{reply.comment}</Text>
+                                                                    </View> 
+                                                                </View>   
+                                                            </View>
+                                                        )
+                                                    })}
+                                                </View> 
+                                            </View>   
+                                        </View>
+                                        )
+                                    })}
+                                </ScrollView>
+                                <View style={[MStyles.option]}>
+                                    <TextInput style={{ color: COLORS.Paragraph, flex: 0.9, paddingLeft: windowWidth * 0.01}} 
+                                    maxLength={150} 
+                                    multiline={true}
+                                    placeholder="Type Here" 
+                                    placeholderTextColor={COLORS.Paragraph} 
+                                    value={text} 
+                                    onChangeText={(t) => setText(t)} 
+                                    onKeyPress={(key) => {if (key.nativeEvent.key == "Enter") {addComment()}}}
+                                    autoCapitalize={false}/>
+                                    <TouchableOpacity style={{ flex: 0.1 }} onPress={() => addComment()}>
+                                        <MaterialCommunityIcons name="send" color={COLORS.Paragraph} size={20} />
+                                    </TouchableOpacity>
+                                </View>
+                            </View> 
+                        </TouchableWithoutFeedback>
+                    </SafeAreaView>
+                </TouchableOpacity>
+            </Modal>
+            <Modal animationType='slide'
+            transparent={true} 
+            visible={replyModalVisible}>
+                <TouchableOpacity activeOpacity={1} style={{flex: 1}} onPressOut={() => setReplyModalVisible(false)}>
+                    <SafeAreaView style={{flex: 1, justifyContent: 'flex-end'}}>
+                        <TouchableWithoutFeedback>
+                            <View style={{width: windowWidth, height: windowHeight * 0.4, backgroundColor: COLORS.Background, borderColor: COLORS.Button, borderRadius: 25, borderWidth: 2, paddingTop: windowHeight * 0.01 }}>
+                                <View style={{width: windowWidth, flex: 1, paddingLeft: windowWidth * 0.01}}> 
+                                    <Text style={{color: COLORS.Headline, paddingBottom: windowHeight * 0.01}}>Replying to:</Text>
+                                    <View style={{flexDirection: 'row'}}>
+                                        <Image style={MStyles.commentImage} source={{uri: replyComment.pfp}}/>
+                                        <View style={{flexDirection: 'column'}}>                            
+                                            <Text style={{color: COLORS.Headline}}>{replyComment.user}</Text>
+                                            <Text style={{color: COLORS.Paragraph, width: windowWidth * 0.85}}>{replyComment.comment}</Text>
+                                        </View> 
+                                    </View>
+                                </View>   
+                                <View style={[MStyles.option]}>
+                                    <TextInput style={{ color: COLORS.Paragraph, flex: 0.9, paddingLeft: windowHeight * 0.01 }} 
+                                    maxLength={150} 
+                                    multiline={true}
+                                    placeholder="Type Here" 
+                                    placeholderTextColor={COLORS.Paragraph} 
+                                    value={text} 
+                                    onChangeText={(t) => setText(t)} 
+                                    onKeyPress={(key) => {if (key.nativeEvent.key == "Enter") {addReply(replyComment, text)}}}
+                                    autoCapitalize={false}/>
+                                    <TouchableOpacity style={{ flex: 0.1 }} onPress={() => addReply(replyComment, text)}>
+                                        <MaterialCommunityIcons name="send" color={COLORS.Paragraph} size={20} />
+                                    </TouchableOpacity>
+                                </View>
+                            </View> 
+                        </TouchableWithoutFeedback>
+                    </SafeAreaView>
+                </TouchableOpacity>
+            </Modal>
+        </View>
     )
 }
 

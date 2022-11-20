@@ -209,7 +209,7 @@ export default function CreatePollScreen() {
                     {inputs.map((index) => {
                         return (
                             <View style={MStyles.option}>
-                                <TextInput style={{ color: COLORS.Paragraph, flex: 0.9, paddingLeft: 5 }} maxLength={25} placeholder="Type Here" placeholderTextColor={COLORS.Paragraph} value={pollAnswers[index]} onChangeText={(text) => updateText(text, index)} />
+                                <TextInput style={{ color: COLORS.Paragraph, flex: 0.9, paddingLeft: 5 }} maxLength={25} placeholder="Type Here" placeholderTextColor={COLORS.Paragraph} value={pollAnswers[index]} onChangeText={(text) => updateText(text, index)} autoCapitalize={false}/>
                                 <TouchableOpacity style={{ flex: 0.1 }} onPress={() => deleteInput(index)}>
                                     <MaterialCommunityIcons name="window-close" color={COLORS.Paragraph} size={20} />
                                 </TouchableOpacity>
