@@ -183,6 +183,10 @@ export default function ProfileScreen({ route, navigation }) {
                         <TouchableHighlight onPress={() => navigation.push("Settings")} >
                             <MaterialCommunityIcons name="cog" color={COLORS.Paragraph} size={25} />
                         </TouchableHighlight>}
+                    {!authorizedUser &&
+                    <TouchableHighlight onPress={() => navigation.push("Report", { user: username, type: 'Profile', reason: 'Inappropriate Profile', uid: currentUid})} >
+                        <MaterialCommunityIcons name="flag-outline" color={COLORS.Paragraph} size={25} />
+                    </TouchableHighlight>}
                 </View>
             </View>
             <View style={[styles.layer, { alignItems: 'center' }]}>
