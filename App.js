@@ -18,6 +18,7 @@ import SettingsScreen from './screens/SettingsScreen'
 import FollowScreen from './screens/FollowScreen';
 import EditPFPScreen from './screens/EditPFP';
 import NewUserScreen from './screens/NewUserScreen';
+import ReportScreen from './screens/ReportScreen'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getAuth } from 'firebase/auth';
@@ -134,6 +135,7 @@ export default function App() {
         <Stack.Screen name="Edit PFP" component={EditPFPScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="New User" component={NewUserScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="SearchPage" component={Search} options={{ headerShown: false }}/>
+        <Stack.Screen name="Report" component={ReportScreen} options={{ headerShown: false }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

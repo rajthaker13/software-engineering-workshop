@@ -15,6 +15,7 @@ import { MStyles } from '../Mason Styles/MStyles';
 import { COLORS } from '../Colors/ColorScheme'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { InputAccessoryView } from 'react-native-web';
+import { RotateInUpLeft } from 'react-native-reanimated';
 
 
 
@@ -42,6 +43,7 @@ export default function PollStats(props) {
     const [replyComment, setReplyComment] = useState({user: '', comment: '', uid: '', replies: [], pfp: ''})
     const isFocused = useIsFocused();
     const [username, setUsername] = useState("")
+    const [pollUsername, setPollusername] = useState('')
     const pollRef = doc(db, "polls", pollID);
 
 
@@ -54,6 +56,7 @@ export default function PollStats(props) {
                 setComments(docSnap.data()['comments'])
                 setCommentsSize(docSnap.data()['comments'].length)
                 setShares(docSnap.data()['shares'])
+                setPollusername(docSnap.data()['creator'])
             }
             let hasVotedBefore = false
             const curUserRef = doc(db, "users", auth.currentUser.uid)
@@ -387,7 +390,11 @@ export default function PollStats(props) {
                     <Text style={styles.statsText}>{shares}</Text>
                 </View>
             </View>
-            
+            <View style={{ flexDirection: 'column' }}>
+                <TouchableHighlight onPress={() => navigation.push("Report", { user: pollUsername, type: 'Poll', reason: 'Inappropriate Poll', uid: props.uid})} >
+                    <MaterialCommunityIcons name="flag-outline" color="white" size={35} />
+                </TouchableHighlight>
+            </View>
             <Modal animationType='slide'
             transparent={true} 
             visible={modalVisible}>
@@ -402,9 +409,14 @@ export default function PollStats(props) {
                                             <View style={{flex: 1, flexDirection: 'row'}}>
                                                 <Image style={MStyles.commentImage} source={{uri: comment.pfp}}/>
                                                 <View style={{flexDirection: 'column'}}>
-                                                    <TouchableHighlight onPress={() => commentPress(comment)}>
-                                                        <Text style={{color: COLORS.Headline}}>{comment.user}</Text>
-                                                    </TouchableHighlight>
+                                                    <View style={{flexDirection: 'row'}}>
+                                                        <TouchableHighlight onPress={() => commentPress(comment)}>
+                                                            <Text style={{color: COLORS.Headline}}>{comment.user}</Text>
+                                                        </TouchableHighlight>
+                                                        <TouchableHighlight onPress={() => {setModalVisible(!modalVisible); navigation.push("Report", { user: comment.user, type: 'Comment', reason: comment.comment, uid: comment.uid})}} >
+                                                            <MaterialCommunityIcons name="flag-outline" color={COLORS.Paragraph} size={15} />
+                                                        </TouchableHighlight>
+                                                    </View>
                                                     <Text style={{color: COLORS.Paragraph, width: windowWidth * 0.85}}>{comment.comment}</Text>
                                                     <TouchableHighlight onPress= {() => startReply(comment)}>
                                                         <Text style={{color: COLORS.Headline}}>Reply</Text>
@@ -415,9 +427,14 @@ export default function PollStats(props) {
                                                                 <View style={{flex: 1, flexDirection: 'row'}}>
                                                                     <Image style={MStyles.commentImage} source={{uri: reply.pfp}}/>
                                                                     <View style={{flexDirection: 'column'}}>
-                                                                        <TouchableHighlight onPress={() => commentPress(comment)}>
-                                                                            <Text style={{color: COLORS.Headline}}>{reply.user}</Text>
-                                                                        </TouchableHighlight>
+                                                                        <View style={{flexDirection: 'row'}}>
+                                                                            <TouchableHighlight onPress={() => commentPress(comment)}>
+                                                                                <Text style={{color: COLORS.Headline}}>{reply.user}</Text>
+                                                                            </TouchableHighlight>
+                                                                            <TouchableHighlight onPress={() => {setModalVisible(!modalVisible); navigation.push("Report", { user: reply.user, type: 'Comment', reason: reply.comment, uid: reply.uid})}} >
+                                                                                <MaterialCommunityIcons name="flag-outline" color={COLORS.Paragraph} size={15} />
+                                                                            </TouchableHighlight>
+                                                                        </View>
                                                                         <Text style={{color: COLORS.Paragraph, width: windowWidth * 0.80}}>{reply.comment}</Text>
                                                                     </View> 
                                                                 </View>   

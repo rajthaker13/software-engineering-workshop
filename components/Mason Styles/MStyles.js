@@ -77,6 +77,26 @@ export const MStyles = StyleSheet.create({
             borderRadius: 10,
             paddingLeft: 5
         },
+        inputMedium: {
+            width: SCREEN_WIDTH * 0.75,
+            height: SCREEN_HEIGHT * 0.1,
+            borderColor: COLORS.Paragraph,
+            borderWidth: 2,
+            alignSelf: 'center',
+            color: COLORS.Paragraph,
+            borderRadius: 10,
+            paddingLeft: 5
+        },
+        inputLong: {
+            width: SCREEN_WIDTH * 0.75,
+            height: SCREEN_HEIGHT * 0.2,
+            borderColor: COLORS.Paragraph,
+            borderWidth: 2,
+            alignSelf: 'center',
+            color: COLORS.Paragraph,
+            borderRadius: 10,
+            paddingLeft: 5
+        },
         text: {
             fontSize: 14,
             fontWeight: '700',
