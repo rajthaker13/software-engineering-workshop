@@ -11,13 +11,15 @@ import { collection, addDoc, setDoc, doc, getDoc, updateDoc, getDocs } from "fir
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { COLORS } from '../components/Colors/ColorScheme';
-import algoliasearch from 'algoliasearch/lite';
+// import algoliasearch from 'algoliasearch/lite';
 import SearchBoxNative from '../components/search/SearchBoxNative';
 import { InstantSearch } from 'react-instantsearch-native';
 import InfiniteHits from '../components/search/InfiniteHits';
 import { SearchBox } from 'react-instantsearch-dom';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import algoliasearch from 'algoliasearch';
+
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -25,13 +27,22 @@ const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 
-const searchClient = algoliasearch('PN9CAYIKKA', 'ecd74f365860ea94f1d92779981d4a64');
+// const searchClient = algoliasearch('PN9CAYIKKA', 'ecd74f365860ea94f1d92779981d4a64');
 
-
+// const client = algoliasearch('PN9CAYIKKA', '8426ddb9e02f50bcb8ae7b4a604db602');
+const client = algoliasearch('PN9CAYIKKA', '8426ddb9e02f50bcb8ae7b4a604db602');
+const userIndex = client.initIndex('PollMe_users');
 
 function SearchScreen() {
 
+
+
+
+    
+
+
     const [pollsArray, setPollsArray] = useState([])
+    const [usersArray, setUsersArray] = useState([])
     const [actArray, setActArray] = useState([])
     const isFocused = useIsFocused();
     const [showHits, setShowHits] = useState(false);
@@ -52,10 +63,24 @@ function SearchScreen() {
             setPollsArray(arr)
 
         }
+        async function getUsers() {
+            let arr = []
+            const usersSnapshot = await getDocs(collection(db, "users"));
+            usersSnapshot.forEach((user) => {
+                var item = user.data()
+                item.objectID = user.id
+                arr.push(item)
+            })
+            setUsersArray(arr)
+
+        }
         getPolls()
+        getUsers()
 
     }, [isFocused])
 
+    
+    // userIndex.saveObjects(test, { autoGenerateObjectIDIfNotExist: true });
 
 
     let arrr =[]
