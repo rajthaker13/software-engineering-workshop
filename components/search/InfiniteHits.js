@@ -8,6 +8,8 @@ import PollModal from '../common/PollModalForSearch';
 import { useEffect, useReducer, useState } from 'react';
 import { MStyles } from '../Mason Styles/MStyles';
 import { TouchableOpacity } from 'react-native';
+import { getAuth } from 'firebase/auth';
+import { useNavigation } from '@react-navigation/native';
 
 
 const styles = StyleSheet.create({
@@ -27,35 +29,30 @@ const styles = StyleSheet.create({
 const windowHeight = Dimensions.get('window').height;
 // const [modalVisible, setModalVisible] = useState(false);
 
-const InfiniteHits = ({ hits, hasMore, refineNext }) => (
-  <FlatList 
-    data={hits}
-    keyExtractor={item => item.objectID}
-    ItemSeparatorComponent={() => <View style={styles.separator} />}
-    onEndReached={() => hasMore && refineNext()}
-    renderItem={({ item }) => (
+const InfiniteHits = ({ hits, hasMore, refineNext }) => {
 
-      <TouchableOpacity style={styles.item}>
-          <PollModal pollID={item.objectID}/>  
-      </TouchableOpacity>
+  const navigation = useNavigation();
 
-      // <PollModal pollID={item.objectID}/>
+  return(
+    <FlatList 
+      data={hits}
+      keyExtractor={item => item.objectID}
+      ItemSeparatorComponent={() => <View style={styles.separator} />}
+      onEndReached={() => hasMore && refineNext()}
+      renderItem={({ item }) => (
 
-      // <View style={styles.item}>
-      //   {/* <Text style={styles.titleText}>
-      //     <Highlight attribute="{{attributesToDisplay.[0]}}" hit={item} />
-      //   </Text>
-      //   <Text>
-      //     <Highlight attribute="{{this}}" hit={item} />
-      //   </Text> */}
-      //   <Pressable onPress={()=> {console.log("xxx", item.objectID)}}>
-      //     <Text style={{color: COLORS.Paragraph}}>{JSON.stringify(item.title).slice(0, 100)}</Text>
-      //     {/* {console.log("xxx", item.objectID)} */}
-      //   </Pressable>
-      // </View>
-    )}
-  />
-);
+        // <TouchableOpacity style={styles.item}>
+        //     <PollModal pollID={item.objectID} navPoll={navigation} setVisibility={true}/>  
+        // </TouchableOpacity>
+
+        <View style={styles.item}>
+          <Pressable onPress={() => navigation.navigate("HomeScreen", {pid: item.objectID})}>
+            <Text style={[MStyles.text]}>{item.title}</Text>
+          </Pressable>
+        </View>
+      )}
+    />
+  )};
 
 InfiniteHits.propTypes = {
   hits: PropTypes.arrayOf(PropTypes.object).isRequired,
