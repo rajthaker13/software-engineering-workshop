@@ -39,6 +39,7 @@ export default function ActivityScreen() {
       const userSnap = await getDoc(userRef);
       let likeArr = []
       let dislikeArr = []
+      let pollArr = []
       if (userSnap.exists()) {
         let data = userSnap.data()['activity']
         if (data != false) {

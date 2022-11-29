@@ -5,9 +5,10 @@ import { get, getDatabase, onValue, ref, remove, update } from "firebase/databas
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Feather from 'react-native-vector-icons/Feather';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getAuth } from 'firebase/auth';
+import { NativeScreenNavigationContainer } from 'react-native-screens';
 import { collection, addDoc, setDoc, doc, getDoc, updateDoc, getFirestore } from "firebase/firestore";
 import GestureRecognizer from 'react-native-swipe-gestures';
 import Answer from '../home/Answer';
@@ -100,79 +101,7 @@ export default function Dislikes(props) {
     getPollsData()
   }, [props])
 
-  async function onVote(option) {
-    const docSnap = await getDoc(pollRef);
-    if (docSnap.exists()) {
-        let curVotesOption = docSnap.data()['votes'].filter(choice => {
-            return choice['choice'] != option
-        })
-        let curVotesOptionsAll = docSnap.data()['votes']
-        const curVotes = docSnap.data()['numVotes'] + 1
-        let voteCountsUpdate = []
-        curVotesOptionsAll.forEach((choice) => {
-            let numVotes = 0
-            if (option == choice['choice']) {
-                numVotes = choice['numVotes'] + 1
-                let votesArray = choice['votes']
-
-                var newVote = {
-                    timestamp: Date.now(),
-                    uid: auth.currentUser.uid
-
-                }
-                votesArray.push(newVote)
-
-                var newVote = {
-                    choice: option,
-                    numVotes: numVotes,
-                    votes: votesArray
-
-                }
-
-                curVotesOption.push(newVote)
-
-
-                updateDoc(pollRef, {
-                    votes: curVotesOption,
-                    numVotes: curVotes
-                })
-
-            }
-            else {
-                numVotes = choice['numVotes']
-
-            }
-            var optionVoteCount = {
-                choice: choice['choice'],
-                numVotes: numVotes
-            }
-            voteCountsUpdate.push(optionVoteCount)
-        })
-
-        const userSnap = await getDoc(userRef)
-        if (userSnap.exists()) {
-            let userVotes = userSnap.data()['votes']
-            var userVote = {
-                pid: props.pollID,
-                timestamp: Date.now(),
-                choice: option
-            }
-            userVotes.push(userVote)
-            updateDoc(userRef, {
-                votes: userVotes,
-            })
-          }
-          setHasVoted(true)
-          setTotalVotes(curVotes)
-          setVoteCounts(voteCountsUpdate)
   
-      }
-  
-  
-  
-  }
-
-
   if(dislikes>0){
   return (
     <View style={{
@@ -269,7 +198,7 @@ export default function Dislikes(props) {
                   }
                     return (
                       <View>
-                        <Answer title={option} key={option} id={props.pollID} onVote={onVote} optionBtnWidth={.7}  progress={progress} optionProgWidth={.7} hasVoted={hasVoted} totalVotes={totalVotes} numVotes={numVotes} />
+                        <Answer title={option} key={option} id={props.pollID} optionBtnWidth={.7}  progress={progress} optionProgWidth={.7} hasVoted={hasVoted} totalVotes={totalVotes} numVotes={numVotes} />
                       </View>
                     )
                   })}
@@ -281,7 +210,8 @@ export default function Dislikes(props) {
       </Modal>
       </GestureRecognizer>
       <Pressable
-        onPress={() => setModalVisible(true)}
+        // onPress={() => props.navPoll.navigate("HomeScreen", {pid: props.pollID})}
+        onLongPress={() => setModalVisible(true)}
         >
         <Text style={{ fontSize: 10, color: "#94a1b2", paddingLeft:"5%", paddingTop:"1%"  }}>{props.time}</Text>
         <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{title}</Text>

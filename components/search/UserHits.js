@@ -8,6 +8,8 @@ import PollModal from '../common/PollModalForSearch';
 import { useEffect, useReducer, useState } from 'react';
 import { MStyles } from '../Mason Styles/MStyles';
 import { TouchableOpacity } from 'react-native';
+import { getAuth } from 'firebase/auth';
+import { useNavigation } from '@react-navigation/native';
 
 
 const styles = StyleSheet.create({
@@ -27,7 +29,13 @@ const styles = StyleSheet.create({
 const windowHeight = Dimensions.get('window').height;
 // const [modalVisible, setModalVisible] = useState(false);
 
-const UserHits = ({ hits, hasMore, refineNext }) => (
+
+
+const UserHits = ({ hits, hasMore, refineNext }) => {
+
+  const auth = getAuth();
+  const navigation = useNavigation();
+  return(
   <FlatList 
     data={hits}
     keyExtractor={item => item.objectID}
@@ -47,14 +55,14 @@ const UserHits = ({ hits, hasMore, refineNext }) => (
         <Text>
           <Highlight attribute="{{this}}" hit={item} />
         </Text> */}
-        <Pressable onPress={()=> {console.log("xxx", item.objectID)}}>
-          <Text style={[MStyles.text]}>{JSON.stringify(item.firstName).slice(0, 100)}</Text>
+        <Pressable onPress={() => navigation.push("Home", { screen: "Profile", params: { id: item.objectID, prevId: auth.currentUser.uid } })}>
+          <Text style={[MStyles.text]}>{item.firstName}</Text>
           {/* {console.log("xxx", item.objectID)} */}
         </Pressable>
       </View>
     )}
   />
-);
+)};
 
 UserHits.propTypes = {
   hits: PropTypes.arrayOf(PropTypes.object).isRequired,
