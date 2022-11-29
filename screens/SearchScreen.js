@@ -28,15 +28,12 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 
 
 // const searchClient = algoliasearch('PN9CAYIKKA', 'ecd74f365860ea94f1d92779981d4a64');
-
 // const client = algoliasearch('PN9CAYIKKA', '8426ddb9e02f50bcb8ae7b4a604db602');
+
 const client = algoliasearch('PN9CAYIKKA', '8426ddb9e02f50bcb8ae7b4a604db602');
 const userIndex = client.initIndex('PollMe_users');
 
 function SearchScreen() {
-
-
-
 
     
 
@@ -80,7 +77,7 @@ function SearchScreen() {
     }, [isFocused])
 
     
-    // userIndex.saveObjects(test, { autoGenerateObjectIDIfNotExist: true });
+    userIndex.saveObjects(usersArray, { autoGenerateObjectIDIfNotExist: true });
 
 
     let arrr =[]
