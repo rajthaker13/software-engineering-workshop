@@ -239,11 +239,13 @@ export default function ProfileScreen({ route, navigation }) {
                     data={pollsArray}
                     renderItem={(item) => (
                         <TouchableOpacity style={MStyles.pollsContainer}>
+                        {/* <TouchableOpacity style={MStyles.pollsContainer} onPress={() => navigation.navigate("HomeScreen", {pid: item.item})}> */}
+
                             {authorizedUser && <TouchableHighlight onPress={() => deletePoll(item)} style={{ alignSelf: "flex-end" }}>
                                 <MaterialCommunityIcons name="close-circle" color={COLORS.Paragraph} size={20} />
                             </TouchableHighlight>}
                             {/* <View style={{ justifyContent: 'center' }}> */}
-                                <PollModal pollID={item.item}/>
+                                <PollModal pollID={item.item} navPoll={navigation}/>
                                 {/* <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{(item.item).replace(currentUid, "")}</Text> */}
                                 {/* {console.log(item.item)} */}
                             {/* </View> */}
