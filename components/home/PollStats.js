@@ -18,7 +18,6 @@ import { InputAccessoryView } from 'react-native-web';
 import { RotateInUpLeft } from 'react-native-reanimated';
 
 
-
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
@@ -44,6 +43,7 @@ export default function PollStats(props) {
     const isFocused = useIsFocused();
     const [username, setUsername] = useState("")
     const [pollUsername, setPollusername] = useState('')
+    const [UID, setUID] = useState("")
     const pollRef = doc(db, "polls", pollID);
 
 
@@ -57,6 +57,7 @@ export default function PollStats(props) {
                 setCommentsSize(docSnap.data()['comments'].length)
                 setShares(docSnap.data()['shares'])
                 setPollusername(docSnap.data()['creator'])
+                setUID(docSnap.data()["uid"])
             }
             let hasVotedBefore = false
             const curUserRef = doc(db, "users", auth.currentUser.uid)
@@ -391,7 +392,7 @@ export default function PollStats(props) {
                 </View>
             </View>
             <View style={{ flexDirection: 'column' }}>
-                <TouchableHighlight onPress={() => navigation.push("Report", { user: pollUsername, type: 'Poll', reason: 'Inappropriate Poll', uid: props.uid})} >
+                <TouchableHighlight onPress={() => navigation.push("Report", { user: pollUsername, type: 'Poll', reason: 'Inappropriate Poll', uid: UID})} >
                     <MaterialCommunityIcons name="flag-outline" color="white" size={35} />
                 </TouchableHighlight>
             </View>
