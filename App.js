@@ -26,6 +26,7 @@ import { getFirestore } from 'firebase/firestore'
 import { COLORS } from './components/Colors/ColorScheme';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Search from './screens/Search';
+import { getStorage } from 'firebase/storage'
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -46,6 +47,7 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth = getAuth()
 const db = getFirestore(app);
+export const storage = getStorage(app)
 
 
 const Tab = createMaterialTopTabNavigator();
@@ -56,11 +58,13 @@ function Home() {
     <Tab.Navigator
       initialRouteName="HomeScreen"
       screenOptions={{
-        tabBarStyle: {backgroundColor: COLORS.Background, 
-            height: SCREEN_HEIGHT * 0.08},
+        tabBarStyle: {
+          backgroundColor: COLORS.Background,
+          height: SCREEN_HEIGHT * 0.08
+        },
         tabBarActiveTintColor: COLORS.Button,
         tabBarInactiveTintColor: COLORS.Paragraph,
-        tabBarIndicatorStyle: {height: 0},
+        tabBarIndicatorStyle: { height: 0 },
         tabBarShowLabel: false
       }}
       tabBarPosition="bottom"
@@ -132,10 +136,10 @@ export default function App() {
         <Stack.Screen name="Edit Profile" component={EditProfileScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Follow" component={FollowScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Edit PFP" component={EditPFPScreen} options={{ headerShown: false }}/>
-        <Stack.Screen name="New User" component={NewUserScreen} options={{ headerShown: false }}/>
-        <Stack.Screen name="SearchPage" component={Search} options={{ headerShown: false }}/>
-        <Stack.Screen name="Report" component={ReportScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name="Edit PFP" component={EditPFPScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="New User" component={NewUserScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="SearchPage" component={Search} options={{ headerShown: false }} />
+        <Stack.Screen name="Report" component={ReportScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
