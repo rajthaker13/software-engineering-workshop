@@ -230,9 +230,16 @@ export default function ProfileScreen({ route, navigation }) {
             <View style={styles.layer}>
                 <Text style={[MStyles.text, { alignSelf: 'center' }]}>{description}</Text>
             </View>
+            {authorizedUser &&
             <View style={MStyles.headerContainer}>
                 <Text style={[MStyles.header, { width: SCREEN_WIDTH, marginLeft: 15 }]}>Your Polls</Text>
             </View>
+            }
+            {!authorizedUser &&
+            <View style={MStyles.headerContainer}>
+                <Text style={[MStyles.header, { width: SCREEN_WIDTH, marginLeft: 15 }]}>User Polls</Text>
+            </View>
+            }
             <View style={{ width: SCREEN_WIDTH, height: 0.5 * SCREEN_HEIGHT }} >
                 <FlatList
                     numColumns={3}
@@ -241,8 +248,9 @@ export default function ProfileScreen({ route, navigation }) {
                         <TouchableOpacity style={MStyles.pollsContainer}>
                         {/* <TouchableOpacity style={MStyles.pollsContainer} onPress={() => navigation.navigate("HomeScreen", {pid: item.item})}> */}
 
-                            {authorizedUser && <TouchableHighlight onPress={() => deletePoll(item)} style={{ alignSelf: "flex-end" }}>
-                                <MaterialCommunityIcons name="close-circle" color={COLORS.Paragraph} size={20} />
+                            {authorizedUser && <TouchableHighlight onPress={() => deletePoll(item)} style={{ alignSelf: "flex-end"}}>
+                                <MaterialCommunityIcons name="close-circle" color={COLORS.Paragraph} size={20} dad
+                                />
                             </TouchableHighlight>}
                             {/* <View style={{ justifyContent: 'center' }}> */}
                                 <PollModal pollID={item.item} navPoll={navigation}/>
