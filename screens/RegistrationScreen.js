@@ -2,12 +2,13 @@ import { useNavigation } from "@react-navigation/native";
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { get, getDatabase, ref, set, update } from "firebase/database";
 import { useState } from "react";
-import { SafeAreaView, Text, TextInput, TouchableHighlight, View } from "react-native";
+import { Keyboard, SafeAreaView, Text, TextInput, TouchableHighlight, View } from "react-native";
 import { COLORS } from '../components/Colors/ColorScheme'
 import { MStyles } from "../components/Mason Styles/MStyles";
 import { collection, addDoc, setDoc, doc, updateDoc, getDocs, getDoc } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import GestureRecognizer from "react-native-swipe-gestures";
 
 
 export default function RegistrationScreen(props) {
@@ -74,53 +75,58 @@ export default function RegistrationScreen(props) {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.Background }}>
-            <Text style={MStyles.pageTitle}>User Registration</Text>
-            <View style={MStyles.headerContainer}>
-                <Text style={MStyles.header}>Email</Text>
-            </View>
-            <TextInput keyboardType='email-address'
-                autoCapitalize={'none'}
-                value={email}
-                onChangeText={text => setEmail(text)}
-                style={MStyles.input} />
-            <View style={MStyles.headerContainer}>
-                <Text style={MStyles.header}>Username</Text>
-            </View>
-            <TextInput value={username}
-                autoCapitalize={'none'}
-                onChangeText={text => setUsername(text)}
-                style={MStyles.input} 
-                maxLength={40}/>
-            <View style={MStyles.headerContainer}>
-                <Text style={MStyles.header}>Password</Text>
-            </View>
-            <TextInput secureTextEntry="true"
-                autoCapitalize={'none'}
-                value={password}
-                onChangeText={text => setPassword(text)}
-                style={MStyles.input} />
-            <View style={MStyles.headerContainer}>
-                <Text style={MStyles.header}>First Name</Text>
-            </View>
-            <TextInput value={firstname}
-                autoCapitalize={'none'}
-                onChangeText={text => setFirstname(text)}
-                style={MStyles.input} 
-                maxLength={20}/>
-            <View style={MStyles.headerContainer}>
-                <Text style={MStyles.header}>Last Name</Text>
-            </View>
-            <TextInput value={lastname}
-                autoCapitalize={'none'}
-                onChangeText={text => setLastname(text)}
-                style={MStyles.input} 
-                maxLength={20}/>
-            <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={handleUniqueness}>
-                <Text style={MStyles.buttonSolidBackgroundText}>Sign Up</Text>
-            </TouchableHighlight>
-            <TouchableHighlight style={MStyles.buttonTranslucentBackground} onPress={() => navigator.replace("Login")}>
-                <Text style={MStyles.buttonTranslucentBackgroundText}>Go Back</Text>
-            </TouchableHighlight>
+            <GestureRecognizer
+            style={{flex: 1 }}
+            onSwipeDown={ () => Keyboard.dismiss() }
+            >
+                <Text style={MStyles.pageTitle}>User Registration</Text>
+                <View style={MStyles.headerContainer}>
+                    <Text style={MStyles.header}>Email</Text>
+                </View>
+                <TextInput keyboardType='email-address'
+                    autoCapitalize={'none'}
+                    value={email}
+                    onChangeText={text => setEmail(text)}
+                    style={MStyles.input} />
+                <View style={MStyles.headerContainer}>
+                    <Text style={MStyles.header}>Username</Text>
+                </View>
+                <TextInput value={username}
+                    autoCapitalize={'none'}
+                    onChangeText={text => setUsername(text)}
+                    style={MStyles.input} 
+                    maxLength={40}/>
+                <View style={MStyles.headerContainer}>
+                    <Text style={MStyles.header}>Password</Text>
+                </View>
+                <TextInput secureTextEntry="true"
+                    autoCapitalize={'none'}
+                    value={password}
+                    onChangeText={text => setPassword(text)}
+                    style={MStyles.input} />
+                <View style={MStyles.headerContainer}>
+                    <Text style={MStyles.header}>First Name</Text>
+                </View>
+                <TextInput value={firstname}
+                    autoCapitalize={'none'}
+                    onChangeText={text => setFirstname(text)}
+                    style={MStyles.input} 
+                    maxLength={20}/>
+                <View style={MStyles.headerContainer}>
+                    <Text style={MStyles.header}>Last Name</Text>
+                </View>
+                <TextInput value={lastname}
+                    autoCapitalize={'none'}
+                    onChangeText={text => setLastname(text)}
+                    style={MStyles.input} 
+                    maxLength={20}/>
+                <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={handleUniqueness}>
+                    <Text style={MStyles.buttonSolidBackgroundText}>Sign Up</Text>
+                </TouchableHighlight>
+                <TouchableHighlight style={MStyles.buttonTranslucentBackground} onPress={() => navigator.replace("Login")}>
+                    <Text style={MStyles.buttonTranslucentBackgroundText}>Go Back</Text>
+                </TouchableHighlight>
+            </GestureRecognizer>
         </SafeAreaView>
     );
 }

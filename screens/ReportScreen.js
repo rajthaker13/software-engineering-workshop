@@ -1,9 +1,10 @@
-import { Dimensions, SafeAreaView, Text, TextInput, TouchableHighlight, View } from "react-native";
+import { Dimensions, Keyboard, SafeAreaView, Text, TextInput, TouchableHighlight, View } from "react-native";
 import { COLORS } from "../components/Colors/ColorScheme";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { MStyles } from "../components/Mason Styles/MStyles";
 import { useState } from "react";
 import { addDoc, arrayUnion, doc, getDoc, getFirestore, setDoc, updateDoc } from "firebase/firestore";
+import GestureRecognizer from "react-native-swipe-gestures";
 
 const SCREEN_HEIGHT = Dimensions.get('window').height
 const SCREEN_WIDTH = Dimensions.get('window').width
@@ -35,36 +36,42 @@ export default function ReportScreen({route, navigation}) {
 
     return (
         <SafeAreaView style={{backgroundColor: COLORS.Background, flex: 1}}>
-            <View style={{width: SCREEN_WIDTH * 0.1}}>
-                    <MaterialCommunityIcons onPress={() => navigation.pop()} name="chevron-left" color={COLORS.Paragraph} size={25} />
-            </View>
-            <View>
-                <View style={MStyles.headerContainer}>
-                    <Text style={MStyles.header}>User:</Text>
+            <GestureRecognizer
+            style={{flex: 1 }}
+            onSwipeDown={ () => Keyboard.dismiss()}
+            >
+                <View style={{width: SCREEN_WIDTH * 0.1}}>
+                        <MaterialCommunityIcons onPress={() => navigation.pop()} name="chevron-left" color={COLORS.Paragraph} size={25} />
                 </View>
-                <TextInput style={MStyles.input} editable={false} maxLength={40} defaultValue={user}/>
-            </View>
-            <View>
-                <View style={MStyles.headerContainer}>
-                    <Text style={MStyles.header}>Type:</Text>
+                <Text style={MStyles.pageTitle}>Report User</Text>
+                <View>
+                    <View style={MStyles.headerContainer}>
+                        <Text style={MStyles.header}>User:</Text>
+                    </View>
+                    <TextInput style={MStyles.input} editable={false} maxLength={40} defaultValue={user}/>
                 </View>
-                <TextInput style={MStyles.input} editable={false} maxLength={40} defaultValue={type}/>
-            </View>
-            <View>
-                <View style={MStyles.headerContainer}>
-                    <Text style={MStyles.header}>Reason:</Text>
+                <View>
+                    <View style={MStyles.headerContainer}>
+                        <Text style={MStyles.header}>Type:</Text>
+                    </View>
+                    <TextInput style={MStyles.input} editable={false} maxLength={40} defaultValue={type}/>
                 </View>
-                <TextInput style={MStyles.inputMedium} editable={false} maxLength={150} multiline={true} defaultValue={reason}/>
-            </View>
-            <View>
-                <View style={MStyles.headerContainer}>
-                    <Text style={MStyles.header}>Additional Comment:</Text>
+                <View>
+                    <View style={MStyles.headerContainer}>
+                        <Text style={MStyles.header}>Reason:</Text>
+                    </View>
+                    <TextInput style={MStyles.inputMedium} editable={false} maxLength={150} multiline={true} defaultValue={reason}/>
                 </View>
-                <TextInput placeholderTextColor={COLORS.Paragraph} placeholder="Specify Whats Wrong" style={MStyles.inputLong} maxLength={450} multiline={true} onChangeText={(text) => setComment(text)} autoCapitalize={false}/>
-            </View>
-            <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={() => submitHandler()}>
-                <Text style={MStyles.buttonSolidBackgroundText}>Submit</Text>
-            </TouchableHighlight>
+                <View>
+                    <View style={MStyles.headerContainer}>
+                        <Text style={MStyles.header}>Additional Comment:</Text>
+                    </View>
+                    <TextInput placeholderTextColor={COLORS.Paragraph} placeholder="Specify Whats Wrong" style={MStyles.inputLong} maxLength={450} multiline={true} onChangeText={(text) => setComment(text)} autoCapitalize={false}/>
+                </View>
+                <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={() => submitHandler()}>
+                    <Text style={MStyles.buttonSolidBackgroundText}>Submit</Text>
+                </TouchableHighlight>
+            </GestureRecognizer>
         </SafeAreaView>
     );
   }

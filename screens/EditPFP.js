@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { StyleSheet, Image, View, Text, SafeAreaView, TextInput, Button, TouchableHighlight, Dimensions } from "react-native";
 import { COLORS } from '../components/Colors/ColorScheme'
 import { MStyles } from "../components/Mason Styles/MStyles";
-import {getDownloadURL, getStorage, uploadBytes, ref} from 'firebase/storage'
+import {getDownloadURL, getStorage, uploadBytes, ref, uploadBytesResumable} from 'firebase/storage'
 import * as ImagePicker from 'expo-image-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -52,8 +52,9 @@ export default function EditPFPScreen({route, navigation}) {
   
         const response = await fetch(image);
         const blob = await response.blob();
+        
   
-        uploadBytes(storageRef, blob)
+        uploadBytesResumable(storageRef, blob)
           .then((snapshot) => {
             getDownloadURL(storageRef)
               .then((url) => {

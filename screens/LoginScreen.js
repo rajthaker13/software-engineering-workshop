@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActionSheetIOS, Alert, Image, KeyboardAvoidingView, SafeAreaView, StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
+import { ActionSheetIOS, Alert, Image, Keyboard, KeyboardAvoidingView, SafeAreaView, StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, applyActionCode, sendEmailVerification, ActionCodeOperation, reload, sendPasswordResetEmail } from "firebase/auth";
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { getDatabase, ref, set } from "firebase/database";
@@ -7,6 +7,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { FirebaseError } from 'firebase/app';
 import { COLORS } from '../components/Colors/ColorScheme'
 import { doc, getDoc, getFirestore } from 'firebase/firestore';
+import GestureRecognizer from 'react-native-swipe-gestures';
 
 
 
@@ -59,50 +60,55 @@ export default function LoginScreen() {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.Background }}>
-            <View style={styles.image}>
-                <Image source={require("../assets/favicon.png")} />
-            </View>
-            <KeyboardAvoidingView style={styles.container} behavior="padding">
-                <View style={styles.inputContainer}>
-                    <Text style={styles.text}>Email:</Text>
-                    <TextInput
-                        placeholder="firstname.lastname@domain.com"
-                        placeholderTextColor={"white"}
-                        keyboardType='email-address'
-                        value={email}
-                        onChangeText={text => setEmail(text)}
-                        autoCapitalize={'none'}
-                        style={styles.input} />
+            <GestureRecognizer
+            style={{flex: 1 }}
+            onSwipeDown={ () => Keyboard.dismiss() }
+            >
+                <View style={styles.image}>
+                    <Image source={require("../assets/favicon.png")} />
                 </View>
-                <View style={styles.inputContainer}>
-                    <Text style={styles.text}>Password:</Text>
-                    <TextInput
-                        placeholder="Password"
-                        placeholderTextColor={"white"}
-                        secureTextEntry="true"
-                        value={password}
-                        onChangeText={text => setPassword(text)}
-                        autoCapitalize={'none'}
-                        style={styles.input} />
-                </View>
-                <View style={styles.buttonContainer}>
-                    <TouchableHighlight
-                        onPress={handleLogin}
-                        style={styles.button}>
-                        <Text style={styles.buttonText}>Login</Text>
-                    </TouchableHighlight>
-                    <TouchableHighlight
-                        onPress={handleSignup}
-                        style={[styles.button, styles.buttonOutline]}>
-                        <Text style={styles.buttonOutlineText}>Sign Up</Text>
-                    </TouchableHighlight>
-                    <TouchableHighlight
-                        onPress={handlePasswordReset}
-                        style={styles.button}>
-                        <Text style={styles.buttonText}>Reset Password</Text>
-                    </TouchableHighlight>
-                </View>
-            </KeyboardAvoidingView>
+                <KeyboardAvoidingView style={styles.container} behavior="padding">
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.text}>Email:</Text>
+                        <TextInput
+                            placeholder="firstname.lastname@domain.com"
+                            placeholderTextColor={"white"}
+                            keyboardType='email-address'
+                            value={email}
+                            onChangeText={text => setEmail(text)}
+                            autoCapitalize={'none'}
+                            style={styles.input} />
+                    </View>
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.text}>Password:</Text>
+                        <TextInput
+                            placeholder="Password"
+                            placeholderTextColor={"white"}
+                            secureTextEntry="true"
+                            value={password}
+                            onChangeText={text => setPassword(text)}
+                            autoCapitalize={'none'}
+                            style={styles.input} />
+                    </View>
+                    <View style={styles.buttonContainer}>
+                        <TouchableHighlight
+                            onPress={handleLogin}
+                            style={styles.button}>
+                            <Text style={styles.buttonText}>Login</Text>
+                        </TouchableHighlight>
+                        <TouchableHighlight
+                            onPress={handleSignup}
+                            style={[styles.button, styles.buttonOutline]}>
+                            <Text style={styles.buttonOutlineText}>Sign Up</Text>
+                        </TouchableHighlight>
+                        <TouchableHighlight
+                            onPress={handlePasswordReset}
+                            style={styles.button}>
+                            <Text style={styles.buttonText}>Reset Password</Text>
+                        </TouchableHighlight>
+                    </View>
+                </KeyboardAvoidingView>
+            </GestureRecognizer>
         </SafeAreaView>
     );
 }

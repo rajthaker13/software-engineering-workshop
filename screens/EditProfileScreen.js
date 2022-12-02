@@ -3,11 +3,12 @@ import { getAuth } from "firebase/auth";
 import { get, getDatabase, set, update } from "firebase/database";
 import { collection, deleteDoc, doc, getDoc, getFirestore, setDoc, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { Image, View, Text, SafeAreaView, TextInput, Button, TouchableHighlight } from "react-native";
+import { Image, View, Text, SafeAreaView, TextInput, Button, TouchableHighlight, Keyboard } from "react-native";
 import { COLORS } from '../components/Colors/ColorScheme'
 import { MStyles } from "../components/Mason Styles/MStyles";
 import {getDownloadURL, getStorage, uploadBytes, ref} from 'firebase/storage'
 import * as ImagePicker from 'expo-image-picker';
+import GestureRecognizer from "react-native-swipe-gestures";
 
 
 
@@ -76,29 +77,34 @@ export default function EditProfileScreen() {
 
     return (
       <SafeAreaView style={{flex:1, backgroundColor:COLORS.Background}}>
-        <Text style={MStyles.pageTitle}>Edit Profile</Text>
-        <View style={MStyles.headerContainer}>
-          <Text style={MStyles.header}>Change Username:</Text>
-        </View>
-        <TextInput style={MStyles.input} autoCapitalize="none" value={username} onChangeText={text => setUsername(text)} maxLength={40}/>
-        <View style={MStyles.headerContainer}>
-          <Text style={MStyles.header}>Change Profile Description:</Text>
-        </View>
-        <TextInput style={MStyles.input} maxLength={150} autoCapitalize="none" value={description} onChangeText={text => setDescription(text)}/>
-        <View style={MStyles.headerContainer}>
-          <Text style={MStyles.header}>Change First Name:</Text>
-        </View>
-        <TextInput style={MStyles.input} autoCapitalize="none" value={firstName} onChangeText={text => setFirstName(text)} maxLength={20}/>
-        <View style={MStyles.headerContainer}>
-          <Text style={MStyles.header}>Change Last Name:</Text>
-        </View>
-        <TextInput style={MStyles.input} autoCapitalize="none" value={lastName} onChangeText={text => setLastName(text)} maxLength={20}/>
-        <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={() => handleUniqueness()}>
-          <Text style={MStyles.buttonSolidBackgroundText}>Submit</Text>
-        </TouchableHighlight>
-        <TouchableHighlight style={MStyles.buttonTranslucentBackground} onPress={() => navigator.navigate("Home", {screen: "Profile"})}>
-            <Text style={MStyles.buttonTranslucentBackgroundText} >Cancel</Text>
-        </TouchableHighlight>
+        <GestureRecognizer
+            style={{flex: 1 }}
+            onSwipeDown={ () => Keyboard.dismiss()}
+        >
+          <Text style={MStyles.pageTitle}>Edit Profile</Text>
+          <View style={MStyles.headerContainer}>
+            <Text style={MStyles.header}>Change Username:</Text>
+          </View>
+          <TextInput style={MStyles.input} autoCapitalize="none" value={username} onChangeText={text => setUsername(text)} maxLength={40}/>
+          <View style={MStyles.headerContainer}>
+            <Text style={MStyles.header}>Change Profile Description:</Text>
+          </View>
+          <TextInput style={MStyles.input} maxLength={150} autoCapitalize="none" value={description} onChangeText={text => setDescription(text)}/>
+          <View style={MStyles.headerContainer}>
+            <Text style={MStyles.header}>Change First Name:</Text>
+          </View>
+          <TextInput style={MStyles.input} autoCapitalize="none" value={firstName} onChangeText={text => setFirstName(text)} maxLength={20}/>
+          <View style={MStyles.headerContainer}>
+            <Text style={MStyles.header}>Change Last Name:</Text>
+          </View>
+          <TextInput style={MStyles.input} autoCapitalize="none" value={lastName} onChangeText={text => setLastName(text)} maxLength={20}/>
+          <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={() => handleUniqueness()}>
+            <Text style={MStyles.buttonSolidBackgroundText}>Submit</Text>
+          </TouchableHighlight>
+          <TouchableHighlight style={MStyles.buttonTranslucentBackground} onPress={() => navigator.navigate("Home", {screen: "Profile"})}>
+              <Text style={MStyles.buttonTranslucentBackgroundText} >Cancel</Text>
+          </TouchableHighlight>
+        </GestureRecognizer>
       </SafeAreaView>
     );
   }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableHighlight, TouchableOpacity, View } from 'react-native';
+import { Keyboard, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableHighlight, TouchableOpacity, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getDatabase, ref, set, get, update } from "firebase/database";
 import { getAuth } from 'firebase/auth';
@@ -12,6 +12,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import * as Location from 'expo-location';
 import { LocationAccuracy } from 'expo-location';
+import GestureRecognizer from 'react-native-swipe-gestures';
 
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -21,7 +22,7 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 //https://javascript.plainenglish.io/build-a-todo-list-app-using-react-native-526f8fe11ff1
 
 
-export default function CreatePollScreen() {
+export default function CreatePollScreen({navigation}) {
     const [inputs, setInputs] = useState([])
     const [pollName, setPollName] = useState('')
     const [pollAnswers, setPollAnswers] = useState([])
@@ -156,10 +157,11 @@ export default function CreatePollScreen() {
                 userPollsArr.push(pollName + auth.currentUser.uid)
                 let { status } = await Location.requestForegroundPermissionsAsync();
                 if (status !== 'granted') {
-                    setErrorMsg('Permission to access location was denied');
+                    alert('Permission to access location was denied');
                     return;
                 }
                 let location = await Location.getCurrentPositionAsync({accuracy: LocationAccuracy.Lowest});
+                
                 const pollsRef = await setDoc(doc(db, "polls", pollName + auth.currentUser.uid), {
                     creator: username,
                     uid: auth.currentUser.uid,
@@ -186,44 +188,51 @@ export default function CreatePollScreen() {
                 setIndices(0)
                 setPollName('')
                 setNumOptions(0)
-                } 
+                navigation.navigate("HomeScreen", {pid: pollName + auth.currentUser.uid})
+                }
+                 
         }
     }
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.Background }}>
-            <View>
-                <Text style={MStyles.pageTitle}>Create Poll</Text>
-            </View>
-            <View>
-                <View style={MStyles.headerContainer}>
-                    <Text style={MStyles.header}>Title:</Text>
+            <GestureRecognizer
+            style={{flex: 1 }}
+            onSwipeDown={ () => Keyboard.dismiss()}
+            >
+                <View>
+                    <Text style={MStyles.pageTitle}>Create Poll</Text>
                 </View>
-                <TextInput style={MStyles.input} maxLength={45} onChangeText={(text) => setPollName(text)} value={pollName} />
-            </View>
-            <View>
-                <View style={MStyles.headerContainer}>
-                    <Text style={MStyles.header}>Options:</Text>
+                <View>
+                    <View style={MStyles.headerContainer}>
+                        <Text style={MStyles.header}>Title/Question:</Text>
+                    </View>
+                    <TextInput style={MStyles.input} maxLength={45} onChangeText={(text) => setPollName(text)} value={pollName} />
                 </View>
-                <ScrollView>
-                    {inputs.map((index) => {
-                        return (
-                            <View style={MStyles.option}>
-                                <TextInput style={{ color: COLORS.Paragraph, flex: 0.9, paddingLeft: 5 }} maxLength={25} placeholder="Type Here" placeholderTextColor={COLORS.Paragraph} value={pollAnswers[index]} onChangeText={(text) => updateText(text, index)} autoCapitalize={false}/>
-                                <TouchableOpacity style={{ flex: 0.1 }} onPress={() => deleteInput(index)}>
-                                    <MaterialCommunityIcons name="window-close" color={COLORS.Paragraph} size={20} />
-                                </TouchableOpacity>
-                            </View>
-                        )
-                    })}
-                </ScrollView>
-            </View>
-            <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={() => addInput()}>
-                <Text style={MStyles.buttonSolidBackgroundText}>Add Option</Text>
-            </TouchableHighlight>
-            <TouchableHighlight style={MStyles.buttonTranslucentBackground} onPress={() => handleUniqueness()}>
-                <Text style={MStyles.buttonTranslucentBackgroundText}>Submit</Text>
-            </TouchableHighlight>
+                <View>
+                    <View style={MStyles.headerContainer}>
+                        <Text style={MStyles.header}>Options:</Text>
+                    </View>
+                    <ScrollView>
+                        {inputs.map((index) => {
+                            return (
+                                <View style={MStyles.option}>
+                                    <TextInput style={{ color: COLORS.Paragraph, flex: 0.9, paddingLeft: 5 }} maxLength={25} placeholder="Type Here" placeholderTextColor={COLORS.Paragraph} value={pollAnswers[index]} onChangeText={(text) => updateText(text, index)} autoCapitalize={false}/>
+                                    <TouchableOpacity style={{ flex: 0.1 }} onPress={() => deleteInput(index)}>
+                                        <MaterialCommunityIcons name="window-close" color={COLORS.Paragraph} size={20} />
+                                    </TouchableOpacity>
+                                </View>
+                            )
+                        })}
+                    </ScrollView>
+                </View>
+                <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={() => addInput()}>
+                    <Text style={MStyles.buttonSolidBackgroundText}>Add Option</Text>
+                </TouchableHighlight>
+                <TouchableHighlight style={MStyles.buttonTranslucentBackground} onPress={() => handleUniqueness()}>
+                    <Text style={MStyles.buttonTranslucentBackgroundText}>Submit</Text>
+                </TouchableHighlight>
+            </GestureRecognizer>
         </SafeAreaView >
     )
 }
