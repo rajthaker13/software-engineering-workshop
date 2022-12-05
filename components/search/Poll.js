@@ -13,7 +13,10 @@ export default function Poll(props) {
     const navigation = useNavigation();
 
 
+
     return (
+
+        
         
         <View style={{
             backgroundColor: COLORS.Background, borderWidth: 5, borderColor: COLORS.Button, borderRadius: 15,

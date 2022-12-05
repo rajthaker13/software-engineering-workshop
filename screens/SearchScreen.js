@@ -19,6 +19,7 @@ import { SearchBox } from 'react-instantsearch-dom';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import algoliasearch from 'algoliasearch';
+import * as Location from 'expo-location'
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -71,10 +72,21 @@ function SearchScreen() {
             setUsersArray(arr)
 
         }
+        
         getPolls()
         getUsers()
 
     }, [isFocused])
+
+    
+    
+    // let { status } = await Location.requestForegroundPermissionsAsync();
+    // if (status !== 'granted') {
+    //     alert('Permission to access location was denied');
+    //     return;
+    // }
+    // let location = await Location.getCurrentPositionAsync({accuracy: LocationAccuracy.Lowest});
+    
 
     
     userIndex.saveObjects(usersArray, { autoGenerateObjectIDIfNotExist: true });
