@@ -2,11 +2,12 @@ import { useNavigation } from "@react-navigation/native";
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { get, getDatabase, ref, set, update } from "firebase/database";
 import { useState } from "react";
-import { Keyboard, SafeAreaView, Text, TextInput, TouchableHighlight, View } from "react-native";
+import { Keyboard, SafeAreaView, Text, TextInput, TouchableHighlight, View, Switch } from "react-native";
 import { COLORS } from '../components/Colors/ColorScheme'
 import { MStyles } from "../components/Mason Styles/MStyles";
 import { collection, addDoc, setDoc, doc, updateDoc, getDocs, getDoc } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getFirestore } from "firebase/firestore";
 import GestureRecognizer from "react-native-swipe-gestures";
 
@@ -17,10 +18,13 @@ export default function RegistrationScreen(props) {
     const [username, setUsername] = useState('');
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');
+    const [privAcnt, setPrivAcnt] = useState(false);
+    const toggleSwitch = () => setPrivAcnt(previousState => !previousState);
     const navigator = useNavigation()
-
+    
     const auth = getAuth()
     const db = getFirestore();
+
 
     const handleUniqueness = async () => {
         const userExists = doc(db, 'usernames', username)
@@ -63,6 +67,7 @@ export default function RegistrationScreen(props) {
             description: '',
             polls: false,
             groups: false,
+            privAcnt: privAcnt,
             activity: '',
             newUser: true
         })
@@ -120,6 +125,21 @@ export default function RegistrationScreen(props) {
                     onChangeText={text => setLastname(text)}
                     style={MStyles.input} 
                     maxLength={20}/>
+                
+                <View style={{flexDirection: "row", paddingTop:"3%"}}>
+                    <MaterialCommunityIcons name="account-lock-outline" color='#7f5af0' size={30} style={{marginLeft: "12.5%"}}/>
+                    <Text style={[MStyles.header, {paddingLeft: "3%"}]}>Private account</Text>
+                    <View style={{marginLeft: "-20%"}}>
+                        <Switch
+                            // style={{marginLeft: "-1900%"}}
+                            trackColor={{ false: "#767577", true: "#7f5af0" }}
+                            thumbColor={privAcnt ? "#f4f3f4" : "#f4f3f4"}
+                            ios_backgroundColor="#3e3e3e"
+                            onValueChange={toggleSwitch}
+                            value={privAcnt}
+                        />
+                    </View>
+                </View>
                 <TouchableHighlight style={MStyles.buttonSolidBackground} onPress={handleUniqueness}>
                     <Text style={MStyles.buttonSolidBackgroundText}>Sign Up</Text>
                 </TouchableHighlight>
