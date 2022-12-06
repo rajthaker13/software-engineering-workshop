@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, View, Modal, Pressable, TouchableHighlight, TouchableOpacity, Text, TextInput, ScrollView, SafeAreaView, Dimensions } from 'react-native'
+import { StyleSheet, View, Modal, ActivityIndicator, Pressable, TouchableHighlight, TouchableOpacity, Text, TextInput, ScrollView, SafeAreaView, Dimensions } from 'react-native'
 import { useEffect, useReducer, useState } from 'react';
 import { get, getDatabase, onValue, ref, remove, update } from "firebase/database";
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
@@ -13,6 +13,7 @@ import { collection, addDoc, setDoc, doc, getDoc, updateDoc, getFirestore } from
 import GestureRecognizer from 'react-native-swipe-gestures';
 import Answer from '../home/Answer';
 import Timestamp from './Timestamp';
+import { MStyles } from '../Mason Styles/MStyles';
 
 
 
@@ -184,7 +185,8 @@ export default function Likes(props) {
                 </View>
               </View >
               <View style={styles.optionSet}>
-                <View style={styles.optionWindow}>
+              <View style={[styles.optionWindow, {color: '#7f5af0'}]}>
+                {/* <View style={styles.optionWindow}> */}
                   {options.map((option) => {
                     const choiceObject = voteCounts.find((choice) => {
                       return choice.choice == option
@@ -198,7 +200,9 @@ export default function Likes(props) {
                   }
                   return (
                       <View>
-                          <Answer title={option} key={option} id={props.pollID} optionBtnWidth={.7}  progress={progress} optionProgWidth={.7} hasVoted={hasVoted} totalVotes={totalVotes} numVotes={numVotes} />
+                          <View style={[{width: windowWidth * .7, justifyContent:"center", backgroundColor: '#7f5af0'}, styles.progContainer]}>
+                              <Text style={{width: windowWidth * .7, textAlign:"center", color: '#7f5af0'}}>{option}</Text>
+                            </View>
                       </View>
                   )
                     // return (
@@ -218,14 +222,59 @@ export default function Likes(props) {
         // onPress={() => props.navPoll.navigate("HomeScreen", {pid: props.pollID})}
         onLongPress={() => setModalVisible(true)}
         >
-        <Text style={{ fontSize: 10, color: "#94a1b2", paddingLeft:"5%", paddingTop:"1%"  }}>{props.time}</Text>
-        <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{title}</Text>
+        <View>
+          <Text style={{ fontSize: 10, color: "#94a1b2", paddingLeft:"5%", paddingTop:"1%"  }}><Timestamp time = {time} /></Text>
+          <Text style={[MStyles.text, { fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2"}]}
+        onLongPress={() => setModalVisible(true)}>{title}</Text>
+          {/* <Text  style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{title}</Text> */}
+
+          </View>
       </Pressable>
     </View>
   )
 }
 }
 const styles = StyleSheet.create({
+  modalBackground: {
+    flex: 1,
+    alignItems: 'center',
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    backgroundColor: '#rgba(0, 0, 0, 0.5)',
+    zIndex: 1000
+  },
+  progContainer: {
+    backgroundColor: '#D9D9D9',
+    borderColor: '#010101',
+    borderRadius: windowHeight * .05,
+    // width: windowWidth * props.width,
+    height: windowHeight * .045,
+    marginTop: windowHeight * .005,
+    marginLeft: windowWidth * .05,
+    marginBottom: windowHeight * .005,
+    justifyContent: 'center',
+},
+containerDisabled: {
+  backgroundColor: '#3B3C3B',
+  borderColor: '#010101',
+  borderRadius: windowHeight * .05,
+  // width: windowWidth * .9,
+  height: windowHeight * .04,
+  marginTop: windowHeight * .005,
+  marginLeft: windowWidth * .05,
+  marginBottom: windowHeight * .005,
+  justifyContent: 'center',
+},
+progressBar: {
+  backgroundColor: 'white',
+  borderColor: '#010101',
+  borderRadius: windowHeight * .05,
+  // width: windowWidth * .9,
+  height: windowHeight * .01,
+  marginLeft: windowWidth * .05,
+  justifyContent: 'center',
+  marginTop: windowHeight * .005
+},
   centeredView: {
     flex: 1,
     justifyContent: "center",

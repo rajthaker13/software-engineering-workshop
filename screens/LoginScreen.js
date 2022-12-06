@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActionSheetIOS, Alert, Image, Keyboard, KeyboardAvoidingView, SafeAreaView, StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
+import { ActionSheetIOS, Alert, Image, Keyboard, KeyboardAvoidingView, SafeAreaView, StyleSheet, Text, TextInput, TouchableHighlight, View, Dimensions } from "react-native";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, applyActionCode, sendEmailVerification, ActionCodeOperation, reload, sendPasswordResetEmail } from "firebase/auth";
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { getDatabase, ref, set } from "firebase/database";
@@ -10,6 +10,8 @@ import { doc, getDoc, getFirestore } from 'firebase/firestore';
 import GestureRecognizer from 'react-native-swipe-gestures';
 
 
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
@@ -64,8 +66,8 @@ export default function LoginScreen() {
             style={{flex: 1 }}
             onSwipeDown={ () => Keyboard.dismiss() }
             >
-                <View style={styles.image}>
-                    <Image source={require("../assets/favicon.png")} />
+                <View style={[styles.image, {}]}>
+                    <Image source={require("../assets/PollMe_Logo.png")} style={{marginTop:"35%", height:"90%", width:"90%", resizeMode: 'contain'}}/>
                 </View>
                 <KeyboardAvoidingView style={styles.container} behavior="padding">
                     <View style={styles.inputContainer}>

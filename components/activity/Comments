@@ -17,17 +17,17 @@ import { MStyles } from '../Mason Styles/MStyles';
 
 
 
+
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 
-export default function Dislikes(props) {
+export default function Likes(props) {
   const db = getFirestore();
   const auth = getAuth()
 
   const userRef = doc(db, "users", auth.currentUser.uid)
   const pollRef = doc(db, "polls", props.pollID);
-  
   
   const [pollsArray, setPollsArray] = useState([])
   const isFocused = useIsFocused();
@@ -44,66 +44,23 @@ export default function Dislikes(props) {
   const [voteCounts, setVoteCounts] = useState([])
 
   useEffect(() => {
-    async function getPollsData() {
+    async function getCommentsData() {
+
       const docSnap = await getDoc(pollRef);
       if (docSnap.exists()) {
+        setLikes(docSnap.data()['likes'])
         setComments(docSnap.data()['comments'])
         setShares(docSnap.data()['shares'])
         setDislikes(docSnap.data()['dislikes'])
-        setLikes(docSnap.data()['likes'])
         setTitle(docSnap.data()['title'])
         setOptions(docSnap.data()['options'])
         setTime(docSnap.data()['location'].timestamp)
       }
-      const docSnapUser = await getDoc(userRef);
-      if (docSnapUser.exists()) {
-          let userVotes = docSnapUser.data()['votes']
-          if (userVotes == null) {
-              userVotes = []
-              updateDoc(userRef, {
-                  votes: userVotes,
-              })
-          }
-          else {
-              userVotes.forEach(async (vote) => {
-                  if (vote['pid'] == props.pollID) {
-                      const pollSnap = await getDoc(pollRef);
-                      if (pollSnap.exists()) {
-                          let curVotesOptionsAll = pollSnap.data()['votes']
-                          const curVotes = pollSnap.data()['numVotes']
-                          let voteCountsUpdate = []
-
-                          curVotesOptionsAll.forEach((choice) => {
-                              const numVotes = choice['numVotes']
-                              var optionVoteCount = {
-                                  choice: choice['choice'],
-                                  numVotes: numVotes
-                              }
-                              voteCountsUpdate.push(optionVoteCount)
-
-
-                          })
-                          setHasVoted(true)
-                          setTotalVotes(curVotes)
-                          setVoteCounts(voteCountsUpdate)
-
-
-                      }
-
-                  }
-
-              })
-          }
-
-      }
-
-
-    }
+  }
     getPollsData()
   }, [props, isFocused])
 
-  
-  if(dislikes>0){
+  if(likes>0){
   return (
     <View style={{
       backgroundColor: '#16161a', borderWidth: 3, borderColor: '#7f5af0', borderRadius: 20,
@@ -186,6 +143,7 @@ export default function Dislikes(props) {
               </View >
               <View style={styles.optionSet}>
               <View style={[styles.optionWindow, {color: '#7f5af0'}]}>
+                {/* <View style={styles.optionWindow}> */}
                   {options.map((option) => {
                     const choiceObject = voteCounts.find((choice) => {
                       return choice.choice == option
@@ -197,13 +155,18 @@ export default function Dislikes(props) {
   
                       progress = (numVotes / totalVotes)
                   }
-                    return (
+                  return (
                       <View>
-                        <View style={[{width: windowWidth * .7, justifyContent:"center", backgroundColor: '#7f5af0'}, styles.progContainer]}>
-                          <Text style={{width: windowWidth * .7, textAlign:"center", color: '#7f5af0'}}>{option}</Text>
-                        </View>
+                          <View style={[{width: windowWidth * .7, justifyContent:"center", backgroundColor: '#7f5af0'}, styles.progContainer]}>
+                              <Text style={{width: windowWidth * .7, textAlign:"center", color: '#7f5af0'}}>{option}</Text>
+                            </View>
                       </View>
-                    )
+                  )
+                    // return (
+                    //     <Answer title={option} key={option} id={props.pollID} optionBtnWidth={.7}/>
+                    //     // <Answer title={option} key={option} id={poll.key} onVote={onVote} hasVoted={hasVoted} totalVotes={totalVotes} numVotes={numVotes} progress={progress} />
+                    //     // <Answer title={option} key={option} id={poll.key} onVote={onVote} hasVoted={hasVoted} totalVotes={totalVotes} numVotes={numVotes} progress={progress} />
+                    // )
                   })}
                 </View>
               </View>
@@ -217,10 +180,8 @@ export default function Dislikes(props) {
         onLongPress={() => setModalVisible(true)}
         >
         <View>
-        {/* <Text style={{ fontSize: 10, color: "#94a1b2", paddingLeft:"5%", paddingTop:"1%"  }}>{props.time}</Text> */}
-          <Text style={{ fontSize: 10, color: "#94a1b2", paddingLeft:"5%", paddingTop:"1%"   }}><Timestamp time = {time} /></Text>
-                        {/* <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{title}</Text> */}
-          <Text style={[MStyles.text, { fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2"}]}
+          <Text style={{ fontSize: 10, color: "#94a1b2", paddingLeft:"5%", paddingTop:"1%"  }}><Timestamp time = {time} /></Text>
+          <Text style={[MStyles.text, { fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2"}]} onPress={() => props.navPoll.navigate("HomeScreen", {pid: props.pollID})}
         onLongPress={() => setModalVisible(true)}>{title}</Text>
           {/* <Text  style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{title}</Text> */}
 
@@ -350,24 +311,9 @@ progressBar: {
     paddingTop:"6%"
   },
   optionSet: {
-    // width: .7,
-    // flex: 1,
         flexDirection: 'row',
         justifyContent: 'flex-end',
         width: windowWidth * .7,
-    // marginTop: windowHeight * .01,
-    // marginLeft: windowWidth * .045,
-    // padding: windowHeight * .005,
-    // // flexDirection: 'row',
-    // // justifyContent: 'space-evenly',
-    // // alignSelf: 'center',
-    // alignSelf: 'center',
-    // // flex: 1,
-    // alignItems: 'center',
-    // position: 'absolute',
-    // marginTop: windowHeight * .01,
-    // marginLeft: windowWidth * .045,
-    // padding: windowHeight * .005,
   },
   optionWindow: {
     width: windowWidth * .7,
@@ -397,7 +343,8 @@ progressBar: {
   statsContainer: {
     alignItems: 'center',
     flexDirection: 'row',
-    justifyContent: 'space-evenly'
+    justifyContent: 'space-evenly',
+    
   },
   statsText: {
     color: 'white',

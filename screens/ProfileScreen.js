@@ -5,22 +5,26 @@ import { StyleSheet, Text, View, SafeAreaView, Image, TouchableHighlight, FlatLi
 import { get, getDatabase, onValue, ref, remove, set, update } from "firebase/database";
 import React, { useEffect, useState } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import { COLORS } from '../components/Colors/ColorScheme';
 import { MStyles } from '../components/Mason Styles/MStyles';
 import { addDoc, arrayRemove, collection, deleteDoc, deleteField, doc, FieldValue, Firestore, getDoc, getDocs, getFirestore, increment, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
 import { NativeScreenNavigationContainer } from 'react-native-screens';
 import PollModal from '../components/common/PollModal';
+import { Center } from 'native-base';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 export default function ProfileScreen({ route, navigation }) {
     const [follow, setFollow] = useState(false)
+    const [requested, setRequested] = useState(false)
     const [username, setUsername] = useState('');
     const [dislikes, setDislikes] = useState('');
     const [firstname, setFirstname] = useState('');
     const [followers, setFollowers] = useState('');
     const [following, setFollowing] = useState('');
+    const [isPriv, setIsPriv] = useState(true)
     const [followersNum, setFollowersNum] = useState('');
     const [followingNum, setFollowingNum] = useState('');
     const [lastname, setLastname] = useState('');
@@ -90,6 +94,18 @@ export default function ProfileScreen({ route, navigation }) {
                 else {
                     setFollow(true)
                 }
+                if (val.data()['followerReq'][auth.currentUser.uid] == undefined) {
+                    setRequested(false)
+                }
+                else {
+                    setRequested(true)
+                }
+                if (val.data()['privAcnt'] == false) {
+                    setIsPriv(false)
+                }
+                else {
+                    setIsPriv(true)
+                }
             }
         }
         getProfileData()
@@ -148,6 +164,20 @@ export default function ProfileScreen({ route, navigation }) {
         setFollowersNum(followersNum + 1)
         setFollow(true)
     }
+    const handleRequest = () => {
+        async function updateFollowReq() {
+            const followReqRef = doc(db, 'users', currentUid)
+            const followerReqRef = doc(db, 'users', auth.currentUser.uid)
+            updateDoc(followerReqRef, {
+                [`followReq.${currentUid}`]: Date.now()
+            })
+            updateDoc(followReqRef, {
+                [`followerReq.${auth.currentUser.uid}`]: Date.now()
+            })
+        }
+        updateFollowReq()
+        setRequested(true)
+    }
 
     const handleUnfollow = async () => {
         const followerRef = doc(db, 'users', currentUid)
@@ -168,6 +198,25 @@ export default function ProfileScreen({ route, navigation }) {
         }
         setFollowersNum(followersNum - 1)
         setFollow(false)
+    }
+    const handleUnrequest = async () => {
+        const followReqRef = doc(db, 'users', currentUid)
+        const followerReqRef = doc(db, 'users', auth.currentUser.uid)
+
+        const currentProfile = await getDoc(followerReqRef)
+        const currentUser = await getDoc(followReqRef)
+        
+        if (currentProfile.exists()) {
+            updateDoc(followerReqRef, {
+                [`followReq.${currentUid}`]: deleteField()
+            })
+        }
+        if (currentUser.exists()) {
+            updateDoc(followReqRef, {
+                [`followerReq.${auth.currentUser.uid}`]: deleteField()
+            })
+        }
+        setRequested(false)
     }
 
     return (
@@ -200,14 +249,54 @@ export default function ProfileScreen({ route, navigation }) {
                 <Text style={[MStyles.header, { width: SCREEN_WIDTH, textAlign: 'center'}]}>@{username}</Text>
             </View>
             <View style={[styles.layer, { flexDirection: "row" }]}>
-                <TouchableOpacity onPress={() => navigation.push("Follow", { id: currentUid, start: 'FollowersList' })} style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: SCREEN_WIDTH * 0.17 }}>
-                    <Text style={MStyles.text}>{followersNum}</Text>
-                    <Text style={MStyles.text}>Followers</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.push("Follow", { id: currentUid, start: 'FollowingList' })} style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: SCREEN_WIDTH * 0.1 }}>
-                    <Text style={MStyles.text}>{followingNum}</Text>
-                    <Text style={MStyles.text}>Following</Text>
-                </TouchableOpacity>
+                {authorizedUser && 
+                    <TouchableOpacity onPress={() => navigation.push("Follow", { id: currentUid, start: 'FollowersList' })} style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: SCREEN_WIDTH * 0.17 }}>
+                        <Text style={MStyles.text}>{followersNum}</Text>
+                        <Text style={MStyles.text}>Followers</Text>
+                    </TouchableOpacity>
+                }
+                {!authorizedUser && !isPriv &&
+                    <TouchableOpacity onPress={() => navigation.push("Follow", { id: currentUid, start: 'FollowersList' })} style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: SCREEN_WIDTH * 0.17 }}>
+                        <Text style={MStyles.text}>{followersNum}</Text>
+                        <Text style={MStyles.text}>Followers</Text>
+                    </TouchableOpacity>
+                }
+                {!authorizedUser && isPriv && follow &&
+                    <TouchableOpacity onPress={() => navigation.push("Follow", { id: currentUid, start: 'FollowersList' })} style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: SCREEN_WIDTH * 0.17 }}>
+                        <Text style={MStyles.text}>{followersNum}</Text>
+                        <Text style={MStyles.text}>Followers</Text>
+                    </TouchableOpacity>
+                }
+                {!authorizedUser && isPriv && !follow &&
+                    <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: SCREEN_WIDTH * 0.17 }}>
+                        <Text style={MStyles.text}>{followersNum}</Text>
+                        <Text style={MStyles.text}>Followers</Text>
+                    </View>
+                }
+                {authorizedUser && 
+                    <TouchableOpacity onPress={() => navigation.push("Follow", { id: currentUid, start: 'FollowingList' })} style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: SCREEN_WIDTH * 0.1 }}>
+                        <Text style={MStyles.text}>{followingNum}</Text>
+                        <Text style={MStyles.text}>Following</Text>
+                    </TouchableOpacity>
+                }
+                {!authorizedUser && !isPriv &&
+                    <TouchableOpacity onPress={() => navigation.push("Follow", { id: currentUid, start: 'FollowingList' })} style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: SCREEN_WIDTH * 0.1 }}>
+                        <Text style={MStyles.text}>{followingNum}</Text>
+                        <Text style={MStyles.text}>Following</Text>
+                    </TouchableOpacity>
+                }
+                {!authorizedUser && isPriv && follow &&
+                    <TouchableOpacity onPress={() => navigation.push("Follow", { id: currentUid, start: 'FollowingList' })} style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: SCREEN_WIDTH * 0.1 }}>
+                        <Text style={MStyles.text}>{followingNum}</Text>
+                        <Text style={MStyles.text}>Following</Text>
+                    </TouchableOpacity>
+                }
+                {!authorizedUser && isPriv && !follow &&
+                    <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: SCREEN_WIDTH * 0.1 }}>
+                        <Text style={MStyles.text}>{followingNum}</Text>
+                        <Text style={MStyles.text}>Following</Text>
+                    </View>
+                }
                 <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginLeft: SCREEN_WIDTH * 0.1 }}>
                     <Text style={MStyles.text}>{likes}</Text>
                     <Text style={MStyles.text}>Likes</Text>
@@ -218,9 +307,17 @@ export default function ProfileScreen({ route, navigation }) {
                     <TouchableHighlight style={[MStyles.buttonSolidBackground, { marginTop: 0, width: SCREEN_WIDTH * 0.5 }]} onPress={() => navigation.push("Edit Profile")}>
                         <Text style={[MStyles.buttonSolidBackgroundText]}>Edit Profile</Text>
                     </TouchableHighlight>}
-                {!authorizedUser && !follow &&
+                {!authorizedUser && !follow &&  !requested && !isPriv &&
                     <TouchableHighlight onPress={() => handleFollow()} style={[MStyles.buttonSolidBackground, { marginTop: 0, width: SCREEN_WIDTH * 0.5 }]}>
                         <Text style={[MStyles.buttonSolidBackgroundText]}>Follow</Text>
+                    </TouchableHighlight>}
+                {!authorizedUser && !follow && !requested && isPriv &&
+                    <TouchableHighlight onPress={() => handleRequest()} style={[MStyles.buttonSolidBackground, { marginTop: 0, width: SCREEN_WIDTH * 0.5 }]}>
+                        <Text style={[MStyles.buttonSolidBackgroundText]}>Follow</Text>
+                    </TouchableHighlight>}
+                {!authorizedUser && !follow && requested && isPriv &&
+                    <TouchableHighlight onPress={() => handleUnrequest()} style={[MStyles.buttonTranslucentBackground, { marginTop: 0, width: SCREEN_WIDTH * 0.5 }]}>
+                        <Text style={[MStyles.buttonTranslucentBackgroundText]}>Unrequest</Text>
                     </TouchableHighlight>}
                 {!authorizedUser && follow &&
                     <TouchableHighlight onPress={() => handleUnfollow()} style={[MStyles.buttonTranslucentBackground, { marginTop: 0, width: SCREEN_WIDTH * 0.5 }]}>
@@ -231,37 +328,103 @@ export default function ProfileScreen({ route, navigation }) {
                 <Text style={[MStyles.text, { alignSelf: 'center' }]}>{description}</Text>
             </View>
             {authorizedUser &&
-            <View style={MStyles.headerContainer}>
-                <Text style={[MStyles.header, { width: SCREEN_WIDTH, marginLeft: 15 }]}>Your Polls</Text>
-            </View>
-            }
-            {!authorizedUser &&
-            <View style={MStyles.headerContainer}>
-                <Text style={[MStyles.header, { width: SCREEN_WIDTH, marginLeft: 15 }]}>User Polls</Text>
-            </View>
-            }
-            <View style={{ width: SCREEN_WIDTH, height: 0.5 * SCREEN_HEIGHT }} >
-                <FlatList
-                    numColumns={3}
-                    data={pollsArray}
-                    renderItem={(item) => (
-                        <TouchableOpacity style={MStyles.pollsContainer}>
-                        {/* <TouchableOpacity style={MStyles.pollsContainer} onPress={() => navigation.navigate("HomeScreen", {pid: item.item})}> */}
+            <View>
+                <View style={MStyles.headerContainer}>
+                    <Text style={[MStyles.header, { width: SCREEN_WIDTH, marginLeft: 15 }]}>Your Polls</Text>
+                </View>
+                <View style={{ width: SCREEN_WIDTH, height: 0.5 * SCREEN_HEIGHT }} >
+                    <FlatList
+                        numColumns={3}
+                        data={pollsArray}
+                        renderItem={(item) => (
+                            <TouchableOpacity style={MStyles.pollsContainer}>
+                            {/* <TouchableOpacity style={MStyles.pollsContainer} onPress={() => navigation.navigate("HomeScreen", {pid: item.item})}> */}
 
-                            {authorizedUser && <TouchableHighlight onPress={() => deletePoll(item)} style={{ alignSelf: "flex-end"}}>
-                                <MaterialCommunityIcons name="close-circle" color={COLORS.Paragraph} size={20} dad
-                                />
-                            </TouchableHighlight>}
-                            {/* <View style={{ justifyContent: 'center' }}> */}
-                                <PollModal pollID={item.item} navPoll={navigation}/>
-                                {/* <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{(item.item).replace(currentUid, "")}</Text> */}
-                                {/* {console.log(item.item)} */}
-                            {/* </View> */}
-                        </TouchableOpacity>
-                    )}
-                    keyExtractor={(item) => item.index}
-                />
+                                {authorizedUser && <TouchableHighlight onPress={() => deletePoll(item)} style={{ alignSelf: "flex-end"}}>
+                                    <MaterialCommunityIcons name="close-circle" color={COLORS.Paragraph} size={20} />
+                                </TouchableHighlight>}
+                                {/* <View style={{ justifyContent: 'center' }}> */}
+                                    <PollModal pollID={item.item} navPoll={navigation} MT="-7.5%"/>
+                                    {/* <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{(item.item).replace(currentUid, "")}</Text> */}
+                                    {/* {console.log(item.item)} */}
+                                {/* </View> */}
+                            </TouchableOpacity>
+                        )}
+                        keyExtractor={(item) => item.index}
+                    />
+                </View>
             </View>
+            }
+            {!authorizedUser && follow &&
+                <View>
+                    <View style={MStyles.headerContainer}>
+                        <Text style={[MStyles.header, { width: SCREEN_WIDTH, marginLeft: 15 }]}>User Polls</Text>
+                    </View>
+                    <View style={{ width: SCREEN_WIDTH, height: 0.5 * SCREEN_HEIGHT }} >
+                        <FlatList
+                            numColumns={3}
+                            data={pollsArray}
+                            renderItem={(item) => (
+                                <TouchableOpacity style={MStyles.pollsContainer}>
+                                {/* <TouchableOpacity style={MStyles.pollsContainer} onPress={() => navigation.navigate("HomeScreen", {pid: item.item})}> */}
+
+                                    {authorizedUser && <TouchableHighlight onPress={() => deletePoll(item)} style={{ alignSelf: "flex-end"}}>
+                                        <MaterialCommunityIcons name="close-circle" color={COLORS.Paragraph} size={20} />
+                                    </TouchableHighlight>}
+                                    {/* <View style={{ justifyContent: 'center' }}> */}
+                                        <PollModal pollID={item.item} navPoll={navigation}  MT="7.5%"/>
+                                        {/* <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{(item.item).replace(currentUid, "")}</Text> */}
+                                        {/* {console.log(item.item)} */}
+                                    {/* </View> */}
+                                </TouchableOpacity>
+                            )}
+                            keyExtractor={(item) => item.index}
+                        />
+                    </View>
+                </View>
+            }
+            {!authorizedUser && !isPriv &&
+                <View>
+                    <View style={MStyles.headerContainer}>
+                        <Text style={[MStyles.header, { width: SCREEN_WIDTH, marginLeft: 15 }]}>User Polls</Text>
+                    </View>
+                    <View style={{ width: SCREEN_WIDTH, height: 0.5 * SCREEN_HEIGHT }} >
+                        <FlatList
+                            numColumns={3}
+                            data={pollsArray}
+                            renderItem={(item) => (
+                                <TouchableOpacity style={MStyles.pollsContainer}>
+                                {/* <TouchableOpacity style={MStyles.pollsContainer} onPress={() => navigation.navigate("HomeScreen", {pid: item.item})}> */}
+
+                                    {authorizedUser && <TouchableHighlight onPress={() => deletePoll(item)} style={{ alignSelf: "flex-end"}}>
+                                        <MaterialCommunityIcons name="close-circle" color={COLORS.Paragraph} size={20} />
+                                    </TouchableHighlight>}
+                                    {/* <View style={{ justifyContent: 'center' }}> */}
+                                        <PollModal pollID={item.item} navPoll={navigation} MT="-7.5%"/>
+                                        {/* <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{(item.item).replace(currentUid, "")}</Text> */}
+                                        {/* {console.log(item.item)} */}
+                                    {/* </View> */}
+                                </TouchableOpacity>
+                            )}
+                            keyExtractor={(item) => item.index}
+                        />
+                    </View>
+                </View>
+            }
+            {!authorizedUser && !follow && isPriv &&
+                <View style={{marginTop: "10%", alignSelf: 'center'}}>
+                    <View style={{alignSelf: 'center', overflow: "hidden", borderColor:'#7f5af0', borderRadius: 100/2, borderWidth: 2, height: 100, width: 100}}>
+                        <SimpleLineIcons name="lock" color='#7f5af0' size={60} style={{alignSelf: 'center', paddingTop: "15%"}}/>
+                    </View>
+                    {/* <View style={[MStyles.headerContainer]}> */}
+                        <Text style={[MStyles.header, { width: SCREEN_WIDTH, textAlign: 'center', fontSize: 20, fontWeight: '800', paddingTop: "10%"}]}>This account is private</Text>
+                        <Text style={[MStyles.text, { width: SCREEN_WIDTH, textAlign: 'center', fontSize: 15, paddingTop: "5%", fontWeight: '500', }]}>Follow this account to view their content</Text>
+                        {/* <Text style={[MStyles.text, { width: SCREEN_WIDTH, textAlign: 'center', fontSize: 15, paddingTop: "5%", fontWeight: '500', }]}>Follow this account to view</Text> */}
+                        {/* <Text style={[MStyles.text, { width: SCREEN_WIDTH, textAlign: 'center', fontSize: 15, fontWeight: '500', }]}>their content</Text> */}
+                    {/* </View> */}
+
+                </View>
+            }
         </SafeAreaView>
     );
 }

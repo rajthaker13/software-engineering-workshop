@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, View, Modal, Pressable, TouchableHighlight, TouchableOpacity, Text, TextInput, ScrollView, SafeAreaView, Dimensions } from 'react-native'
+import { StyleSheet, View, Modal, ActivityIndicator, Pressable, TouchableHighlight, TouchableOpacity, Text, TextInput, ScrollView, SafeAreaView, Dimensions } from 'react-native'
 import { useEffect, useReducer, useState } from 'react';
 import { get, getDatabase, onValue, ref, remove, update } from "firebase/database";
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
@@ -15,6 +15,8 @@ import { NativeScreenNavigationContainer } from 'react-native-screens';
 // import Answer from '../components/home/Answer';
 import Timestamp from '../activity/Timestamp';
 import { MStyles } from '../Mason Styles/MStyles';
+import { ProgressBar } from 'react-native-paper';
+
 
 
 
@@ -44,6 +46,8 @@ export default function PollModal(props) {
   const [hasVoted, setHasVoted] = useState(false)
   const [totalVotes, setTotalVotes] = useState(0)
   const [voteCounts, setVoteCounts] = useState([])
+  const [progress, setProgess] = useState(0.0)
+  const [progressString, setProgressString] = useState('')
   
   useEffect(() => {
     async function getPollsData() {
@@ -107,6 +111,14 @@ export default function PollModal(props) {
   getPollsData()
   }, [props, isFocused])
 
+  const progressFn = async (item) => {
+    const progressFloat = parseFloat(props.progress)
+    setProgess(progressFloat)
+
+    const percent = parseFloat(progressFloat * 100).toFixed(2)
+
+    setProgressString(percent + '%')
+  }
   
   return (
     <View style={{
@@ -127,12 +139,13 @@ export default function PollModal(props) {
         onSwipeRight={ () => setModalVisible(!modalVisible) }
       >
       <Modal
+        // presentationStyle="formSheet"
         animationType="fade"
         transparent={true} 
         visible={modalVisible}
         onRequestClose={() => {
           Alert.alert("Modal has been closed.");
-          setModalVisible(modalVisible);
+          setModalVisible(!modalVisible);
         }}
       >
         <View style={styles.centeredView}>
@@ -186,7 +199,7 @@ export default function PollModal(props) {
                 </View>
               </View >
               <View style={styles.optionSet}>
-                <View style={styles.optionWindow}>
+                <View style={[styles.optionWindow, {color: '#7f5af0'}]}>
                 {options.map((option) => {
                     const choiceObject = voteCounts.find((choice) => {
                       return choice.choice == option
@@ -199,10 +212,40 @@ export default function PollModal(props) {
                       progress = (numVotes / totalVotes)
                   }
                   return (
-                      <View>
-                        {/* {console.log(onVote)} */}
-                          <Answer title={option} key={option} id={props.pollID} optionBtnWidth={.7}  progress={progress} optionProgWidth={.7} hasVoted={hasVoted} totalVotes={totalVotes} numVotes={numVotes} />
+                    <View>
+                      
+                            <View style={[{width: windowWidth * .7, justifyContent:"center", backgroundColor: '#7f5af0'}, styles.progContainer]}>
+                              <Text style={{width: windowWidth * .7, textAlign:"center", color: '#7f5af0'}}>{option}</Text>
+                              {/* <Button title={props.title} onPress={() => { props.onVote(props.title) }}></Button> */}
+                            </View>
+                          
                       </View>
+                      // <View>
+                      //               <ActivityIndicator  color="black" /> 
+
+                      //   {/* {console.log(onVote)} */}
+                      //     {/* <Answer title={option} key={option} id={props.pollID} optionBtnWidth={.7}  progress={progress} optionProgWidth={.7} hasVoted={hasVoted} totalVotes={totalVotes} numVotes={numVotes} /> */}
+                      //     {!hasVoted && 
+                      //       <View style={[{width: windowWidth * .7}, styles.progContainer]}>
+                      //         <Text>{option}</Text>
+                      //         {/* <Button title={props.title} onPress={() => { props.onVote(props.title) }}></Button> */}
+                      //       </View>
+                      //     }
+                      //     {/*  */}
+                      //     {hasVoted &&
+                      //         <View style={{width: windowWidth * .7}}>
+                      //             <View style={[{width: windowWidth * .7}, styles.containerDisabled]}>
+                      //                 {/* <Button title={props.title + ' ' + progressString} disabled={true} ></Button> */}
+                      //                 <Text>{option} {progressString}</Text>
+                      //             </View>
+                      //             <View style={{width: windowWidth * .7}}>
+                      //               <ProgressBar style={[{width: windowWidth * .7},styles.progressBar]} progress={progress}></ProgressBar>
+                      //             </View>
+                      //         </View>
+
+                      //     }
+                          
+                      // </View>
                   )
                     // return (
                     //     <Answer title={option} key={option} id={props.pollID} optionBtnWidth={.7}/>
@@ -222,7 +265,7 @@ export default function PollModal(props) {
         // onLongPress={() => setModalVisible(true)}
         >
           <View>
-          <Text style={{ fontSize: 10, color: "#94a1b2", paddingLeft:"7.5%", marginTop:"-7.5%"  }}><Timestamp time = {time} /></Text>
+          <Text style={{ fontSize: 10, color: "#94a1b2", paddingLeft:"7.5%", marginTop:props.MT  }}><Timestamp time = {time} /></Text>
           <Text style={[MStyles.text, { alignSelf: 'center', fontSize: 15, fontWeight: 'bold', textAlign: 'center', marginTop:"10%"}]} onPress={() => props.navPoll.navigate("HomeScreen", {pid: props.pollID})}
         onLongPress={() => setModalVisible(true)}>{title}</Text>
           {/* <Text  style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{title}</Text> */}
@@ -235,6 +278,14 @@ export default function PollModal(props) {
   )
 }
 const styles = StyleSheet.create({
+  modalBackground: {
+    flex: 1,
+    alignItems: 'center',
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    backgroundColor: '#rgba(0, 0, 0, 0.5)',
+    zIndex: 1000
+  },
   centeredView: {
     flex: 1,
     justifyContent: "center",
@@ -279,6 +330,38 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: "center"
   },
+  progContainer: {
+    backgroundColor: '#D9D9D9',
+    borderColor: '#010101',
+    borderRadius: windowHeight * .05,
+    // width: windowWidth * props.width,
+    height: windowHeight * .045,
+    marginTop: windowHeight * .005,
+    marginLeft: windowWidth * .05,
+    marginBottom: windowHeight * .005,
+    justifyContent: 'center',
+},
+containerDisabled: {
+  backgroundColor: '#3B3C3B',
+  borderColor: '#010101',
+  borderRadius: windowHeight * .05,
+  // width: windowWidth * .9,
+  height: windowHeight * .04,
+  marginTop: windowHeight * .005,
+  marginLeft: windowWidth * .05,
+  marginBottom: windowHeight * .005,
+  justifyContent: 'center',
+},
+progressBar: {
+  backgroundColor: 'white',
+  borderColor: '#010101',
+  borderRadius: windowHeight * .05,
+  // width: windowWidth * .9,
+  height: windowHeight * .01,
+  marginLeft: windowWidth * .05,
+  justifyContent: 'center',
+  marginTop: windowHeight * .005
+},
   container: {
     backgroundColor: '#3B3C3B',
     width: windowWidth,
