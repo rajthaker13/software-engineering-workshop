@@ -56,7 +56,7 @@ const UserHits = ({ hits, hasMore, refineNext }) => {
           <Highlight attribute="{{this}}" hit={item} />
         </Text> */}
         <Pressable onPress={() => navigation.push("Home", { screen: "Profile", params: { id: item.objectID, prevId: auth.currentUser.uid } })}>
-          <Text style={[MStyles.text]}>{item.firstName}</Text>
+          <Text style={[MStyles.text]}>{item.username}</Text>
           {/* {console.log("xxx", item.objectID)} */}
         </Pressable>
       </View>

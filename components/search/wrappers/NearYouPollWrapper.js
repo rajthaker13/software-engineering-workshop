@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, View, Text, TextInput, ScrollView, SafeAreaView, Dimensions } from 'react-native'
-import Poll from '../Poll';
+import PollNearYou from '../Poll_nearYou';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -24,7 +24,7 @@ export default function NearYouPollWrapper(props) {
                         {pollArray.map((poll) => {
                             // {console.log(poll.key);}
                             return(
-                                <Poll title={poll.title} time="1h" answerNum={poll.likes} pollID={poll.key}/>
+                                <PollNearYou title={poll.title} answerNum={poll.dist} pollID={poll.pollID}/>
                             )
                             
                         })}
