@@ -28,6 +28,9 @@ export default function ActivityScreen() {
   const [dislikes, setDislikes] = useState([])
   const [requests, setRequests] = useState([])
   const [hasInt, setHasInt] = useState(false)
+  const [likeEmpty, setLikeEmpty] = useState(false)
+  const [dislikeEmpty, setDislikeEmpty] = useState(false)
+  const [reqEmpty, setReqEmpty] = useState(false)
 
 
   const auth = getAuth()
@@ -70,6 +73,13 @@ export default function ActivityScreen() {
       setRequests(reqMap)
       setLikes(likeArr)
       setDislikes(dislikeArr)
+      if (likes.length < 1){setLikeEmpty(true)}
+      if (likes.length > 0){setLikeEmpty(false)}
+      if (dislikes.length < 1){setDislikeEmpty(true)}
+      if (dislikes.length > 0){setDislikeEmpty(false)}
+      if (requests.length < 1){setReqEmpty(true)}
+      if (requests.length > 0){setReqEmpty(false)}
+      console.log("WWWWWWWWMMMMMMMM", reqEmpty)
     }
     getActivity()
     
@@ -109,6 +119,13 @@ export default function ActivityScreen() {
       setRequests(reqMap)
       setLikes(likeArr)
       setDislikes(dislikeArr)     
+      if (likes.length < 1){setLikeEmpty(true)}
+      if (likes.length > 0){setLikeEmpty(false)}
+      if (dislikes.length < 0){setDislikeEmpty(true)}
+      if (dislikes.length > 0){setDislikeEmpty(false)}
+      if (requests.length < 0){setReqEmpty(true)}
+      if (requests.length > 0){setReqEmpty(false)}
+      console.log("WWWWWWWWMMMMMMMM", reqEmpty)
    };  
   // async function updateActivity() {
   //     getActivity()
@@ -127,8 +144,19 @@ export default function ActivityScreen() {
         flex: 1,
         flexDirection: 'row'
       }}>
-        <LikesWrapper title="Likes" likeActivity={likes} />
-        <DislikesWrapper title="Dislikes" dislikeActivity={dislikes} />
+        
+        {!likeEmpty &&
+          <LikesWrapper title="Likes" likeActivity={likes} />
+        }
+        {likeEmpty &&
+                <Text style={{ marginLeft: 'auto', marginRight: 'auto', color: 'white', fontSize: 22.5, fontWeight: '700', paddingBottom:"153%"}}>Likes</Text>
+        }
+        {!dislikeEmpty &&
+          <DislikesWrapper title="Dislikes" dislikeActivity={dislikes} />
+        }
+        {dislikeEmpty &&
+                <Text style={{ marginLeft: 'auto', marginRight: 'auto', color: 'white', fontSize: 22.5, fontWeight: '700', paddingBottom:"153%"}}>Dislikes</Text>
+        }
       </View>
     </ScrollView>
     <ScrollView>
@@ -142,7 +170,13 @@ export default function ActivityScreen() {
         flex: 1,
         flexDirection: 'row'
       }}>
-        <RequestsWrapper title="Requests" reqActivity={requests} hasInt={updateActivity} />
+        {!reqEmpty &&
+          <RequestsWrapper title="Requests" reqActivity={requests} hasInt={updateActivity} />
+        }
+        {reqEmpty &&
+                <Text style={{ marginLeft: 'auto', marginRight: 'auto', color: 'white', fontSize: 22.5, fontWeight: '700', paddingBottom:"3.5%" }}>Requests</Text>
+        }
+        
       </View>
     </ScrollView>
     </>

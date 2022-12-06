@@ -34,7 +34,7 @@ export default function Poll(props) {
                 paddingTop:"17.5%",
             }}>
                 <View>
-                    <PollModal pollID={props.pollID} navPoll={navigation} setVisibility={true}/>
+                    <PollModal pollID={props.pollID} navPoll={navigation} setVisibility={true}  MT="-7.5%"/>
                 </View>
                 <View style={{
                 // marginTop:"20%",

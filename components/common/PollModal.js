@@ -145,7 +145,7 @@ export default function PollModal(props) {
         visible={modalVisible}
         onRequestClose={() => {
           Alert.alert("Modal has been closed.");
-          setModalVisible(modalVisible);
+          setModalVisible(!modalVisible);
         }}
       >
         <View style={styles.centeredView}>
@@ -265,7 +265,7 @@ export default function PollModal(props) {
         // onLongPress={() => setModalVisible(true)}
         >
           <View>
-          <Text style={{ fontSize: 10, color: "#94a1b2", paddingLeft:"7.5%", marginTop:"-7.5%"  }}><Timestamp time = {time} /></Text>
+          <Text style={{ fontSize: 10, color: "#94a1b2", paddingLeft:"7.5%", marginTop:props.MT  }}><Timestamp time = {time} /></Text>
           <Text style={[MStyles.text, { alignSelf: 'center', fontSize: 15, fontWeight: 'bold', textAlign: 'center', marginTop:"10%"}]} onPress={() => props.navPoll.navigate("HomeScreen", {pid: props.pollID})}
         onLongPress={() => setModalVisible(true)}>{title}</Text>
           {/* <Text  style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{title}</Text> */}
