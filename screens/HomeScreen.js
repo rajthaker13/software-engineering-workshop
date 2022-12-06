@@ -53,8 +53,19 @@ export default function HomeScreen({ route, navigation }) {
                     followingList = Object.keys(userSnap.data()['following'])
                 }
             }
-            pollsSnapshot.forEach((doc) => {
+            pollsSnapshot.forEach(async (doc) => {
                 if (onForYouTab) {
+                    //AI
+                    const url = 'https://us-central1-aiplatform.googleapis.com/ui/projects/pollme-24549/locations/us-central1/endpoints/7178636650958815232:predict'
+                    // await fetch(url, {
+                    //     method: 'POST',
+                    //     headers: {
+                    //         'Content-Type': "application/json",
+                    //     },
+                    //     body: doc.data().title
+                    // }).then((res) => {
+                    //     console.log(res.data())
+                    // })
                     var item = doc.data()
                     item.key = doc.id
                     if (item.key == pid) {
@@ -68,7 +79,6 @@ export default function HomeScreen({ route, navigation }) {
                     var item = doc.data()
                     followingList.forEach((user) => {
                         if (user == item.uid) {
-
                             item.key = doc.id
                             if (item.key == pid) {
                                 arr.unshift(item)
@@ -84,7 +94,7 @@ export default function HomeScreen({ route, navigation }) {
 
                 }
             })
-            setPollsArray(arr)
+            setPollsArray(arr.sort(() => Math.random() - .5))
 
         }
         getPollsData()
