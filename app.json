@@ -18,16 +18,34 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
+        "backgroundColor": "#FFFFFF",
+        "googleServicesFile": "./google-services.json"
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": "./assets/favicon.png",
+      "config": {
+        "firebase": {
+          "apiKey": "AIzaSyAN3OCr7y5e7I_ba_ASonj2HoAgrnSQbYU",
+          "authDomain": "pollme-24549.firebaseapp.com",
+          "databaseURL": "https://pollme-24549-default-rtdb.firebaseio.com",
+          "projectId": "pollme-24549",
+          "storageBucket": "pollme-24549.appspot.com",
+          "messagingSenderId": "517411271651",
+          "appId": "1:517411271651:web:2ce5925cd5faf436eba6d6",
+          "measurementId": "G-TMWX0CVP82"
+        }
+      }
+    },
+    "plugins": [
+      "expo-build-properties",
+      "@react-native-firebase/app"
+    ]
   }
 }
