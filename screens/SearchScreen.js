@@ -155,12 +155,6 @@ function SearchScreen() {
         nearYouArray.push({pollID: poll[0],title:poll[1],dist:poll[2]})
     })
 
-    
-
-
-
-    
-
 
 
 
@@ -198,7 +192,6 @@ function SearchScreen() {
     </SafeAreaView>
     )
 }
-
 
 
 
