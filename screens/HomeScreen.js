@@ -44,6 +44,7 @@ export default function HomeScreen({ route, navigation }) {
     useEffect(() => {
         async function getPollsData() {
             let arr = []
+            var firstItem
             const userRef = doc(db, "users", auth.currentUser.uid)
             const pollsSnapshot = await getDocs(collection(db, "polls"));
             let followingList = []
@@ -69,10 +70,12 @@ export default function HomeScreen({ route, navigation }) {
                     var item = doc.data()
                     item.key = doc.id
                     if (item.key == pid) {
-                        arr.unshift(item)
+                        // arr.unshift(item)
+                        firstItem = item
                     }
                     else {
                         arr.push(item)
+                        arr.sort(() => Math.random() - .5)
                     }
                 }
                 else {
@@ -81,10 +84,12 @@ export default function HomeScreen({ route, navigation }) {
                         if (user == item.uid) {
                             item.key = doc.id
                             if (item.key == pid) {
-                                arr.unshift(item)
+                                // arr.unshift(item)
+                                firstItem = item
                             }
                             else {
                                 arr.push(item)
+                                arr.sort(() => Math.random() - .5)
                             }
 
 
@@ -94,7 +99,10 @@ export default function HomeScreen({ route, navigation }) {
 
                 }
             })
-            setPollsArray(arr.sort(() => Math.random() - .5))
+            if (firstItem) {
+                arr.unshift(firstItem)
+            }
+            setPollsArray(arr)
 
         }
         getPollsData()
