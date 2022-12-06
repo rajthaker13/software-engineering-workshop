@@ -179,7 +179,7 @@ export default function Requests(props) {
                             <Text style={[MStyles.buttonSolidBackgroundText]}>Accept</Text>
                     </TouchableHighlight>
                     <TouchableHighlight onPress={() => handleUnrequest()} style={[MStyles.buttonTranslucentBackground, { marginTop: 0, width: windowWidth * 0.25 }]}>
-                            <Text style={[MStyles.buttonTranslucentBackgroundText]}>kys</Text>
+                            <Text style={[MStyles.buttonTranslucentBackgroundText]}>Decline</Text>
                     </TouchableHighlight>
                 </View>
             </View>
