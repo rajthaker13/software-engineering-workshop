@@ -406,14 +406,14 @@ export default function PollStats(props) {
                     <Text style={styles.statsText}>{commentsSize}</Text>
                 </View>
             </View>
-            <View style={{ flexDirection: 'column' }}>
+            {/* <View style={{ flexDirection: 'column' }}>
                 <TouchableOpacity onPress={() => onPress("share")}>
                     <Fontisto name="share-a" size={26} color="white" />
                 </TouchableOpacity>
                 <View style={styles.statsContainer}>
                     <Text style={styles.statsText}>{shares}</Text>
                 </View>
-            </View>
+            </View> */}
             <View style={{ flexDirection: 'column' }}>
                 <TouchableHighlight onPress={() => {
                     if (UID == auth.currentUser.uid) {
