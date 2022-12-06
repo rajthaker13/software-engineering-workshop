@@ -224,7 +224,7 @@ export default function Likes(props) {
         >
         <View>
           <Text style={{ fontSize: 10, color: "#94a1b2", paddingLeft:"5%", paddingTop:"1%"  }}><Timestamp time = {time} /></Text>
-          <Text style={[MStyles.text, { fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2"}]} onPress={() => props.navPoll.navigate("HomeScreen", {pid: props.pollID})}
+          <Text style={[MStyles.text, { fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2"}]}
         onLongPress={() => setModalVisible(true)}>{title}</Text>
           {/* <Text  style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1, color: "#94a1b2" }}>{title}</Text> */}
 
