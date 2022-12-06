@@ -3,6 +3,7 @@ import { StyleSheet, View, TextInput } from 'react-native';
 import PropTypes from 'prop-types';
 import { connectSearchBox } from 'react-instantsearch-native';
 import { COLORS } from '../Colors/ColorScheme';
+import { MStyles } from '../Mason Styles/MStyles';
 
 const styles = StyleSheet.create({
   container: {
@@ -27,7 +28,7 @@ const styles = StyleSheet.create({
 const SearchBox = ({ currentRefinement, refine }) => (
   <View style={styles.container}>
     <TextInput
-      style={styles.input}
+      style={MStyles.input}
       onChangeText={value => refine(value)}
       value={currentRefinement}
       placeholder=""

@@ -8,7 +8,7 @@ import PollModal from '../common/PollModal';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default function Poll(props) {
+export default function PollNearYou(props) {
 
     const navigation = useNavigation();
 
@@ -37,14 +37,14 @@ export default function Poll(props) {
                 paddingTop:"17.5%",
             }}>
                 <View>
-                    <PollModal pollID={props.pollID} navPoll={navigation} setVisibility={true}  MT="-7.5%"/>
+                    <PollModal pollID={props.pollID} navPoll={navigation} setVisibility={true}/>
                 </View>
                 <View style={{
                 // marginTop:"20%",
                 // textAlign: 'center',
                 paddingTop:"10%",
             }}>
-                    <Text style={{ fontSize: 10, textAlign: 'center', bottom: 0 , color:COLORS.Paragraph}}>{props.answerNum} likes in the past 10 minutes</Text>
+                    <Text style={{ fontSize: 10, textAlign: 'center', bottom: 0 , color:COLORS.Paragraph}}>{props.answerNum.toFixed(2)} miles away from you</Text>
                 </View>
             </View>
         </View>

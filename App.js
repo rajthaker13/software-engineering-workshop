@@ -27,6 +27,9 @@ import { COLORS } from './components/Colors/ColorScheme';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Search from './screens/Search';
 
+console.ignoredYellowBox = ['Warning: Each', 'Warning: Failed'];
+console.disableYellowBox = true;
+
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SCREEN_WIDTH = Dimensions.get('window').width;
 

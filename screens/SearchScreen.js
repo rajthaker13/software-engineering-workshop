@@ -19,7 +19,9 @@ import { SearchBox } from 'react-instantsearch-dom';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import algoliasearch from 'algoliasearch';
-
+import * as Location from 'expo-location'
+import { LocationAccuracy } from 'expo-location';
+import haversine from 'haversine';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -40,9 +42,12 @@ function SearchScreen() {
 
     const [pollsArray, setPollsArray] = useState([])
     const [usersArray, setUsersArray] = useState([])
+
     const [actArray, setActArray] = useState([])
     const isFocused = useIsFocused();
     const [showHits, setShowHits] = useState(false);
+    const [curLocation, setLocation] = useState([])
+
 
 
     let db = getFirestore()
@@ -71,16 +76,33 @@ function SearchScreen() {
             setUsersArray(arr)
 
         }
+        async function getLocation (){
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                alert('Permission to access location was denied');
+                return;
+            }
+            let location = await Location.getCurrentPositionAsync({accuracy: LocationAccuracy.Lowest});
+            setLocation(location);
+        }
+
+        
+        
         getPolls()
         getUsers()
+        getLocation()
 
     }, [isFocused])
+
+    
+    
 
     
     userIndex.saveObjects(usersArray, { autoGenerateObjectIDIfNotExist: true });
 
 
-    let arrr =[]
+    let unsortedTrending =[]
+    let unsortedNearYou = []
     pollsArray.forEach((poll) => {
         if ("activities" in poll){
             if(poll.activities["0"]!=""){
@@ -92,25 +114,46 @@ function SearchScreen() {
                     likeInMin ++
                 })
 
-                arrr.push([poll.key, poll.title,likeInMin])
+                unsortedTrending.push([poll.key, poll.title,likeInMin])
 
+            }
+            if(poll.location){
+                
+                //console.log(curLocation.coords.latitude)
+
+            
+                var curLoc = {
+                    latitude: 38.64839,
+                    longitude: 90.30772
+                }
+                var pollLoc ={
+                    latitude: poll.location.coords.latitude.toFixed(3),
+                    longitude: Math.abs(poll.location.coords.longitude.toFixed(3))
+                }
+                var dist = haversine(curLoc,pollLoc,{unit: 'mile'})
+                unsortedNearYou.push([poll.key,poll.title,dist])
             }
             
         }
     })
 
-    var sorted = arrr.sort(function(a, b) {
+
+    var sortedTrending = unsortedTrending.sort(function(a, b) {
         return b[2] - a[2];
     });
-    
-    var finalArr = []
-
-    sorted.forEach((poll)=>{
-        finalArr.push({pollID: poll[0],title:poll[1],likes:poll[2]})
+    var trendingArray = []
+    sortedTrending.forEach((poll)=>{
+        trendingArray.push({pollID: poll[0],title:poll[1],likes:poll[2]})
     })
 
 
-
+    var sortedNearYou = unsortedNearYou.sort(function(a, b) {
+        return a[2] - b[2];
+    });
+    var nearYouArray = []
+    sortedNearYou.forEach((poll)=>{
+        nearYouArray.push({pollID: poll[0],title:poll[1],dist:poll[2]})
+    })
 
 
 
@@ -134,8 +177,8 @@ function SearchScreen() {
                 paddingTop: 10,
                 flex: 1
             }}>
-                <TrendingPollWrapper polls={finalArr} title="Trending Polls" />
-                <NearYouPollWrapper polls={pollsArray} title="Polls Near You" />
+                <TrendingPollWrapper polls={trendingArray} title="Trending Polls" />
+                <NearYouPollWrapper polls={nearYouArray} title="Polls Near You" />
         
                 {/* <GroupWrapper title="Groups for You" /> */}
 
@@ -149,7 +192,6 @@ function SearchScreen() {
     </SafeAreaView>
     )
 }
-
 
 
 
