@@ -9,6 +9,7 @@ import UserHits from './UserHits';
 import { MStyles } from '../Mason Styles/MStyles';
 import { COLORS } from '../Colors/ColorScheme';
 import { getAuth } from 'firebase/auth';
+import ResultTabs from './SearchTabs';
 
 const searchClient = algoliasearch('PN9CAYIKKA', 'ecd74f365860ea94f1d92779981d4a64');
 // const client = algoliasearch('PN9CAYIKKA', '8426ddb9e02f50bcb8ae7b4a604db602');
@@ -35,13 +36,14 @@ export default function SearchBar() {
 
   return (
 
+    
+
     <SafeAreaView>
-        <StatusBar />
-        <View>
+        <View style={{height: "100%"}}>
           <InstantSearch searchClient={searchClient} indexName="PollMe_polls">
             <SearchBoxNative onFocus={()=>setShowHits(true)} onBlur={()=>setShowHits(false)}/>
-
-            <Index indexName="PollMe_polls">
+            <ResultTabs/>
+            {/* <Index indexName="PollMe_polls">
               <Text style={[styles.separatorText]}>Polls</Text>
               <InfiniteHits modalVisible={false}/>
             </Index>
@@ -49,7 +51,7 @@ export default function SearchBar() {
             <Index indexName="PollMe_users">
               <Text style={[styles.separatorText]}>Users</Text>
               <UserHits/>
-            </Index>
+            </Index> */}
 
           </InstantSearch>
         </View>
