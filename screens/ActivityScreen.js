@@ -40,7 +40,6 @@ export default function ActivityScreen() {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    console.log("XXXXXX", hasInt)
     async function getActivity() {
       const userRef = doc(db, "users", auth.currentUser.uid);
       const userSnap = await getDoc(userRef);
@@ -79,7 +78,6 @@ export default function ActivityScreen() {
       if (dislikes.length > 0){setDislikeEmpty(false)}
       if (requests.length < 1){setReqEmpty(true)}
       if (requests.length > 0){setReqEmpty(false)}
-      console.log("WWWWWWWWMMMMMMMM", reqEmpty)
     }
     getActivity()
     
@@ -125,7 +123,6 @@ export default function ActivityScreen() {
       if (dislikes.length > 0){setDislikeEmpty(false)}
       if (requests.length < 0){setReqEmpty(true)}
       if (requests.length > 0){setReqEmpty(false)}
-      console.log("WWWWWWWWMMMMMMMM", reqEmpty)
    };  
   // async function updateActivity() {
   //     getActivity()

@@ -26,8 +26,10 @@ import { getFirestore } from 'firebase/firestore'
 import { COLORS } from './components/Colors/ColorScheme';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Search from './screens/Search';
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+LogBox.ignoreAllLogs();//Ignore all log notifications
 
-console.ignoredYellowBox = ['Warning: Each', 'Warning: Failed'];
 console.disableYellowBox = true;
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
